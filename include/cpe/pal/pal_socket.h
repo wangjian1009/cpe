@@ -52,6 +52,7 @@ extern const char *cpe_sock_errstr(int n);
 #include <arpa/inet.h>
 #include <errno.h>
 
+#define cpe_sock_pair socketpair
 #define cpe_sock_open socket
 #define cpe_connect connect
 #define cpe_getsockopt getsockopt
