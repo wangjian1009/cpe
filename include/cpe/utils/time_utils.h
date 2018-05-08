@@ -23,6 +23,8 @@ const char * time_to_str(time_t time, void * buf, size_t buf_size);
 time_t time_from_str_tz(const char * str_time);
 const char * time_to_str_tz(time_t time, void * buf, size_t buf_size);
 
+int timeval_subtract(struct timeval *result, struct timeval *x, struct timeval *y);
+
 #ifdef __cplusplus
 }
 #endif
