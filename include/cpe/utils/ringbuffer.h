@@ -8,9 +8,6 @@
   原始代码参见https://github.com/cloudwu/mread
  */
 
-typedef struct ringbuffer * ringbuffer_t;
-typedef struct ringbuffer_block * ringbuffer_block_t;
-
 struct ringbuffer_block {
 	int length;
 	int offset;

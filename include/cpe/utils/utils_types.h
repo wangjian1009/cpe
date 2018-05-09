@@ -37,7 +37,10 @@ typedef struct cpe_md5_value * cpe_md5_value_t;
 typedef struct cpe_md5_ctx * cpe_md5_ctx_t;
 
 typedef struct cpe_http_arg * cpe_http_arg_t;
-    
+
+typedef struct ringbuffer * ringbuffer_t;
+typedef struct ringbuffer_block * ringbuffer_block_t;
+
 #ifdef __cplusplus
 }
 #endif
