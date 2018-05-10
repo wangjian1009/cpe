@@ -1,4 +1,6 @@
+#include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_strings.h"
+#include "cpe/pal/pal_socket.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/stream.h"
 #include "cpe/utils_sock/sock_utils.h"
@@ -63,7 +65,7 @@ char * sock_get_remote_addr(char * buf, size_t buf_capacity, int fd, uint8_t wit
     else {
         CPE_ERROR(
             em, "sock_get_local_name_by_fd: getpeername fail, %d (%s)",
-            cpe_sock_errno(), strerror(cpe_sock_errno()));
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
         return NULL;
     }
 }
@@ -79,7 +81,7 @@ char * sock_get_local_addr(char * buf, size_t buf_capacity, int fd, uint8_t with
     else {
         CPE_ERROR(
             em, "sock_get_local_addr: getsockname fail, %d (%s)",
-            cpe_sock_errno(), strerror(cpe_sock_errno()));
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
         return NULL;
     }
 }
@@ -127,7 +129,7 @@ int sock_print_peer_addr(write_stream_t ws, int fd, uint8_t with_port, error_mon
     else {
         CPE_ERROR(
             em, "sock_print_local_addr: getpeername fail, %d (%s)",
-            cpe_sock_errno(), strerror(cpe_sock_errno()));
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
         return -1;
     }
 }
@@ -143,7 +145,7 @@ int sock_print_local_addr(write_stream_t ws, int fd, uint8_t with_port, error_mo
     else {
         CPE_ERROR(
             em, "sock_print_local_addr: getsockname fail, %d (%s)",
-            cpe_sock_errno(), strerror(cpe_sock_errno()));
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
         return -1;
     }
 }
