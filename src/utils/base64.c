@@ -1,6 +1,10 @@
 #include "cpe/pal/pal_stdlib.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/base64.h"
+#include "cpe/utils/stream.h"
+#include "cpe/utils/stream_buffer.h"
+#include "cpe/utils/stream_mem.h"
+#include "cpe/utils/buffer.h"
 
 static const uint8_t table64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -133,4 +137,17 @@ size_t cpe_base64_decode(write_stream_t output, read_stream_t input) {
     }
 
     return wlen;  
+}
+
+const char * cpe_base64_dump(mem_buffer_t buffer, void const * data, size_t data_len) {
+    mem_buffer_clear_data(buffer);
+    
+    struct read_stream_mem is = CPE_READ_STREAM_MEM_INITIALIZER(data, data_len);
+    struct write_stream_buffer ws = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
+
+    cpe_base64_encode((write_stream_t)&ws, (read_stream_t)&is);
+
+    mem_buffer_append_char(buffer, 0);
+
+    return mem_buffer_make_continuous(buffer, 0);
 }
