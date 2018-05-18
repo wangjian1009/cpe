@@ -336,23 +336,29 @@ void ringbuffer_dump_i(write_stream_t s, ringbuffer_t rb) {
         ringbuffer_block_t blk = block_ptr(rb,0);
         int i = 0;
 
-        stream_printf(s, "total size= %d\n",rb->size);
+        stream_printf(s, "ringbuffer: total-size=%d, head=%d\n", rb->size, rb->head);
         while (blk) {
             ++i;
             if (i > 1024) break;
 
             if (blk->length >= sizeof(*blk)) {
-                stream_printf(s, "[%u : %d]", (unsigned)(blk->length - sizeof(*blk)), block_offset(rb,blk));
-                stream_printf(s, " id=%d",blk->id);
+                stream_printf(s, "%d | id=%d, len=%d", block_offset(rb, blk), blk->id, (int)blk->length);
+                if (blk->offset > 0) {
+                    stream_printf(s, ", data-len=%d+%d", blk->offset, (int)(blk->length - sizeof(*blk) - blk->offset));
+                }
+                else {
+                    stream_printf(s, ", data-len=%d", (int)(blk->length - sizeof(*blk)));
+                }
+                        
                 if (blk->id >=0) {
-                    stream_printf(s, " offset=%d next=%d",blk->offset, blk->next);
+                    stream_printf(s, ", next=%d", blk->next);
                 }
             }
             else {
-                stream_printf(s, "<%u : %d>", blk->length, block_offset(rb,blk));
+                stream_printf(s, "%d | ??? len=%d, ", block_offset(rb, blk), blk->length);
             }
 
-            stream_printf(s, " ");
+            stream_printf(s, "\n");
 
             blk = block_next(rb, blk);
         }
