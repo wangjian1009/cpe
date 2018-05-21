@@ -311,7 +311,6 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         {
             /* If we see a period, then we must be in the middle of an IPv4
              * address at the end of the IPv6 address. */
-            struct cork_ipv4  *ipv4 = (struct cork_ipv4 *) dest;
 
             /* Ensure that we have space for the two hextets that the IPv4
              * address will take up. */
@@ -380,7 +379,6 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         return 0;
     }
     else if (hextets_seen == 8) {
-        unsigned int  after_count = hextets_seen - before_count;
         if (*addr_len < sizeof(struct sockaddr_in6)) {
             CPE_ERROR(em, "address len %d too small", (int)*addr_len);
             return -1;
