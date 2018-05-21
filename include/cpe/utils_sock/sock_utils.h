@@ -29,9 +29,11 @@ int sock_print_addr(write_stream_t ws, struct sockaddr_storage * addr, socklen_t
 int sock_print_peer_addr(write_stream_t ws, int fd, uint8_t with_port, error_monitor_t em);
 int sock_print_local_addr(write_stream_t ws, int fd, uint8_t with_port, error_monitor_t em);
 
-int sock_ipv4_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em);
-int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em);
-int sock_ipv_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em);    
+int sock_ipv4_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em);
+int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em);
+int sock_ip_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em);    
+
+int sock_validate_hostname(const char *hostname, const int hostname_len);
 
 #ifdef __cplusplus
 }

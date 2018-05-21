@@ -152,7 +152,7 @@ int sock_print_local_addr(write_stream_t ws, int fd, uint8_t with_port, error_mo
     }
 }
 
-static const char * sock_ipv4_parse(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em) {
+static const char * sock_ipv4_parse(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em) {
     const char * ch;
     uint8_t seen_digit_in_octet = 0;
     unsigned int  octets = 0;
@@ -196,6 +196,7 @@ static const char * sock_ipv4_parse(struct sockaddr * addr, socklen_t * addr_len
         struct sockaddr_in * in_addr = (struct sockaddr_in*)addr;
         bzero(in_addr, sizeof(*in_addr));
         in_addr->sin_family = AF_INET;
+        in_addr->sin_port = htons(port);
         memcpy(&in_addr->sin_addr, result, sizeof(in_addr->sin_addr));
         return ch;
     }
@@ -205,11 +206,11 @@ parse_error:
     return NULL;
 }
 
-int sock_ipv4_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em) {
-    return sock_ipv4_parse(addr, addr_len, str, em) == NULL ? -1 : 0;
+int sock_ipv4_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em) {
+    return sock_ipv4_parse(addr, addr_len, str, port, em) == NULL ? -1 : 0;
 }
 
-int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em) {
+int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em) {
     const char  *ch;
 
     uint16_t  digit = 0;
@@ -320,7 +321,7 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
 
             /* Parse the IPv4 address directly into our current hextet
              * buffer. */
-            ch = sock_ipv4_parse(addr, addr_len, ch - digits_seen, em);
+            ch = sock_ipv4_parse(addr, addr_len, ch - digits_seen, port, em);
             if (ch != NULL) {
                 hextets_seen += 2;
                 digits_seen = 0;
@@ -373,6 +374,7 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         struct sockaddr_in6 * in6_addr = (struct sockaddr_in6*)addr;
         bzero(in6_addr, sizeof(*in6_addr));
         in6_addr->sin6_family = AF_INET6;
+        in6_addr->sin6_port = htons(port);
         memcpy(&in6_addr->sin6_addr, before_double_colon, sizeof(uint16_t) * before_count);
         memcpy(((uint16_t*)&in6_addr->sin6_addr) + (8 - after_count), after_double_colon, sizeof(uint16_t) * after_count);
         return 0;
@@ -387,6 +389,7 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         struct sockaddr_in6 * in6_addr = (struct sockaddr_in6*)addr;
         bzero(in6_addr, sizeof(*in6_addr));
         in6_addr->sin6_family = AF_INET6;
+        in6_addr->sin6_port = htons(port);
         memcpy(&in6_addr->sin6_addr, before_double_colon, sizeof(uint16_t) * before_count);
         return 0;
     }
@@ -396,10 +399,48 @@ parse_error:
     return -1;
 }
 
-int sock_ip_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, error_monitor_t em) {
-    if (sock_ipv4_init(addr, addr_len, str, NULL) == 0) return 0;
-    if (sock_ipv6_init(addr, addr_len, str, NULL) == 0) return 0;
+int sock_ip_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, uint16_t port, error_monitor_t em) {
+    if (sock_ipv4_init(addr, addr_len, str, port, NULL) == 0) return 0;
+    if (sock_ipv6_init(addr, addr_len, str, port, NULL) == 0) return 0;
     
     CPE_ERROR(em, "Invalid IP address: \"%s\"", str);
     return -1;
+}
+
+static const char valid_label_bytes[] =
+    "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+
+int sock_validate_hostname(const char *hostname, const int hostname_len) {
+    if (hostname == NULL)
+        return 0;
+
+    if (hostname_len < 1 || hostname_len > 255)
+        return 0;
+
+    if (hostname[0] == '.')
+        return 0;
+
+    const char *label = hostname;
+    while (label < hostname + hostname_len) {
+        size_t label_len = hostname_len - (label - hostname);
+        char *next_dot   = strchr(label, '.');
+        if (next_dot != NULL)
+            label_len = next_dot - label;
+
+        if (label + label_len > hostname + hostname_len)
+            return 0;
+
+        if (label_len > 63 || label_len < 1)
+            return 0;
+
+        if (label[0] == '-' || label[label_len - 1] == '-')
+            return 0;
+
+        if (strspn(label, valid_label_bytes) < label_len)
+            return 0;
+
+        label += label_len + 1;
+    }
+
+    return 1;
 }
