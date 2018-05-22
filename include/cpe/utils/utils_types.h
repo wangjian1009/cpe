@@ -41,6 +41,9 @@ typedef struct cpe_http_arg * cpe_http_arg_t;
 typedef struct ringbuffer * ringbuffer_t;
 typedef struct ringbuffer_block * ringbuffer_block_t;
 
+typedef struct cpe_raw_array * cpe_raw_array_t;
+typedef struct cpe_string_array * cpe_string_array_t;
+    
 #ifdef __cplusplus
 }
 #endif
