@@ -37,19 +37,19 @@ size_t cpe_ba_bytes_from_bits(size_t nbits);
 /*
   cpe_ba_value_t cpe_ba_get(cpe_ba_t ba, size_t pos); */
 #define cpe_ba_get(ba, pos) \
-    ((((const uint8_t *)(ba))[((size_t)pos) >> 3] & (1 << ((size_t)pos) % 8) ) \
+    ((((const uint8_t *)(ba))[((size_t)pos) >> 3] & (0x80 >> ((size_t)pos) % 8) ) \
      ? cpe_ba_true : cpe_ba_false)
     
 /*
   void cpe_ba_set(cpe_ba_t ba, size_t pos, cpe_ba_value_t value); */
 #define cpe_ba_set(ba, pos, value)                                      \
-    if (value) ((uint8_t *)(ba))[((size_t)pos) >> 3] |= (1 << (((size_t)pos) % 8) ); \
-    else ((uint8_t *)(ba))[((size_t)pos) >> 3] &= ~(1 << (((size_t)pos) % 8) )
+    if (value) ((uint8_t *)(ba))[((size_t)pos) >> 3] |= (0x80 >> (((size_t)pos) % 8) ); \
+    else ((uint8_t *)(ba))[((size_t)pos) >> 3] &= ~(0x80 >> (((size_t)pos) % 8) )
 
 /*
   void cpe_ba_toggle(cpe_ba_t ba, size_t pos); */
 #define cpe_ba_toggle(ba, pos, value)                       \
-    ((const uint8_t *)(ba))[((size_t)pos) >> 3] ^= (1 << (((size_t)pos) % 8) )
+    ((const uint8_t *)(ba))[((size_t)pos) >> 3] ^= (0x80 >> (((size_t)pos) % 8) )
 
 
 #ifdef __cplusplus
