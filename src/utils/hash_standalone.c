@@ -56,8 +56,6 @@ static inline uint32_t cpe_hash_table_standalone_new_size(uint32_t desired_count
 #define bin_index(table, hash)  ((hash) & (table)->bin_mask)
 
 static void cpe_hash_table_standalone_allocate_bins(cpe_hash_table_standalone_t table, uint32_t desired_count) {
-    uint32_t  i;
-
     table->bin_count = cpe_hash_table_standalone_new_size(desired_count);
     table->bin_mask = table->bin_count - 1;
 
@@ -276,7 +274,6 @@ void cpe_hash_table_standalone_put_hash(
     uint32_t hash, void *key, void *value,
     uint8_t *is_new, void **old_key, void **old_value)
 {
-    struct cpe_hash_table_standalone_entry_priv  *entry;
     uint32_t  bin_index;
 
     if (table->bin_count > 0) {
@@ -291,8 +288,8 @@ void cpe_hash_table_standalone_put_hash(
                 if (old_value) *old_value = curr->public.value;
                 if (is_new) *is_new = 0;
                 
-                entry->public.key = key;
-                entry->public.value = value;
+                curr->public.key = key;
+                curr->public.value = value;
                 return;
             }
         }
@@ -308,7 +305,8 @@ void cpe_hash_table_standalone_put_hash(
         bin_index = bin_index(table, hash);
     }
 
-    entry = cpe_hash_table_standalone_new_entry(table, hash, key, value);
+    struct cpe_hash_table_standalone_entry_priv  * entry
+        = cpe_hash_table_standalone_new_entry(table, hash, key, value);
 
     TAILQ_INSERT_TAIL(&table->bins[bin_index], entry, in_bucket);
 
@@ -394,10 +392,9 @@ void cpe_hash_table_standalone_iterator_init(cpe_hash_table_standalone_t table, 
 
 cpe_hash_table_standalone_entry_t
 cpe_hash_table_standalone_iterator_next(cpe_hash_table_standalone_iterator_t iterator) {
-    cpe_hash_table_standalone_t table = iterator->table;
     struct cpe_hash_table_standalone_entry_priv * curr = iterator->priv;
 
-    if (curr == TAILQ_END(&table->insertion_order)) return NULL;
+    if (curr == NULL) return NULL;
 
     iterator->priv = TAILQ_NEXT(curr, insertion_order);
     
