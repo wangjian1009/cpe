@@ -104,6 +104,7 @@
     } while(0)
 
 #ifdef CPE_LITTLE_ENDIAN
+/*网络字节序处理 */
 #define CPE_COPY_HTON64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
 #define CPE_COPY_NTOH64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
 #define CPE_COPY_HTON32(outp, inp) CPE_COPY_ENDIAN32(outp, inp)
@@ -116,7 +117,21 @@
 #define CPE_SWAP_NTOH32(p) CPE_SWAP_ENDIAN32(p)
 #define CPE_SWAP_HTON16(p) CPE_SWAP_ENDIAN16(p)
 #define CPE_SWAP_NTOH16(p) CPE_SWAP_ENDIAN16(p)
+/*LITTLE_ENDIAN字节序处理 */
+#define CPE_COPY_HTOL64(outp, inp) do { memcpy(outp, inp, 8); } while(0)
+#define CPE_COPY_LTOH64(outp, inp) do { memcpy(outp, inp, 8); } while(0)
+#define CPE_COPY_HTOL32(outp, inp) do { memcpy(outp, inp, 4); } while(0)
+#define CPE_COPY_LTOH32(outp, inp) do { memcpy(outp, inp, 4); } while(0)
+#define CPE_COPY_HTOL16(outp, inp) do { memcpy(outp, inp, 2); } while(0)
+#define CPE_COPY_LTOH16(outp, inp) do { memcpy(outp, inp, 2); } while(0)
+#define CPE_SWAP_HTOL64(p) do { } while(0)
+#define CPE_SWAP_LTOH64(p) do { } while(0)
+#define CPE_SWAP_HTOL32(p) do { } while(0)
+#define CPE_SWAP_LTOH32(p) do { } while(0)
+#define CPE_SWAP_HTOL16(p) do { } while(0)
+#define CPE_SWAP_LTOH16(p) do { } while(0)
 #else
+/*网络字节序处理 */
 #define CPE_COPY_HTON64(outp, inp) do { memcpy(outp, inp, 8); } while(0)
 #define CPE_COPY_NTOH64(outp, inp) do { memcpy(outp, inp, 8); } while(0)
 #define CPE_COPY_HTON32(outp, inp) do { memcpy(outp, inp, 4); } while(0)
@@ -129,6 +144,19 @@
 #define CPE_SWAP_NTOH32(p) do { } while(0)
 #define CPE_SWAP_HTON16(p) do { } while(0)
 #define CPE_SWAP_NTOH16(p) do { } while(0)
+/*LITTLE_ENDIAN字节序处理 */
+#define CPE_COPY_HTOL64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
+#define CPE_COPY_LTOH64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
+#define CPE_COPY_HTOL32(outp, inp) CPE_COPY_ENDIAN32(outp, inp)
+#define CPE_COPY_LTOH32(outp, inp) CPE_COPY_ENDIAN32(outp, inp)
+#define CPE_COPY_HTOL16(outp, inp) CPE_COPY_ENDIAN16(outp, inp)
+#define CPE_COPY_LTOH16(outp, inp) CPE_COPY_ENDIAN16(outp, inp)
+#define CPE_SWAP_HTOL64(p) CPE_SWAP_ENDIAN64(p)
+#define CPE_SWAP_LTOH64(p) CPE_SWAP_ENDIAN64(p)
+#define CPE_SWAP_HTOL32(p) CPE_SWAP_ENDIAN32(p)
+#define CPE_SWAP_LTOH32(p) CPE_SWAP_ENDIAN32(p)
+#define CPE_SWAP_HTOL16(p) CPE_SWAP_ENDIAN16(p)
+#define CPE_SWAP_LTOH16(p) CPE_SWAP_ENDIAN16(p)
 #endif
 
 #ifdef __GNUC__

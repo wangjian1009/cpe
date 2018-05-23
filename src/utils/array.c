@@ -17,7 +17,7 @@ struct cpe_array_priv {
     void  *user_data;
     void (*free_user_data)(mem_allocrator_t alloc, void *);
     void (*init)(void *user_data, void *value);
-    void (*done)(void *user_data, void *value);
+    void (*fini)(void *user_data, void *value);
     void (*reuse)(void *user_data, void *value);
     void (*remove)(void *user_data, void *value);
 };
@@ -34,17 +34,17 @@ void cpe_raw_array_init(cpe_raw_array_t array, mem_allocrator_t alloc, size_t el
     array->priv->user_data = NULL;
     array->priv->free_user_data = NULL;
     array->priv->init = NULL;
-    array->priv->done = NULL;
+    array->priv->fini = NULL;
     array->priv->reuse = NULL;
     array->priv->remove = NULL;
 }
 
 void cpe_raw_array_fini(cpe_raw_array_t array) {
-    if (array->priv->done != NULL) {
+    if (array->priv->fini != NULL) {
         size_t  i;
         char  *element = array->items;
         for (i = 0; i < array->priv->initialized_count; i++) {
-            array->priv->done(array->priv->user_data, element);
+            array->priv->fini(array->priv->user_data, element);
             element += array->priv->element_size;
         }
     }
@@ -68,8 +68,8 @@ void cpe_raw_array_set_init(cpe_raw_array_t array, void (*init)(void *user_data,
     array->priv->init = init;
 }
 
-void cpe_raw_array_set_done(cpe_raw_array_t array, void (*done)(void *user_data, void *value)) {
-    array->priv->done = done;
+void cpe_raw_array_set_fini(cpe_raw_array_t array, void (*fini)(void *user_data, void *value)) {
+    array->priv->fini = fini;
 }
 
 void cpe_raw_array_set_reuse(cpe_raw_array_t array, void (*reuse)(void *user_data, void *value)) {
@@ -247,7 +247,7 @@ static void pointer__init(void *user_data, void *vvalue) {
     *value = NULL;
 }
 
-static void pointer__done(void *user_data, void *vvalue) {
+static void pointer__fini(void *user_data, void *vvalue) {
     struct cpe_pointer_array  *ptr_array = user_data;
     void **value = vvalue;
     if (*value != NULL) {
@@ -276,7 +276,7 @@ void cpe_raw_pointer_array_init(cpe_raw_array_t array, mem_allocrator_t alloc, v
     cpe_raw_array_init(array, alloc, sizeof(void *));
     cpe_array_set_callback_data(array, ptr_array, pointer__free);
     cpe_array_set_init(array, pointer__init);
-    cpe_array_set_done(array, pointer__done);
+    cpe_array_set_fini(array, pointer__fini);
     cpe_array_set_remove(array, pointer__remove);
 }
 
