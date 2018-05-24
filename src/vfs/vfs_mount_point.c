@@ -212,7 +212,6 @@ static int vfs_mount_point_find_child_process_mount(vfs_mount_point_t * i_mp, co
             }
 
             *path = mem_buffer_make_continuous(&mp->m_mgr->m_search_path_buffer, 0);
-            //printf("xxxxx: path=%s\n", *path);
         }
         
         if (next_mp->m_backend) {
