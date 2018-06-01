@@ -4,6 +4,25 @@ proj-dir=$(patsubst %/,%,$(dir $(word 1, $(MAKEFILE_LIST))))
 OUTPUT_PATH?=$(call my-dir)/../build
 auto-build-dirs+=$(OUTPUT_PATH)
 
+ifneq ($(OPENWRT_ROOT),)
+
+ORIGN_OS_NAME=Linux
+OS_NAME=linux32
+
+OPENWRT_TOOLCHAIN:=$(word 1,$(wildcard $(OPENWRT_ROOT)/staging_dir/toolchain-*))
+$(if $(OPENWRT_TOOLCHAIN),,$(warning OpenWRT $(OPENWRT_ROOT) no toolchain found))
+
+CC:=$(OPENWRT_TOOLCHAIN)/bin/mipsel-openwrt-linux-gcc
+$(if $(wildcard $(CC)),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no gcc found))
+
+AR:=$(OPENWRT_TOOLCHAIN)/bin/mipsel-openwrt-linux-gcc-ar
+$(if $(wildcard $(AR)),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no ar found))
+
+CC:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(CC)
+AR:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(AR)
+
+else #OPENWRT_ROOT
+
 ORIGN_OS_NAME:=$(shell uname -s)
 
 ifeq ($(ORIGN_OS_NAME),Linux)
@@ -26,6 +45,8 @@ OS_NAME:=cygwin
 endif
 endif
 
+endif #OPENWRT
+
 ifeq ($(OS_NAME),)
 $(error unknown orign os name $(ORIGN_OS_NAME))
 endif
@@ -34,7 +55,7 @@ endif
 define def_c_rule
 
 $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$2): $2
-	$(if $V,,@echo "$1: compiling $(notdir $$@)" &&)CC $(if $D,-ggdb) $($1_cpp_flags) $($1_c_flags) -c -o $$@ $$^
+	$(if $V,,@echo "$1: compiling $(notdir $$@)" &&)$(CC) $(if $D,-ggdb) $($1_cpp_flags) $($1_c_flags) -c -o $$@ $$^
 
 endef
 
@@ -64,7 +85,7 @@ $1: $($1_output)
 $(foreach f,$($1_src),$(call def_c_rule,$1,$f))
 
 $($1_output): $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$($1_src)) $(foreach d,$($1_depends),$($d_output))
-	$(if $V,,@echo "$1: linking $(notdir $$@)" &&)CC $(if $D,-ggdb) $($1_ld_flags) -o $$@ $$^
+	$(if $V,,@echo "$1: linking $(notdir $$@)" &&)$(CC) $(if $D,-ggdb) $($1_ld_flags) -o $$@ $$^
 
 auto-build-dirs+=$(sort $(dir $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$($1_src)) $($1_output)))
 

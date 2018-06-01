@@ -170,7 +170,8 @@ void cpe_hash_table_standalone_ensure_size(struct cpe_hash_table_standalone *tab
         cpe_hash_table_standalone_allocate_bins(table, desired_count);
 
         if (old_bins != NULL) {
-            for (uint32_t i = 0; i < old_bin_count; i++) {
+            uint32_t i;
+            for (i = 0; i < old_bin_count; i++) {
                 struct cpe_hash_table_standalone_entry_priv_list * old_bin = &old_bins[i];
                 struct cpe_hash_table_standalone_entry_priv_list * new_bin = &table->bins[i];
                 while(TAILQ_EMPTY(old_bin)) {
