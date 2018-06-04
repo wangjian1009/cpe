@@ -89,6 +89,7 @@ ssize_t file_load_to_stream(write_stream_t stream, const char * file, error_moni
     totalSize = file_stream_load_to_stream(stream, fp, em);
 
     if (!feof(fp)) {
+        CPE_INFO(em, "file %s data overflow!", file);
         totalSize = -1;
     }
 
