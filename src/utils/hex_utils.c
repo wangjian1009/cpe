@@ -1,4 +1,6 @@
+#include "cpe/pal/pal_stdlib.h"
 #include "cpe/utils/hex_utils.h"
+#include "cpe/utils/error.h"
 #include "cpe/utils/stream_mem.h" 
 #include "cpe/utils/stream_buffer.h" 
 
@@ -46,3 +48,28 @@ char * cpe_hex_dup_buf(const void * buf, size_t size, mem_buffer_t buffer) {
     return cpe_hex_dup((read_stream_t)&stream, buffer);
 }
 
+int cpe_hex_2_bin(uint8_t * p, const char * hexstr, size_t len, error_monitor_t em) {
+    char hex_byte[3];
+    char *ep;
+
+    hex_byte[2] = '\0';
+
+    while (*hexstr && len) {
+        if (!hexstr[1]) {
+            CPE_ERROR(em, "hex2bin str truncated");
+            return -1;
+        }
+        hex_byte[0] = hexstr[0];
+        hex_byte[1] = hexstr[1];
+        *p = (uint8_t)strtol(hex_byte, &ep, 16);
+        if (*ep) {
+            CPE_ERROR(em, "hex2bin failed on '%s'", hex_byte);
+            return -1;
+        }
+        p++;
+        hexstr += 2;
+        len--;
+    }
+
+    return (len == 0 && *hexstr == 0) ? 0 : -1;
+}
