@@ -40,6 +40,8 @@ ssize_t file_stream_load_to_buf(char * buf, size_t size, FILE * fp, error_monito
 ssize_t file_stream_load_to_buffer(mem_buffer_t buffer, FILE * fp, error_monitor_t em);
 ssize_t file_stream_load_to_stream(write_stream_t stream, FILE * fp, error_monitor_t em);
 
+int file_stream_read_line(mem_buffer_t buffer, char * * data, size_t * data_len, FILE * fp, error_monitor_t em);
+    
 /*file name operations*/
 const char * dir_name(const char * input, mem_buffer_t tbuf);
 const char * dir_name_ex(const char * input, int level, mem_buffer_t tbuf);

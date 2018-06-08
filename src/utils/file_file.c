@@ -216,6 +216,67 @@ ssize_t file_stream_load_to_stream(write_stream_t stream, FILE * fp, error_monit
     return totalSize;
 }
 
+int file_stream_read_line(mem_buffer_t buffer, char * * r_data, size_t * data_len, FILE * fp, error_monitor_t em) {
+    if (*data_len > 0) {
+        size_t buf_sz = mem_buffer_size(buffer);
+        if (*data_len < buf_sz) {
+            size_t left_sz = buf_sz - *data_len;
+            char * data = mem_buffer_make_continuous(buffer, 0);
+            memmove(data, data + *data_len, left_sz);
+            mem_buffer_set_size(buffer, left_sz);
+        }
+        else {
+            mem_buffer_clear_data(buffer);
+        }
+    }
+
+    size_t buf_sz = mem_buffer_size(buffer);
+    char * data = mem_buffer_make_continuous(buffer, 0);
+    size_t pos = 0;
+
+    do {
+        for(; pos < buf_sz; pos++) {
+            if (data[pos] == '\n') {
+                data[pos] = 0;
+                *r_data = data;
+                *data_len = pos + 1;
+                return 0;
+            }
+        }
+
+        if (mem_buffer_alloc(buffer, 128) == NULL) {
+            CPE_ERROR(em, "file_stream_read_line: alloc fail, buffer size is %d", (int)mem_buffer_size(buffer));
+            return -1;
+        }
+
+        size_t new_buf_sz = mem_buffer_size(buffer);
+        data = mem_buffer_make_continuous(buffer, 0);
+        if (data == NULL) {
+            CPE_ERROR(em, "file_stream_read_line: make continue, buffer size is %d", (int)mem_buffer_size(buffer));
+            return -1;
+        }
+        
+        ssize_t loaded_sz = file_stream_load_to_buf(data + buf_sz, mem_buffer_size(buffer) - buf_sz, fp, em);
+        if (loaded_sz < 0) return -1;
+
+        if (loaded_sz == 0) {
+            if (pos > 0) {
+                mem_buffer_append_char(buffer, 0);
+                *r_data = mem_buffer_make_continuous(buffer, 0);
+                *data_len = mem_buffer_size(buffer);
+            }
+            else {
+                *r_data = NULL;
+                *data_len = 0;
+            }
+            return 0;
+        }
+
+        buf_sz += loaded_sz;
+        mem_buffer_set_size(buffer, buf_sz);
+    } while(1);
+}
+
 int file_exist(const char * path, error_monitor_t em) {
     struct stat buffer;
     int status;
