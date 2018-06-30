@@ -12,11 +12,13 @@ OS_NAME=linux32
 OPENWRT_TOOLCHAIN:=$(word 1,$(wildcard $(OPENWRT_ROOT)/staging_dir/toolchain-*))
 $(if $(OPENWRT_TOOLCHAIN),,$(warning OpenWRT $(OPENWRT_ROOT) no toolchain found))
 
-CC:=$(OPENWRT_TOOLCHAIN)/bin/mipsel-openwrt-linux-gcc
-$(if $(wildcard $(CC)),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no gcc found))
+openwrt_search_tool=$(foreach a,mipsel arm,$(wildcard $(OPENWRT_TOOLCHAIN)/bin/$a-openwrt-linux-$1))
 
-AR:=$(OPENWRT_TOOLCHAIN)/bin/mipsel-openwrt-linux-gcc-ar
-$(if $(wildcard $(AR)),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no ar found))
+CC:=$(call openwrt_search_tool,gcc)
+$(if $(CC),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no gcc found))
+
+AR:=$(call openwrt_search_tool,ar)
+$(if $(AR),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no ar found))
 
 CC:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(CC)
 AR:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(AR)
