@@ -73,3 +73,26 @@ int cpe_hex_2_bin(uint8_t * p, const char * hexstr, size_t len, error_monitor_t 
 
     return (len == 0 && *hexstr == 0) ? 0 : -1;
 }
+
+const char * s_hex_num2char = "0123456789abcdef";
+
+void cpe_bin_2_hex(char * o, uint8_t const * p, size_t len) {
+    while (len) {
+        o[0] = s_hex_num2char[(*p) >> 4];
+        o[1] = s_hex_num2char[(*p) & 0xF];
+        p++;
+        o += 2;
+        len--;
+    }
+}
+
+void cpe_uint32_2_hex(char * o, uint32_t v) {
+    o[0] = s_hex_num2char[(v >> 28) & 0xF];
+    o[1] = s_hex_num2char[(v >> 24) & 0xF];
+    o[2] = s_hex_num2char[(v >> 20) & 0xF];
+    o[3] = s_hex_num2char[(v >> 16) & 0xF];
+    o[4] = s_hex_num2char[(v >> 12) & 0xF];
+    o[5] = s_hex_num2char[(v >> 8) & 0xF];
+    o[6] = s_hex_num2char[(v >> 4) & 0xF];
+    o[7] = s_hex_num2char[(v >> 0) & 0xF];
+}
