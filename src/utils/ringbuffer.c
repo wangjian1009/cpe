@@ -234,6 +234,10 @@ int ringbuffer_block_total_len(ringbuffer_t rb, ringbuffer_block_t blk) {
     return length;
 }
 
+ringbuffer_block_t ringbuffer_block_link_next(ringbuffer_t rb, ringbuffer_block_t blk) {
+    return blk->next >= 0 ? block_ptr(rb, blk->next) : NULL;
+}
+
 int
 ringbuffer_data(ringbuffer_t rb, ringbuffer_block_t blk, int size, int skip, void **ptr) {
     int length = blk->length - sizeof(struct ringbuffer_block) - blk->offset;
