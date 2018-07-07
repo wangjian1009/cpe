@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_strings.h"
 #include "cpe/pal/pal_socket.h"
 #include "cpe/pal/pal_platform.h"
