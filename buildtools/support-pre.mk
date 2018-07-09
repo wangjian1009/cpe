@@ -94,7 +94,7 @@ $1: $($1_output)
 $(foreach f,$($1_src),$(call def_c_rule,$1,$f))
 
 $($1_output): $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$($1_src)) $(foreach d,$($1_depends),$($d_output))
-	$(if $V,,@echo "$1: linking $(notdir $$@)" &&)$(CC) $(if $D,-ggdb) $($1_ld_flags) -o $$@ $$^
+	$(if $V,,@echo "$1: linking $(notdir $$@)" &&)$(CC) $(if $D,-ggdb) -o $$@ $$^ $($1_ld_flags)
 
 auto-build-dirs+=$(sort $(dir $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$($1_src)) $($1_output)))
 
