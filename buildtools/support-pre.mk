@@ -23,6 +23,8 @@ $(if $(AR),,$(warning OpenWRT toolchain $(OPENWRT_TOOLCHAIN) no ar found))
 CC:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(CC)
 AR:=STAGING_DIR=$(OPENWRT_ROOT)/staging_dir $(AR)
 
+CPPFLAGS+=-DCPE_OS_LINUX=1
+
 else #OPENWRT_ROOT
 
 ORIGN_OS_NAME:=$(shell uname -s)
@@ -30,20 +32,25 @@ ORIGN_OS_NAME:=$(shell uname -s)
 ifeq ($(ORIGN_OS_NAME),Linux)
 ifeq ($(shell uname -p),x86_64)
 OS_NAME:=linux64
+CPPFLAGS+=-DCPE_OS_LINUX=1
 else
 OS_NAME:=linux32
+CPPFLAGS+=-DCPE_OS_LINUX=1
 endif
 endif
 
 ifeq ($(ORIGN_OS_NAME),Darwin)
 OS_NAME:=mac
+CPPFLAGS+=-DCPE_OS_MAC=1
 endif
 
 ifeq ($(filter CYGWIN%,$(ORIGN_OS_NAME)),$(ORIGN_OS_NAME))
 ifeq ($(shell uname -m),x86_64)
 OS_NAME:=cygwin64
+CPPFLAGS+=-DCPE_OS_CYGWIN=1
 else
 OS_NAME:=cygwin
+CPPFLAGS+=-DCPE_OS_CYGWIN=1
 endif
 endif
 
@@ -57,7 +64,7 @@ endif
 define def_c_rule
 
 $(patsubst $($1_base)/%.c,$(OUTPUT_PATH)/obj/$1/%.o,$2): $2
-	$(if $V,,@echo "$1: compiling $(notdir $$@)" &&)$(CC) $(if $D,-ggdb) $($1_cpp_flags) $($1_c_flags) -c -o $$@ $$^
+	$(if $V,,@echo "$1: compiling $(notdir $$@)" &&)$(CC) $(CPPFLAGS) $(CFLAGS) $(if $D,-ggdb) $($1_cpp_flags) $($1_c_flags) -c -o $$@ $$^
 
 endef
 
