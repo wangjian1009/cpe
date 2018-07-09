@@ -165,5 +165,19 @@
 #define INLINE static
 #endif
 
+#ifdef _MSC_VER
+
+#define CPE_START_PACKED __pragma(pack(push, 1))
+#define CPE_END_PACKED __pragma(pack(pop))
+#define CPE_PACKED
+
+#else
+
+#define CPE_START_PACKED
+#define CPE_END_PACKED
+#define CPE_PACKED __attribute__((packed))
+
+#endif
+
 #endif
 
