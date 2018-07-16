@@ -175,7 +175,7 @@ double yajl_get_double(yajl_val v);
 
 /** Get the 64bit (long long) integer representation of a number.  You should
  *  check type first, perhaps using YAJL_IS_INTEGER */
-#define YAJL_GET_INTEGER(v) (YAJL_IS_INTEGER(v) ? (v)->u.number.i : 0)
+#define YAJL_GET_INTEGER(v) (YAJL_IS_INTEGER(v) ? (v)->u.number.i : (YAJL_IS_DOUBLE(v) ? ((long long)(v)->u.number.d) : 0))
 
 /** Get a pointer to a yajl_val_object or NULL if the value is not an object. */
 #define YAJL_GET_OBJECT(v) (YAJL_IS_OBJECT(v) ? &(v)->u.object : NULL)
