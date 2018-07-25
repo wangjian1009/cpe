@@ -514,7 +514,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C9F47EF52092B92A00FEB799 /* Build configuration list for PBXProject "cpe_utils" */;
+			buildConfigurationList = C9F47EF52092B92A00FEB799 /* Build configuration list for PBXProject "cpe" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -658,7 +658,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -710,7 +710,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -744,7 +744,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C9F47EF52092B92A00FEB799 /* Build configuration list for PBXProject "cpe_utils" */ = {
+		C9F47EF52092B92A00FEB799 /* Build configuration list for PBXProject "cpe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C9F47F012092B92A00FEB799 /* Debug */,

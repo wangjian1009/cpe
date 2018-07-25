@@ -31,7 +31,7 @@ uint32_t cpe_stable_hash_buffer(uint32_t seed, const void *src, size_t len) {
 
     /* This is exactly the same as cpe_murmur_hash_x86_32, but with a byte swap
      * to make sure that we always process the uint32s little-endian. */
-    const unsigned int  nblocks = len / 4;
+    const unsigned int nblocks = (unsigned int)(len / 4u);
     const cpe_aliased_uint32_t  *blocks = (const cpe_aliased_uint32_t *) src;
     const cpe_aliased_uint32_t  *end = blocks + nblocks;
     const cpe_aliased_uint32_t  *curr;
@@ -74,7 +74,7 @@ uint32_t cpe_stable_hash_buffer(uint32_t seed, const void *src, size_t len) {
     do {                                                                \
         typedef uint32_t __attribute__((__may_alias__))  aliased_uint32_t; \
                                                                         \
-        const unsigned int  nblocks = len / 4;                          \
+        const unsigned int nblocks = (unsigned int)(len / 4u);                          \
         const aliased_uint32_t  *blocks = (const aliased_uint32_t *) src; \
         const aliased_uint32_t  *end = blocks + nblocks;                \
         const aliased_uint32_t  *curr;                                  \

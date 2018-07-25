@@ -1,7 +1,8 @@
 #ifndef CPE_PAL_PLATFORM_H
 #define CPE_PAL_PLATFORM_H
 
-#if defined _APPLE
+#if defined __APPLE__
+#    include <stdint.h>
 #    include <ConditionalMacros.h>
 #endif
 

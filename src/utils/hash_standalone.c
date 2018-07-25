@@ -404,7 +404,7 @@ cpe_hash_table_standalone_iterator_next(cpe_hash_table_standalone_iterator_t ite
 
 static uint32_t string_hash(void *user_data, const void *vk) {
     const char  *k = vk;
-    uint32_t  len = strlen(k);
+    uint32_t len = (uint32_t)strlen(k);
     return cpe_hash_buffer(0, k, len);
 }
 
