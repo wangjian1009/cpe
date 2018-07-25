@@ -102,7 +102,7 @@ rwpipe_t rwpipe_mmap_attach(const char * path, int * r_fd, error_monitor_t em) {
         return NULL;
     }
 
-    buf = mmap(NULL, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FILE, fd, 0);
+    buf = mmap(NULL, (size_t)statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FILE, fd, 0);
     if (buf == NULL) {
         CPE_ERROR(em, "rwpipe_mmap_init: mmap fail, errno=%d (%s)\n", errno, strerror(errno));
         close(fd);
