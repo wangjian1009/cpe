@@ -282,6 +282,9 @@ void * mem_pos_insert_alloc(mem_buffer_pos_t pos, size_t n) {
             trunk->m_size = appendSize;
             pos->m_trunk->m_size -= appendSize;
         }
+        else {
+            trunk = pos->m_trunk;
+        }
 
         if (pos->m_pos_in_trunk < pos->m_trunk->m_size) {
             memmove(
