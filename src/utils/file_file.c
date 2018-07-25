@@ -249,7 +249,6 @@ int file_stream_read_line(mem_buffer_t buffer, char * * r_data, size_t * data_le
             return -1;
         }
 
-        size_t new_buf_sz = mem_buffer_size(buffer);
         data = mem_buffer_make_continuous(buffer, 0);
         if (data == NULL) {
             CPE_ERROR(em, "file_stream_read_line: make continue, buffer size is %d", (int)mem_buffer_size(buffer));

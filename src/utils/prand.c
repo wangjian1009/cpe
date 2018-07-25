@@ -19,9 +19,9 @@ static double cpe_prand_do_basic_1(void * ctx) {
     double rm1, rm2, t;
     int32_t m1,m2,m3,ia1,ia2,ia3,ic1,ic2,ic3,j;
 
-    m1 = 259200, ia1 = 7141, ic1 = 54773, rm1 = 0.0000038580247;
-    m2 = 134456, ia2 = 8121, ic2 = 28411, rm2 = 0.0000074373773;
-    m3 = 243000, ia3 = 4561, ic3 = 51349;
+    m1 = 259200; ia1 = 7141; ic1 = 54773; rm1 = 0.0000038580247;
+    m2 = 134456; ia2 = 8121; ic2 = 28411; rm2 = 0.0000074373773;
+    m3 = 243000; ia3 = 4561; ic3 = 51349;
 
     data->ix1 = (ia1 * data->ix1 + ic1) % m1;
     data->ix2 = (ia2 * data->ix2 + ic2) % m2;
@@ -46,9 +46,9 @@ void cpe_prand_init_basic_1_i(struct cpe_prand_ctx_data_basic_1 * data, int32_t 
 
     (void)check_data_size;
 
-    m1 = 259200, ia1 = 7141, ic1 = 54773, rm1 = 0.0000038580247;
-    m2 = 134456, ia2 = 8121, ic2 = 28411, rm2 = 0.0000074373773;
-    m3 = 243000, ia3 = 4561, ic3 = 51349;
+    m1 = 259200; ia1 = 7141; ic1 = 54773; rm1 = 0.0000038580247;
+    m2 = 134456; ia2 = 8121; ic2 = 28411; rm2 = 0.0000074373773;
+    m3 = 243000; ia3 = 4561; ic3 = 51349;
 
     data->ix1 = (ic1 + abs(idum)) % m1;
     data->ix1 = (ia1 * data->ix1 + ic1) % m1;

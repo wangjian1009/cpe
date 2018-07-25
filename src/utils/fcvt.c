@@ -39,7 +39,7 @@ static char *cvt(double arg, int ndigits, int *decpt, int *sign, char *buf, size
     char *p, *p1;
 
     if (ndigits < 0) ndigits = 0;
-    if (ndigits >= buf_size - 1) ndigits = buf_size - 2;
+    if (ndigits >= buf_size - 1) ndigits = (int)buf_size - 2;
     r2 = 0;
     *sign = 0;
     p = &buf[0];

@@ -341,7 +341,7 @@ int stream_vprintf(struct write_stream * stream, const char *format, va_list arg
 
         case_int:
         {
-            unsigned int number;       // Number to convert (32 bit)
+            unsigned int number = 0;       // Number to convert (32 bit)
             uint64_t number64; // Number to convert (64 bit)
             int digit;                 // ASCII value of digit
 
