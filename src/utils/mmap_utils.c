@@ -114,7 +114,7 @@ void * mmap_file_load(const char * file, const char * mod, size_t * size, error_
 
     close(fd);
 
-    if (size) *size = state_buf.st_size;
+    if (size) *size = (size_t)state_buf.st_size;
 
     return r;
 }
