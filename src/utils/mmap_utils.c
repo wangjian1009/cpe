@@ -103,7 +103,7 @@ void * mmap_file_load(const char * file, const char * mod, size_t * size, error_
         return NULL;
     }
 
-    r = mmap(NULL, state_buf.st_size, prot, MAP_FILE | MAP_PRIVATE, fd, 0);
+    r = mmap(NULL, (size_t)state_buf.st_size, prot, MAP_FILE | MAP_PRIVATE, fd, 0);
     if ((ptr_int_t)r == -1) {
         CPE_ERROR(
             em, "mmap_file_load: mmap file %s fail, size=%d, error=%d (%s)",
