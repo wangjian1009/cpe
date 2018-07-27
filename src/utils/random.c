@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "cpe/pal/pal_string.h"
 #include "cpe/utils/random.h"
 #include "cpe/pal/pal_limits.h"
 
