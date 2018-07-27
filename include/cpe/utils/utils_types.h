@@ -36,6 +36,9 @@ typedef struct binpack_maxrects_ctx * binpack_maxrects_ctx_t;
 typedef struct cpe_md5_value * cpe_md5_value_t;
 typedef struct cpe_md5_ctx * cpe_md5_ctx_t;
 
+typedef struct cpe_sha1_value * cpe_sha1_value_t;
+typedef struct cpe_sha1_ctx * cpe_sha1_ctx_t;
+
 typedef struct cpe_http_arg * cpe_http_arg_t;
 
 typedef struct ringbuffer * ringbuffer_t;

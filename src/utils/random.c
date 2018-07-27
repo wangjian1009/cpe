@@ -42,6 +42,18 @@ uint32_t cpe_rand_ctx_generate(struct cpe_rand_ctx * ctx, uint32_t max) {
     return r;
 }
 
+void cpe_rand_ctx_fill(struct cpe_rand_ctx * ctx, void * data, size_t data_size) {
+    uint8_t * buf = data;
+    
+    while(data_size) {
+        uint32_t v = cpe_rand_ctx_generate(ctx, UINT32_MAX);
+        size_t copy_len = sizeof(v) > data_size ? data_size : sizeof(v);
+        memcpy(buf, &v, copy_len);
+        buf += copy_len;
+        data_size -= copy_len;
+    }
+}
+
 float cpe_rand_ctx_generate_f(struct cpe_rand_ctx * ctx) {
     uint32_t value = cpe_rand_ctx_generate(ctx, INT32_MAX);
     return (((float)value) / ((float)(INT32_MAX - 1)));

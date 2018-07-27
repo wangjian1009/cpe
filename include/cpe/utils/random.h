@@ -17,6 +17,8 @@ uint32_t cpe_rand(int32_t seed, uint32_t max);
 
 void cpe_rand_ctx_init(struct cpe_rand_ctx * ctx, int32_t seed);
 uint32_t cpe_rand_ctx_generate(struct cpe_rand_ctx * ctx, uint32_t max);
+void cpe_rand_ctx_fill(struct cpe_rand_ctx * ctx, void * data, size_t data_size);
+
 float cpe_rand_ctx_generate_f(struct cpe_rand_ctx * ctx);
 float cpe_rand_ctx_generate_f_range(struct cpe_rand_ctx * ctx, float min, float max);
 
