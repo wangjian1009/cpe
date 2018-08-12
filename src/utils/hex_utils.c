@@ -9,6 +9,7 @@ char * cpe_hex_dup(read_stream_t input, mem_buffer_t buffer) {
     size_t size;
     int first_line;
     struct write_stream_buffer output = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
+    mem_buffer_clear_data(buffer);
 
     first_line = 1;
     size = stream_read(input, buf, sizeof(buf));
