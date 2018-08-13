@@ -184,7 +184,7 @@ _block_id(ringbuffer_block_t blk) {
 
     assert(blk->length >= sizeof(struct ringbuffer_block));
     id = blk->id;
-    assert(id>=0);
+    //assert(id>=0);
     return id;
 }
 
