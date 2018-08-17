@@ -28,6 +28,7 @@ void ringbuffer_free(ringbuffer_t rb, ringbuffer_block_t blk);
 int ringbuffer_block_data(ringbuffer_t rb, ringbuffer_block_t blk, int skip, void **ptr);
 int ringbuffer_block_len(ringbuffer_t rb, ringbuffer_block_t blk, int skip);
 ringbuffer_block_t ringbuffer_block_link_next(ringbuffer_t rb, ringbuffer_block_t blk);
+void ringbuffer_block_set_id(ringbuffer_t rb, ringbuffer_block_t blk, int id);
 int ringbuffer_block_total_len(ringbuffer_t rb, ringbuffer_block_t blk);
 int ringbuffer_data(ringbuffer_t rb, ringbuffer_block_t blk, int size, int skip, void **ptr);
 void * ringbuffer_copy(ringbuffer_t rb, ringbuffer_block_t from, int skip, ringbuffer_block_t to);

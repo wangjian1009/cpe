@@ -61,7 +61,7 @@ ringbuffer_link(ringbuffer_t rb , ringbuffer_block_t head, ringbuffer_block_t ne
     while (head->next >=0) {
         head = block_ptr(rb, head->next);
     }
-    next->id = head->id;
+    ringbuffer_block_set_id(rb, next, head->id);
     head->next = block_offset(rb, next);
 }
 
@@ -220,6 +220,13 @@ ringbuffer_block_data(ringbuffer_t rb, ringbuffer_block_t blk, int skip, void **
 
 int ringbuffer_block_len(ringbuffer_t rb, ringbuffer_block_t blk, int skip) {
     return blk->length - sizeof(struct ringbuffer_block) - blk->offset - skip;
+}
+
+void ringbuffer_block_set_id(ringbuffer_t rb, ringbuffer_block_t blk, int id) {
+    while(blk) {
+        blk->id = id;
+        blk = ringbuffer_block_link_next(rb, blk);
+    }
 }
 
 int ringbuffer_block_total_len(ringbuffer_t rb, ringbuffer_block_t blk) {
