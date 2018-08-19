@@ -218,29 +218,34 @@ void * mem_buffer_make_exactly(struct mem_buffer * buffer) {
 }
 
 void * mem_buffer_alloc(struct mem_buffer * buffer, size_t size) {
-    void * result = NULL;
-    struct mem_buffer_trunk * trunk = NULL;
+    void * result;
+    struct mem_buffer_trunk * check_trunk;
+    struct mem_buffer_trunk * found_trunk = NULL;
 
     if (!buffer || size <= 0) return NULL;
 
-    trunk = TAILQ_LAST(&buffer->m_trunks, mem_buffer_trunk_list);
-    if (trunk == NULL || trunk->m_size + size > trunk->m_capacity) {
-        trunk = mem_buffer_append_trunk(
+    TAILQ_FOREACH_REVERSE(check_trunk, &buffer->m_trunks, mem_buffer_trunk_list, m_next) {
+        size_t trunk_size = check_trunk->m_capacity - check_trunk->m_size;
+        if (size <= trunk_size) {
+            found_trunk = check_trunk;
+        }
+
+        if (check_trunk->m_size > 0) break;
+    }
+    
+    if (found_trunk == NULL) {
+        found_trunk = mem_buffer_append_trunk(
             buffer,
             buffer->m_auto_inc_size > size
             ? buffer->m_auto_inc_size
             : size);
-        if (trunk == NULL) {
+        if (found_trunk == NULL) {
             return NULL;
         }
-
-        result = mem_trunk_data(trunk);
     }
-    else {
-        result = (char*)mem_trunk_data(trunk) + trunk->m_size;
-    }
-
-    trunk->m_size += size;
+    
+    result = (char*)mem_trunk_data(found_trunk) + found_trunk->m_size;
+    found_trunk->m_size += size;
     buffer->m_size += size;
 
     return result;
