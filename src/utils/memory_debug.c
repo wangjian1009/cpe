@@ -158,7 +158,7 @@ static void mem_allocrator_debug_clear_infos(mem_allocrator_t allocrator) {
     struct debug_mem_allocrator * dalloc = (struct debug_mem_allocrator *)allocrator;
 
     cpe_hash_it_init(&it, &dalloc->m_alloc_infos);
-    while((info = (struct debug_mem_alloc_info *)cpe_hash_it_next(&it))) {
+    for(info = (struct debug_mem_alloc_info *)cpe_hash_it_next(&it); info;) {
         struct debug_mem_alloc_info * next = (struct debug_mem_alloc_info *)cpe_hash_it_next(&it);
 
         cpe_hash_table_remove_by_ins(&dalloc->m_alloc_infos, info);

@@ -22,7 +22,6 @@ size_t cpe_base64_encode(write_stream_t output, read_stream_t input) {
         int have_next = read_len > 0 ? 1 : 0;
 
         buf_len += read_len;
-        read_len = 0;
 
         while(buf_len > 0) {
             if(buf_len > 2) { //够3个字符  
@@ -92,7 +91,6 @@ size_t cpe_base64_decode(write_stream_t output, read_stream_t input) {
         int have_next = read_len > 0 ? 1 : 0;
 
         buf_len += read_len;
-        read_len = 0;
 
         while(buf_len > 4) {      /*不足三个字符，忽略 */
             lpCode[0] = cpe_base64_char_to_index(rp[0]);

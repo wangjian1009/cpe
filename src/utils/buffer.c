@@ -118,7 +118,7 @@ ssize_t mem_buffer_append(struct mem_buffer * buffer, const void * buf, size_t s
         return -1;
     }
 
-    writedSize += mem_trunk_append(buffer, trunk, (const char*)buf + writedSize, size - writedSize);
+    mem_trunk_append(buffer, trunk, (const char*)buf + writedSize, size - writedSize);
 
     return size;
 }
