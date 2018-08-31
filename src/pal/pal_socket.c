@@ -73,13 +73,24 @@ int cpe_sock_set_none_block(int fd, int is_non_block) {
 #endif
 }
 
+int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
+#ifdef _WIN32
+    BOOL flag;
+
+    flag = is_no_sigpipe ? TRUE : FALSE;
+    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_NOSIGPIPE, (const char *)&flag, sizeof(flag));
+#else
+	int opt = is_no_sigpipe ? 1 : 0;
+	return setsockopt( fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );
+#endif
+}
+
 
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
 #ifdef _WIN32
     BOOL flag;
 
     flag = is_reuseaddr ? TRUE : FALSE;
-    //return setsockopt(fd,  SOL_SOCKET, SO_EXCLUSIVEADDRUSE, &flag, sizeof(flag));
     return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
 #else
 	int opt = is_reuseaddr;

@@ -74,6 +74,7 @@ extern const char *cpe_sock_errstr(int n);
 
 int cpe_sock_set_none_block(int fd, int is_non_block);
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr);
+int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe);
 
 #ifdef __cplusplus
 }
