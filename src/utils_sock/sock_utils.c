@@ -197,6 +197,7 @@ static const char * sock_ipv4_parse(struct sockaddr * addr, socklen_t * addr_len
         struct sockaddr_in * in_addr = (struct sockaddr_in*)addr;
         bzero(in_addr, sizeof(*in_addr));
         in_addr->sin_family = AF_INET;
+        in_addr->sin_len = sizeof(*in_addr);
         in_addr->sin_port = htons(port);
         memcpy(&in_addr->sin_addr, result, sizeof(in_addr->sin_addr));
         return ch;
@@ -374,6 +375,7 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         struct sockaddr_in6 * in6_addr = (struct sockaddr_in6*)addr;
         bzero(in6_addr, sizeof(*in6_addr));
         in6_addr->sin6_family = AF_INET6;
+        in6_addr->sin6_len = sizeof(*in6_addr);
         in6_addr->sin6_port = htons(port);
         memcpy(&in6_addr->sin6_addr, before_double_colon, sizeof(uint16_t) * before_count);
         memcpy(((uint16_t*)&in6_addr->sin6_addr) + (8 - after_count), after_double_colon, sizeof(uint16_t) * after_count);
@@ -388,6 +390,7 @@ int sock_ipv6_init(struct sockaddr * addr, socklen_t * addr_len, const char *str
         struct sockaddr_in6 * in6_addr = (struct sockaddr_in6*)addr;
         bzero(in6_addr, sizeof(*in6_addr));
         in6_addr->sin6_family = AF_INET6;
+        in6_addr->sin6_len = sizeof(*in6_addr);
         in6_addr->sin6_port = htons(port);
         memcpy(&in6_addr->sin6_addr, before_double_colon, sizeof(uint16_t) * before_count);
         return 0;

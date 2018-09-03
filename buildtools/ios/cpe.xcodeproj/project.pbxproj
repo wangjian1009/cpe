@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C98F307D213D51AC00C64DC6 /* getdnssvraddrs.c in Sources */ = {isa = PBXBuildFile; fileRef = C98F307B213D51AB00C64DC6 /* getdnssvraddrs.c */; };
+		C98F307E213D51AC00C64DC6 /* getgateway.c in Sources */ = {isa = PBXBuildFile; fileRef = C98F307C213D51AC00C64DC6 /* getgateway.c */; };
 		C9F30FC82108B3F3006A7621 /* pal_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F30FBE2108B3F3006A7621 /* pal_socket.c */; };
 		C9F30FC92108B3F3006A7621 /* pal_math.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F30FBF2108B3F3006A7621 /* pal_math.c */; };
 		C9F30FCB2108B3F3006A7621 /* pal_string.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F30FC12108B3F3006A7621 /* pal_string.c */; };
@@ -141,6 +143,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C98F307B213D51AB00C64DC6 /* getdnssvraddrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getdnssvraddrs.c; sourceTree = "<group>"; };
+		C98F307C213D51AC00C64DC6 /* getgateway.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getgateway.c; sourceTree = "<group>"; };
 		C9F30F9C2108B354006A7621 /* pal_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pal_error.h; sourceTree = "<group>"; };
 		C9F30F9D2108B354006A7621 /* pal_signal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pal_signal.h; sourceTree = "<group>"; };
 		C9F30F9E2108B354006A7621 /* pal_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pal_time.h; sourceTree = "<group>"; };
@@ -451,6 +455,8 @@
 		C9F30FD22108B40E006A7621 /* utils_sock */ = {
 			isa = PBXGroup;
 			children = (
+				C98F307B213D51AB00C64DC6 /* getdnssvraddrs.c */,
+				C98F307C213D51AC00C64DC6 /* getgateway.c */,
 				C9F30FD32108B40E006A7621 /* sock_utils.c */,
 			);
 			path = utils_sock;
@@ -931,6 +937,7 @@
 				C9F310772108B40E006A7621 /* math_ex.c in Sources */,
 				C9F3106E2108B40E006A7621 /* hex_utils.c in Sources */,
 				C9F310542108B40E006A7621 /* sock_utils.c in Sources */,
+				C98F307D213D51AC00C64DC6 /* getdnssvraddrs.c in Sources */,
 				C9F310BB2108B40E006A7621 /* binpack_maxrects_utils.c in Sources */,
 				C9F310A22108B40E006A7621 /* error.c in Sources */,
 				C9F310B82108B40E006A7621 /* priority_queue.c in Sources */,
@@ -952,6 +959,7 @@
 				C9F310632108B40E006A7621 /* prand.c in Sources */,
 				C9F310602108B40E006A7621 /* rwpipe.c in Sources */,
 				C9F310732108B40E006A7621 /* graph_dijkstra.c in Sources */,
+				C98F307E213D51AC00C64DC6 /* getgateway.c in Sources */,
 				C9F310AF2108B40E006A7621 /* stream_file.c in Sources */,
 				C9F3105F2108B40E006A7621 /* array.c in Sources */,
 			);

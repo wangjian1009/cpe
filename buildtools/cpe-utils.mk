@@ -8,5 +8,7 @@ cpe_utils_src:=$(addprefix $(cpe_utils_base)/src/pal/,\
                 $(wildcard $(cpe_utils_base)/src/utils/*.c) \
                  $(addprefix $(cpe_utils_base)/src/utils_sock/,\
                      sock_utils.c \
-                 )
+                     getgateway.c \
+                     getdnssvraddrs.c \
+                )
 $(eval $(call def_library,cpe_utils))
