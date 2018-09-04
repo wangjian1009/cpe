@@ -16,3 +16,9 @@
 
 #OS_NAME:=cygwin64
 #OS_NAME:=cygwin
+
+set(OS_NAME mac)
+
+add_definitions(
+  -DCPE_OS_MAC=1
+  )
