@@ -1,9 +1,5 @@
 set(cpe_utils_base ${CMAKE_CURRENT_LIST_DIR}/../..)
 
-include_directories(
-  ${cpe_utils_base}/include
-  )
-
 file(GLOB cpe_utils_source ${cpe_utils_base}/src/utils/*.c)
 
 set(cpe_utils_source
@@ -16,3 +12,7 @@ set(cpe_utils_source
   )
 
 add_library(cpe_utils STATIC ${cpe_utils_source})
+
+set_property(TARGET cpe_utils PROPERTY INCLUDE_DIRECTORIES
+  ${cpe_utils_base}/include
+  )

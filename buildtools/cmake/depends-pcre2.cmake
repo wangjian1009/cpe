@@ -1,15 +1,5 @@
 set(pcre2_base ${CMAKE_CURRENT_LIST_DIR}/../../depends/pcre2)
 
-add_definitions(
-  -DPCRE2_CODE_UNIT_WIDTH=8
-  -DHAVE_CONFIG_H
-  -Wno-implicit-function-declaration -O3
-  )
-
-include_directories(
-  ${pcre2_base}/include
-  )
-
 set(pcre2_source
   ${pcre2_base}/src/pcre2_auto_possess.c
   ${pcre2_base}/src/pcre2_chartables.c
@@ -38,3 +28,12 @@ set(pcre2_source
   )
 
 add_library(pcre2 STATIC ${pcre2_source})
+
+set_property(TARGET pcre2 PROPERTY COMPILE_DEFINITIONS
+  PCRE2_CODE_UNIT_WIDTH=8
+  HAVE_CONFIG_H
+  )
+
+set_property(TARGET pcre2 PROPERTY INCLUDE_DIRECTORIES
+  ${pcre2_base}/include
+  )
