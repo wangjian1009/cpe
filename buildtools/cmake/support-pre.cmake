@@ -1,24 +1,26 @@
-#ORIGN_OS_NAME=Linux
-#OS_NAME=linux32
+if (WIN32)
+  set(GUI_TYPE WIN32)
+  
+  if (MSVC)
+    add_definitions("-D_MSC_VER")
+    set(OS_NAME linux64)
+    #set_property(GLOBAL PROPERTY INCLUDE_OS_NAME "win32" )
+  else()
+    if (CMAKE_SYSTEM_NAME MATCHES "cygwin")
+      set(OS_NAME cygwin)
+      #set_property(GLOBAL PROPERTY INCLUDE_OS_NAME "cygwin" )
+    else()
+      set(OS_NAME mingw)
+      # set_property(GLOBAL PROPERTY INCLUDE_OS_NAME "mingw" )
+    endif()
+  endif()
 
-#CPPFLAGS+=-DCPE_OS_LINUX=1
-
-#ORIGN_OS_NAME:=$(shell uname -s)
-
-#OS_NAME:=linux64
-#CPPFLAGS+=-DCPE_OS_LINUX=1
-
-#OS_NAME:=linux32
-#CPPFLAGS+=-DCPE_OS_LINUX=1
-
-#OS_NAME:=mac
-#CPPFLAGS+=-DCPE_OS_MAC=1
-
-#OS_NAME:=cygwin64
-#OS_NAME:=cygwin
-
-set(OS_NAME mac)
-
-add_definitions(
-  -DCPE_OS_MAC=1
-  )
+elseif (APPLE)
+  add_definitions(-DCPE_OS_MAC=1)
+  set(OS_NAME mac)
+  #set_property(GLOBAL PROPERTY INCLUDE_OS_NAME "mac" )
+else()
+  add_definitions(-DCPE_OS_LINUX=1)
+  set(OS_NAME linux64)
+  # set_property(GLOBAL PROPERTY INCLUDE_OS_NAME "linux64" )
+endif()

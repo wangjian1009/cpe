@@ -74,11 +74,15 @@ int cpe_sock_set_none_block(int fd, int is_non_block) {
 }
 
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
-#ifdef _WIN32
+#if defined _WIN32
     BOOL flag;
 
     flag = is_no_sigpipe ? TRUE : FALSE;
     return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_NOSIGPIPE, (const char *)&flag, sizeof(flag));
+#endif
+
+#if defined CPE_OS_LINUX
+    return 0;
 #else
 	int opt = is_no_sigpipe ? 1 : 0;
 	return setsockopt( fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );
