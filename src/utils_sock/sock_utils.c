@@ -41,7 +41,19 @@ char * sock_get_addr(
     }
     else if (addr->ss_family == AF_INET6) {
         struct sockaddr_in6 *s = (struct sockaddr_in6 *)addr;
-        str_addr = inet_ntop(AF_INET6, &s->sin6_addr, buf, (socklen_t)buf_capacity);
+
+        if (with_port) {
+            buf[0] = '[';
+            str_addr = inet_ntop(AF_INET6, &s->sin6_addr, buf + 1, (socklen_t)buf_capacity - 1);
+            size_t len = strlen(str_addr) + 1;
+            if (len + 1 < buf_capacity) {
+                buf[len] = ']';
+            }
+        }
+        else {
+            str_addr = inet_ntop(AF_INET6, &s->sin6_addr, buf, (socklen_t)buf_capacity);
+        }
+        
         port = ntohs(s->sin6_port);
     }
     else {

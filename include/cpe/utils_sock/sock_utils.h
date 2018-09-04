@@ -35,6 +35,9 @@ int sock_ip_init(struct sockaddr * addr, socklen_t * addr_len, const char *str, 
 
 int sock_validate_hostname(const char *hostname, const int hostname_len);
 
+char * sock_get_remote_addr(char * buf, size_t buf_capacity, int fd, uint8_t with_port, error_monitor_t em);
+char * sock_get_local_addr(char * buf, size_t buf_capacity, int fd, uint8_t with_port, error_monitor_t em);
+
 #ifdef __cplusplus
 }
 #endif
