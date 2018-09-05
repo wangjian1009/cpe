@@ -5,6 +5,12 @@
 #define CPE_ROTL32(a,b) (((a) << ((b) & 0x1f)) | ((a) >> (32 - ((b) & 0x1f))))
 #define CPE_ROTL64(a,b) (((a) << ((b) & 0x3f)) | ((a) >> (64 - ((b) & 0x3f))))
 
+#if _MSC_VER
+typedef uint32_t cpe_aliased_uint32_t;
+#else
+typedef uint32_t __attribute__((__may_alias__))  cpe_aliased_uint32_t;
+#endif
+
 uint32_t cpe_hash_str(const void * str, size_t len) {
     size_t i;
 	uint32_t h = (uint32_t)len;
@@ -27,8 +33,6 @@ uint64_t cpe_hash_uint64(uint64_t k) {
 }
 
 uint32_t cpe_stable_hash_buffer(uint32_t seed, const void *src, size_t len) {
-    typedef uint32_t __attribute__((__may_alias__))  cpe_aliased_uint32_t;
-
     /* This is exactly the same as cpe_murmur_hash_x86_32, but with a byte swap
      * to make sure that we always process the uint32s little-endian. */
     const unsigned int nblocks = (unsigned int)(len / 4u);
@@ -72,12 +76,10 @@ uint32_t cpe_stable_hash_buffer(uint32_t seed, const void *src, size_t len) {
 
 #define CPE_MURMUR_HASH_X86_32(seed, src, len, dest)                    \
     do {                                                                \
-        typedef uint32_t __attribute__((__may_alias__))  aliased_uint32_t; \
-                                                                        \
         const unsigned int nblocks = (unsigned int)(len / 4u);                          \
-        const aliased_uint32_t  *blocks = (const aliased_uint32_t *) src; \
-        const aliased_uint32_t  *end = blocks + nblocks;                \
-        const aliased_uint32_t  *curr;                                  \
+        const cpe_aliased_uint32_t  *blocks = (const cpe_aliased_uint32_t *) src; \
+        const cpe_aliased_uint32_t  *end = blocks + nblocks;                \
+        const cpe_aliased_uint32_t  *curr;                                  \
         const uint8_t  *tail = (const uint8_t *) end;                   \
                                                                         \
         uint32_t  h1 = seed;                                            \

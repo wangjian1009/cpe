@@ -1,11 +1,12 @@
 #ifndef CPE_PAL_MSVC_TIME_H
 #define CPE_PAL_MSVC_TIME_H
 #include <time.h>
-#include <winsock.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+struct timeval;
 
 struct timezone {
     __int32  tz_minuteswest; /* minutes W of Greenwich */

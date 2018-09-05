@@ -176,7 +176,7 @@
 
 #define CPE_START_PACKED
 #define CPE_END_PACKED
-#define CPE_PACKED __attribute__((packed))
+#define CPE_PACKED __attribute__((packed, aligned(1)))
 
 #endif
 

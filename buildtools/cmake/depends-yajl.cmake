@@ -8,6 +8,8 @@ set_property(TARGET yajl PROPERTY INCLUDE_DIRECTORIES
   ${yajl_base}/include
   )
 
+if (GCC)
 set_property(TARGET yajl PROPERTY COMPILE_OPTIONS
   -Wno-implicit-function-declaration
   )
+endif ()

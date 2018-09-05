@@ -1,5 +1,6 @@
 #ifndef CPE_UTILS_SOCK_GETDNSADDRS_H
 #define CPE_UTILS_SOCK_GETDNSADDRS_H
+#include "cpe/pal/pal_types.h"
 #include "cpe/pal/pal_socket.h"
 
 #ifdef __cplusplus

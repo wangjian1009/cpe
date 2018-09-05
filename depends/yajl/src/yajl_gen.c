@@ -208,10 +208,12 @@ yajl_gen_integer(yajl_gen g, long long int number)
     return yajl_gen_status_ok;
 }
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #include <float.h>
+#if _MSC_VER < 1915
 #define isnan _isnan
 #define isinf !_finite
+#endif
 #endif
 
 yajl_gen_status

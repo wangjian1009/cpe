@@ -21,7 +21,7 @@ vfs_builder_entry_create(
     entry->m_builder = builder;
     entry->m_parent = parent;
     entry->m_name = (void*)(entry + 1);
-    entry->m_name_len = name_len;
+    entry->m_name_len = (uint8_t)name_len;
     entry->m_is_dir = is_dir;
 
     if (is_dir) {

@@ -85,7 +85,7 @@ static ssize_t vfs_builder_file_read(void * ctx, vfs_file_t file, void * buf, si
     size_t read_size;
 
     if (fp->m_pos == buf_size) return 0;
-    if (fp->m_pos > buf_size) {
+    if (fp->m_pos > (ssize_t)buf_size) {
         CPE_ERROR(
             backend->m_mgr->m_em, "vfs_builder_file_read: pos %d overflow, size=%d",
             (int)fp->m_pos, (int)buf_size);

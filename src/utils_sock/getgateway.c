@@ -13,8 +13,9 @@
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
-#include <stdio.h>
-#include <ctype.h>
+#include "cpe/pal/pal_stdio.h"
+#include "cpe/pal/pal_ctype.h"
+#include "cpe/utils_sock/sock_utils.h"
 #ifndef WIN32
 #include <netinet/in.h>
 #include <sys/param.h>
@@ -89,9 +90,6 @@
 #endif
 #include "cpe/utils_sock/getgateway.h"
 
-#define SUCCESS (0)
-#define FAILED  (-1)
-
 typedef uint32_t in_addr_t;
 #ifdef USE_PROC_NET_ROUTE
 int getdefaultgateway(struct in_addr * addr)
@@ -103,7 +101,7 @@ int getdefaultgateway(struct in_addr * addr)
     char * p;
     f = fopen("/proc/net/route", "r");
     if (!f)
-        return FAILED;
+        return -1;
     while(fgets(buf, sizeof(buf), f)) {
         if (line > 0) {
             p = buf;
@@ -115,7 +113,7 @@ int getdefaultgateway(struct in_addr * addr)
                 if (d == 0) { /* default */
                 	addr->s_addr = (in_addr_t)g;
                     fclose(f);
-                    return SUCCESS;
+                    return 0;
                 }
             }
         }
@@ -124,11 +122,11 @@ int getdefaultgateway(struct in_addr * addr)
     /* default route not found ! */
     if (f)
         fclose(f);
-    return FAILED;
+    return -1;
 }
 
 int getdefaultgateway6(struct in6_addr * addr) {
-	return FAILED;
+	return -1;
 }
 
 #endif /* #ifdef USE_PROC_NET_ROUTE */
@@ -155,15 +153,15 @@ int getdefaultgateway(struct in_addr * addr)
     struct sockaddr * sa;
     struct sockaddr * sa_tab[RTAX_MAX];
     int i;
-    int r = FAILED;
+    int r = -1;
     if (sysctl(mib, sizeof(mib)/sizeof(int), 0, &l, 0, 0) < 0) {
-        return FAILED;
+        return -1;
     }
     if (l>0) {
         buf = malloc(l);
         if (sysctl(mib, sizeof(mib)/sizeof(int), buf, &l, 0, 0) < 0) {
             free(buf);
-            return FAILED;
+            return -1;
         }
         for(p=buf; p<buf+l; p+=rt->rtm_msglen) {
             rt = (struct rt_msghdr *)p;
@@ -181,7 +179,7 @@ int getdefaultgateway(struct in_addr * addr)
 //              && sa_tab[RTAX_GATEWAY]->sa_family == AF_INET) {
                 if (((struct sockaddr_in *)sa_tab[RTAX_DST])->sin_addr.s_addr == 0) {
                     *addr = ((struct sockaddr_in *)(sa_tab[RTAX_GATEWAY]))->sin_addr;
-                    r = SUCCESS;
+                    r = 0;
                     break;
                 }
             }
@@ -202,15 +200,15 @@ int getdefaultgateway6(struct in6_addr * addr)
     struct sockaddr * sa;
     struct sockaddr * sa_tab[RTAX_MAX];
     int i;
-    int r = FAILED;
+    int r = -1;
     if (sysctl(mib, sizeof(mib)/sizeof(int), 0, &l, 0, 0) < 0) {
-        return FAILED;
+        return -1;
     }
     if (l>0) {
         buf = malloc(l);
         if (sysctl(mib, sizeof(mib)/sizeof(int), buf, &l, 0, 0) < 0) {
             free(buf);
-            return FAILED;
+            return -1;
         }
         for(p=buf; p<buf+l; p+=rt->rtm_msglen) {
             rt = (struct rt_msghdr *)p;
@@ -228,7 +226,7 @@ int getdefaultgateway6(struct in6_addr * addr)
 //               && sa_tab[RTAX_GATEWAY]->sa_family == AF_INET6) {
                 if (IN6_IS_ADDR_UNSPECIFIED(&((struct sockaddr_in6 *)sa_tab[RTAX_DST])->sin6_addr)) {
                     *addr = ((struct sockaddr_in6 *)(sa_tab[RTAX_GATEWAY]))->sin6_addr;
-                    r = SUCCESS;
+                    r = 0;
                     break;
                 }
             }
@@ -289,7 +287,7 @@ int getdefaultgateway(in_addr_t *addr)
 
   if (write(s, (char *)&m_rtmsg, l) < 0) {
       close(s);
-      return FAILED;
+      return -1;
   }
 
   do {
@@ -311,21 +309,21 @@ int getdefaultgateway(in_addr_t *addr)
         cp += sizeof(struct sockaddr);
       }
   } else {
-      return FAILED;
+      return -1;
   }
 
 
   if (gate != NULL ) {
       *addr = ((struct sockaddr_in *)gate)->sin_addr.s_addr;
-      return SUCCESS;
+      return 0;
   } else {
-      return FAILED;
+      return -1;
   }
 }
 #endif /* #ifdef USE_SOCKET_ROUTE */
 
 #ifdef USE_WIN32_CODE
-int getdefaultgateway(in_addr_t * addr)
+int getdefaultgateway(struct in_addr * addr)
 {
     HKEY networkCardsKey;
     HKEY networkCardKey;
@@ -463,7 +461,13 @@ int getdefaultgateway(in_addr_t * addr)
     
     if (done)
     {
-        *addr = inet_addr(gatewayValue);
+		struct sockaddr_in addr_full;
+		socklen_t addr_len = sizeof(addr_full);
+
+		if (sock_ipv4_init((struct sockaddr *)&addr_full, &addr_len, gatewayValue, 0, NULL) != 0) return -1;
+
+		*addr = addr_full.sin_addr;
+
         return 0;
     }
     
@@ -471,7 +475,7 @@ int getdefaultgateway(in_addr_t * addr)
 }
 
 int getdefaultgateway6(struct in6_addr * addr) {
-	return FAILED;
+	return -1;
 }
 #endif /* #ifdef USE_WIN32_CODE */
 

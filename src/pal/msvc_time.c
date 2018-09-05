@@ -1,4 +1,5 @@
 #ifdef _MSC_VER
+#include <winsock2.h>
 #include <windows.h>
 #include "cpe/pal/msvc_time.h"
 

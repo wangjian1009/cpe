@@ -7,7 +7,6 @@
 extern "C" {
 #endif
 
-int sock_set_reuseport(int socket);
 size_t sock_get_sockaddr_len(struct sockaddr *addr);
 
 char * sock_get_addr(

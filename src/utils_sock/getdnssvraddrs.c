@@ -1,5 +1,6 @@
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils_sock/getdnssvraddrs.h"
+#include "cpe/utils_sock/sock_utils.h"
 
 #ifdef ANDROID
 
@@ -78,21 +79,27 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count)
 #pragma comment(lib, "Iphlpapi.lib")
 
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {
+	uint8_t addr_capacity = *addr_count;
+	*addr_count = 0;
+
     FIXED_INFO fi;
     ULONG ulOutBufLen = sizeof(fi);
     
-    if (::GetNetworkParams(&fi, &ulOutBufLen) != ERROR_SUCCESS) {
-        return;
+    if (GetNetworkParams(&fi, &ulOutBufLen) != ERROR_SUCCESS) {
+        return -1;
     }
     
     IP_ADDR_STRING* pIPAddr = fi.DnsServerList.Next;
     
-    while (pIPAddr != NULL) {
-		_dnssvraddrs.push_back(socket_address(pIPAddr->IpAddress.String) );
+    while (pIPAddr != NULL && *addr_count * addr_capacity) {
+        socklen_t addr_len = sizeof(dnssevraddrs[0]);
+        if (sock_ip_init((struct sockaddr *)&dnssevraddrs[*addr_count], &addr_len, pIPAddr->IpAddress.String, 0, NULL) == 0) {
+            *addr_count++;
+        }
         pIPAddr = pIPAddr->Next;
     }
     
-    return;
+    return 0;
 }
 #else
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {

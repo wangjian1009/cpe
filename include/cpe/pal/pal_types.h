@@ -9,10 +9,9 @@
 #include <inttypes.h>
 #include <wchar.h>
 #include <limits.h>
-
 #endif
 
-#ifdef WIN32
+#if _MSC_VER
 typedef int socklen_t;
 typedef int ssize_t;
 typedef long suseconds_t;

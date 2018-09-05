@@ -1,3 +1,7 @@
+#if defined _MSC_VER
+#include <winsock2.h>
+#endif
+
 #define _XOPEN_SOURCE
 #include "cpe/pal/pal_time.h"
 #include "cpe/pal/pal_stdio.h"

@@ -1,8 +1,8 @@
-#include <fcntl.h>
 #include "cpe/pal/pal_socket.h"
+#include "cpe/pal/pal_fcntl.h"
+#include "cpe/pal/pal_string.h"
 
 #ifdef _MSC_VER
-#include <string.h>
 
 #ifdef _DEBUG
 int cpe_sock_close(int fd)
@@ -41,7 +41,7 @@ const char* cpe_sock_errstr(int n)
 #endif
 
 int cpe_sock_set_none_block(int fd, int is_non_block) {
-#ifdef _WIN32
+#ifdef _MSC_VER
     u_long flag;
 
     flag = is_non_block ? 1 : 0;
@@ -74,24 +74,22 @@ int cpe_sock_set_none_block(int fd, int is_non_block) {
 }
 
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
-#if defined _WIN32
-    BOOL flag;
-
-    flag = is_no_sigpipe ? TRUE : FALSE;
-    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_NOSIGPIPE, (const char *)&flag, sizeof(flag));
-#endif
-
-#if defined CPE_OS_LINUX
+#if defined _MSC_VER
     return 0;
 #else
+#if defined CPE_OS_LINUX
 	int opt = is_no_sigpipe ? 1 : 0;
-	return setsockopt( fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );
+    return setsockopt(fd, SOL_SOCKET, MSG_NOSIGNAL, &opt, sizeof(opt));
+#else
+	int opt = is_no_sigpipe ? 1 : 0;
+	return setsockopt(fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );
+#endif
 #endif
 }
 
 
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
-#ifdef _WIN32
+#ifdef _MSC_VER
     BOOL flag;
 
     flag = is_reuseaddr ? TRUE : FALSE;
@@ -102,4 +100,15 @@ int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
 #endif
 }
 
+int cpe_sock_set_reuseport(int fd, int is_reuseport) {
+#ifdef _MSC_VER
+    BOOL flag;
+
+    flag = is_reuseport ? TRUE : FALSE;
+    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
+#else
+    int opt = is_reuseport;
+    return setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+#endif
+}
 

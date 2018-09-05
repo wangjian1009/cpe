@@ -52,7 +52,7 @@ static ssize_t vfs_native_file_read(void * ctx, vfs_file_t file, void * buf, siz
     ssize_t readed_size = 0;
     
     readed_size = 0;
-    while(readed_size < size) {
+    while(readed_size < (ssize_t)size) {
         size_t rv = fread(((char*)buf) + readed_size, 1, size - readed_size, fp);
         if (rv == 0) break;
         readed_size += rv;
@@ -72,7 +72,7 @@ static ssize_t vfs_native_file_write(void * ctx, vfs_file_t file, const void * b
     ssize_t writed_size;
 
     writed_size = 0;
-    while(writed_size < size) {
+    while(writed_size < (ssize_t)size) {
         size_t rv = fwrite(((char*)buf) + writed_size, 1, size - writed_size, fp);
         if (rv == 0) break;
         

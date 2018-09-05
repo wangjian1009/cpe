@@ -7,7 +7,12 @@ extern "C" {
 
 #ifdef _WIN32
 
-#include <WinSock.h>
+#if defined _WINDOWS_
+#error Do not include winsock.h or windows.h before pal_socket.h.
+#endif
+
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 #include <errno.h>
 #include <io.h>
 
@@ -74,6 +79,7 @@ extern const char *cpe_sock_errstr(int n);
 
 int cpe_sock_set_none_block(int fd, int is_non_block);
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr);
+int cpe_sock_set_reuseport(int socket, int is_reuseport);
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe);
 
 #ifdef __cplusplus
