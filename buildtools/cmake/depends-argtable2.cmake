@@ -21,6 +21,16 @@ set(argtable2_source
   )
 endif ()
 
+if (MSVC)
+set(argtable2_compile_options
+  /wd4013 /wd4047 /wd4018 /wd4273
+  )
+elseif (GCC)
+set(argtable2_compile_options
+  -Wno-implicit-function-declaration
+  )    
+endif ()
+
 add_library(argtable2 STATIC ${argtable2_source})
 
 set_property(TARGET argtable2 PROPERTY INCLUDE_DIRECTORIES
@@ -32,8 +42,4 @@ set_property(TARGET argtable2 PROPERTY COMPILE_DEFINITIONS
   HAVE_CONFIG_H
   )
 
-if (GCC)
-set_property(TARGET argtable2 PROPERTY COMPILE_OPTIONS
-  -Wno-implicit-function-declaration
-  )
-endif ()
+set_property(TARGET argtable2 PROPERTY COMPILE_OPTIONS ${argtable2_compile_options})

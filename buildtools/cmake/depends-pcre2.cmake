@@ -27,6 +27,12 @@ set(pcre2_source
   ${pcre2_base}/src/pcre2_xclass.c
   )
 
+if (MSVC)
+set(pcre2_compile_options
+  /wd4267
+  )
+endif ()
+
 add_library(pcre2 STATIC ${pcre2_source})
 
 set_property(TARGET pcre2 PROPERTY COMPILE_DEFINITIONS
@@ -37,3 +43,5 @@ set_property(TARGET pcre2 PROPERTY COMPILE_DEFINITIONS
 set_property(TARGET pcre2 PROPERTY INCLUDE_DIRECTORIES
   ${pcre2_base}/include
   )
+
+set_property(TARGET pcre2 PROPERTY COMPILE_OPTIONS ${pcre2_compile_options})

@@ -1,4 +1,5 @@
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_strings.h"
 #include "cpe/utils/sha1.h"
 #include "cpe/utils/stream.h"
 

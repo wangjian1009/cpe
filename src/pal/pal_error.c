@@ -3,6 +3,7 @@
 #include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_errno.h"
+#include "cpe/pal/pal_stdarg.h"
 
 #if defined CPE_OS_LINUX
 #else
