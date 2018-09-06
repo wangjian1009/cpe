@@ -82,6 +82,12 @@ int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr);
 int cpe_sock_set_reuseport(int socket, int is_reuseport);
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe);
 
+#ifdef MSG_NOSIGNAL
+#define CPE_SOCKET_DEFAULT_SEND_FLAGS MSG_NOSIGNAL
+#else
+#define CPE_SOCKET_DEFAULT_SEND_FLAGS 0
+#endif
+
 #ifdef __cplusplus
 }
 #endif

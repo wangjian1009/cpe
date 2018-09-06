@@ -4,6 +4,8 @@
 
 #ifdef _MSC_VER
 
+#pragma comment(lib, "ws2_32.lib")
+
 #ifdef _DEBUG
 int cpe_sock_close(int fd)
 {

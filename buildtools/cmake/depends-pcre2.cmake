@@ -36,6 +36,7 @@ endif ()
 add_library(pcre2 STATIC ${pcre2_source})
 
 set_property(TARGET pcre2 PROPERTY COMPILE_DEFINITIONS
+  PCRE2_STATIC
   PCRE2_CODE_UNIT_WIDTH=8
   HAVE_CONFIG_H
   )

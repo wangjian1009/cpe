@@ -160,6 +160,12 @@
 #define CPE_SWAP_LTOH16(p) CPE_SWAP_ENDIAN16(p)
 #endif
 
+# if defined(__INTEL_COMPILER) || defined(_MSC_VER)
+#  define CPE_ALIGN(x) __declspec(align(x))
+# else
+#  define CPE_ALIGN(x) __attribute__ ((aligned(x)))
+# endif
+
 #ifdef __GNUC__
 #define INLINE static inline
 #else
