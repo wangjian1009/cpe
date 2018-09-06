@@ -6,33 +6,21 @@
 
 #include <sys/system_properties.h>
 
-int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {
+int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
     uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
-    
-    if (*addr_count < addr_capacity) {
+
+    unsigned int i;
+    for (i = 1; i <= MAX_DNS_PROPERTIES && *addr_count < addr_capacity; i++) {
+        char propname[PROP_NAME_MAX];
+        char propvalue[PROP_VALUE_MAX];
+        snprintf(propname, sizeof(propname), "%s%u", DNS_PROP_NAME_PREFIX, i);
+        if (__system_property_get(propname, propvalue) < 1) {
+            continue;
+        }
+
         struct sockaddr_storage * addr = dnssevraddrs + *addr_count;
         socklen_t addr_len = sizeof(*addr);
-        
-        char buf[PROP_VALUE_MAX];
-        __system_property_get("net.dns1", buf);
-
-        if (sock_ipv4_init((struct sockaddr *)addr, &addr_len, buf1, 0, NULL) == 0) {
-            *addr_count++;
-        }
-        else if (sock_ipv6_init((struct sockaddr *)addr, &addr_len, url, port, NULL) == 0) {
-            *addr_count++;
-        }
-    }
-
-    
-    if (*addr_count < addr_capacity) {
-        struct sockaddr_storage * addr = dnssevraddrs + *addr_count;
-        socklen_t addr_len = sizeof(*addr);
-        
-        char buf[PROP_VALUE_MAX];
-        __system_property_get("net.dns2", buf);
-
         if (sock_ipv4_init((struct sockaddr *)addr, &addr_len, buf1, 0, NULL) == 0) {
             *addr_count++;
         }
@@ -48,7 +36,7 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count)
 #include <TargetConditionals.h>
 #include <resolv.h>
 
-int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {
+int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
     uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
     
@@ -78,7 +66,7 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count)
 
 #pragma comment(lib, "Iphlpapi.lib")
 
-int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {
+int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
 	uint8_t addr_capacity = *addr_count;
 	*addr_count = 0;
 
@@ -102,8 +90,71 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count)
     return 0;
 }
 #else
-int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count) {
+#include <errno.h>
+#include "cpe/utils/file.h"
+#include "cpe/utils/string_utils.h"
+#include "cpe/utils/buffer.h"
+
+static int getdnssvraddrs_cfg_resolve(
+    struct sockaddr_storage * dnssevraddrs, uint8_t addr_capacity, uint8_t * addr_count,
+    const char * path, error_monitor_t em)
+{
+    FILE *fp = file_stream_open(path, "r", NULL);
+    if (fp == NULL) {
+        CPE_ERROR(
+            em, "getdnssvraddrs: load from %s: open fail!, errno=%d (%s)",
+            path, errno, strerror(errno));
+        return -1;
+    }
+
+    int rv = 0;
+    char * line = NULL;
+    size_t data_len = 0;
+
+    struct mem_buffer buffer;
+    mem_buffer_init(&buffer, NULL);
+    do {
+        if (file_stream_read_line(&buffer, &line, &data_len, fp, NULL) != 0) {
+            CPE_ERROR(
+                em, "getdnssvraddrs: load from %s: read line fail, errno=%d (%s)",
+                path, errno, strerror(errno));
+            rv = -1;
+            break;
+        }
+
+        if (line == NULL) break;
+
+        if (cpe_str_start_with(line, "ns")) {
+            //TODO:
+            //if (net_dns_manage_load_ns_by_str(manage, driver, scope, cpe_str_trim_head(line + strlen("ns"))) != 0) rv = -1;
+        }
+        else if (cpe_str_start_with(line, "domain")) {
+        }
+        else if (cpe_str_start_with(line, "lookup")) {
+        }
+        else if (cpe_str_start_with(line, "search")) {
+        }
+        else if (cpe_str_start_with(line, "sortlist")) {
+        }
+        else if (cpe_str_start_with(line, "options")) {
+        }
+    } while(1);
+
+    mem_buffer_clear(&buffer);
+    file_stream_close(fp, em);
+    
+    return rv;
+}
+
+int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
+    int rv = 0;
+    uint8_t addr_capacity = *addr_capacity;
     *addr_count = 0;
-    return -1;
+    
+    if (file_exists("/etc/resolv.conf")) {
+        if (getdnssvraddrs_cfg_resolve(dnssevraddrs, addr_capacity, addr_count, path, em) != 0) rv = -1;
+    }
+    
+    return rv;
 }
 #endif
