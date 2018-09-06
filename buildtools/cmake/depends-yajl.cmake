@@ -3,9 +3,10 @@ set(yajl_base ${CMAKE_CURRENT_LIST_DIR}/../../depends/yajl)
 file(GLOB yajl_source ${yajl_base}/src/*.c)
 
 if (MSVC)
-elseif (GCC)
+elseif (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_IS_GNUCC)
 set(yajl_compile_options
   -Wno-implicit-function-declaration
+  -Wno-enum-conversion
   )
 endif ()
 

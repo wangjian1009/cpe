@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#if _MSC_VER < 1915
+#if defined _MSC_VER && _MSC_VER < 1915
 #define _CPE_NO_STRTOF
 #endif
 

@@ -25,7 +25,7 @@ if (MSVC)
 set(argtable2_compile_options
   /wd4013 /wd4047 /wd4018 /wd4273
   )
-elseif (GCC)
+elseif (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_IS_GNUCC)
 set(argtable2_compile_options
   -Wno-implicit-function-declaration
   )    
