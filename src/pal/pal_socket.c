@@ -80,8 +80,7 @@ int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
     return 0;
 #else
 #if defined CPE_OS_LINUX
-	int opt = is_no_sigpipe ? 1 : 0;
-    return setsockopt(fd, SOL_SOCKET, MSG_NOSIGNAL, &opt, sizeof(opt));
+    return 0;
 #else
 	int opt = is_no_sigpipe ? 1 : 0;
 	return setsockopt(fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );

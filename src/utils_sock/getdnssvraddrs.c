@@ -148,11 +148,11 @@ static int getdnssvraddrs_cfg_resolve(
 
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
     int rv = 0;
-    uint8_t addr_capacity = *addr_capacity;
+    uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
     
-    if (file_exists("/etc/resolv.conf")) {
-        if (getdnssvraddrs_cfg_resolve(dnssevraddrs, addr_capacity, addr_count, path, em) != 0) rv = -1;
+    if (file_exist("/etc/resolv.conf", em)) {
+        if (getdnssvraddrs_cfg_resolve(dnssevraddrs, addr_capacity, addr_count, "/etc/resolv.conf", em) != 0) rv = -1;
     }
     
     return rv;
