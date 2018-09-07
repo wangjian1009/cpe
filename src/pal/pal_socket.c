@@ -6,13 +6,6 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#ifdef _DEBUG
-int cpe_sock_close(int fd)
-{
-    return closesocket(_get_osfhandle(fd));
-}
-#endif
-
 const char* cpe_sock_errstr(int n)
 {
     /// <FIXME> not thread safe

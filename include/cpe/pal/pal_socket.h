@@ -39,13 +39,8 @@ extern "C" {
 #define cpe_recvfrom(_fd, _buf, _len,_flags, _from, _fromlen) (recvfrom(_get_osfhandle(_fd), _buf, _len,_flags, _from, _fromlen))
 #define cpe_send(_fd, _buf, _len, _flags) (send(_get_osfhandle(_fd), _buf, _len, _flags))
 #define cpe_sendto(_fd, _buf, _len, _flags, _to, _tolen) (sendto(_get_osfhandle(_fd), _buf, _len, _flags, _to, _tolen))
+#define cpe_sock_close _close
 
-#ifdef _DEBUG
-extern int cpe_sock_close (int fd);
-#else
-#define cpe_sock_close(_fd) (closesocket(_get_osfhandle(_fd)))
-
-#endif
 #define cpe_sock_errno() WSAGetLastError()
 extern const char *cpe_sock_errstr(int n);
 
