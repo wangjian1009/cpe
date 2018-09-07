@@ -79,7 +79,7 @@ int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
 #if defined _MSC_VER
     return 0;
 #else
-#if defined CPE_OS_LINUX
+#if defined CPE_OS_LINUX || defined CPE_OS_CYGWIN
     return 0;
 #else
 	int opt = is_no_sigpipe ? 1 : 0;
@@ -108,8 +108,13 @@ int cpe_sock_set_reuseport(int fd, int is_reuseport) {
     flag = is_reuseport ? TRUE : FALSE;
     return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
 #else
+#if defined CPE_OS_CYGWIN
+    int opt = is_reuseport;
+    return setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+#else
     int opt = is_reuseport;
     return setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+#endif
 #endif
 }
 
