@@ -70,24 +70,34 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count,
 	uint8_t addr_capacity = *addr_count;
 	*addr_count = 0;
 
-    FIXED_INFO fi;
-    ULONG ulOutBufLen = sizeof(fi);
-    
-    if (GetNetworkParams(&fi, &ulOutBufLen) != ERROR_SUCCESS) {
-        return -1;
-    }
-    
-    IP_ADDR_STRING* pIPAddr = fi.DnsServerList.Next;
-    
-    while (pIPAddr != NULL && *addr_count * addr_capacity) {
-        socklen_t addr_len = sizeof(dnssevraddrs[0]);
-        if (sock_ip_init((struct sockaddr *)&dnssevraddrs[*addr_count], &addr_len, pIPAddr->IpAddress.String, 0, NULL) == 0) {
-            *addr_count++;
-        }
-        pIPAddr = pIPAddr->Next;
-    }
-    
-    return 0;
+	ULONG ulOutBufLen = sizeof(FIXED_INFO);
+	FIXED_INFO *pFixedInfo = malloc(ulOutBufLen);
+	if (pFixedInfo == NULL)
+		return -1;
+
+	DWORD dwError = GetNetworkParams(pFixedInfo, &ulOutBufLen);
+	if (dwError == ERROR_BUFFER_OVERFLOW && ulOutBufLen > sizeof(FIXED_INFO)) {
+		pFixedInfo = (FIXED_INFO *)realloc(pFixedInfo, ulOutBufLen);
+		dwError = GetNetworkParams(pFixedInfo, &ulOutBufLen);
+	}
+	if (dwError != ERROR_SUCCESS) {
+		if (pFixedInfo != NULL)
+			free(pFixedInfo);
+		return -1;
+	}
+
+	IP_ADDR_STRING* pIPAddr = &pFixedInfo->DnsServerList;
+	while (pIPAddr != NULL && addr_capacity) {
+		socklen_t addr_len = sizeof(dnssevraddrs[0]);
+		if (sock_ip_init((struct sockaddr *)&dnssevraddrs[*addr_count], &addr_len, pIPAddr->IpAddress.String, 0, NULL) == 0) {
+			*addr_count = (*addr_count)++;
+		}
+		pIPAddr = pIPAddr->Next;
+	}
+	if (pFixedInfo != NULL)
+		free(pFixedInfo);
+
+	return 0;
 }
 #else
 #include <errno.h>
