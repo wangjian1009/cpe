@@ -1,4 +1,5 @@
 #include "cpe/pal/pal_string.h"
+#include "cpe/utils/error.h"
 #include "cpe/utils_sock/getdnssvraddrs.h"
 #include "cpe/utils_sock/sock_utils.h"
 
@@ -39,19 +40,24 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count,
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
     uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
-    
+
     struct __res_state stat = {0};
     res_ninit(&stat);
     union res_sockaddr_union addrs[MAXNS] = {0};
     int count = res_getservers(&stat, addrs, MAXNS);
     if (count > addr_capacity) count = addr_capacity;
-    for (*addr_count = 0; *addr_count < count; ++addr_count) {
-        if (AF_INET == addrs[*addr_count].sin.sin_family) {
-            memcpy(dnssevraddrs + *addr_count, &addrs[*addr_count].sin, sizeof(addrs[*addr_count].sin));
+
+    uint8_t i;
+    for (i = 0; i < count; i++) {
+        if (AF_INET == addrs[i].sin.sin_family) {
+            memcpy(dnssevraddrs + (*addr_count)++, &addrs[i].sin, sizeof(addrs[i].sin));
         }
-        else if (AF_INET6 == addrs[*addr_count].sin.sin_family) {
-            memcpy(dnssevraddrs + *addr_count, &addrs[*addr_count].sin6, sizeof(addrs[*addr_count].sin6));
+        else if (AF_INET6 == addrs[i].sin6.sin6_family) {
+            memcpy(dnssevraddrs + (*addr_count)++, &addrs[i].sin6, sizeof(addrs[i].sin6));
         }
+        else {
+            CPE_ERROR(em, "getdnssvraddrs: unknown network type %d", addrs[i].sin6.sin6_family);
+        }            
     }
     
     res_ndestroy(&stat);
