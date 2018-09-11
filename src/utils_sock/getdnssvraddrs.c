@@ -78,7 +78,8 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count,
 	DWORD dwError = GetNetworkParams(pFixedInfo, &ulOutBufLen);
 	if (dwError == ERROR_BUFFER_OVERFLOW && ulOutBufLen > sizeof(FIXED_INFO)) {
 		pFixedInfo = (FIXED_INFO *)realloc(pFixedInfo, ulOutBufLen);
-		dwError = GetNetworkParams(pFixedInfo, &ulOutBufLen);
+        if (pFixedInfo != NULL)
+		    dwError = GetNetworkParams(pFixedInfo, &ulOutBufLen);
 	}
 	if (dwError != ERROR_SUCCESS) {
 		if (pFixedInfo != NULL)
