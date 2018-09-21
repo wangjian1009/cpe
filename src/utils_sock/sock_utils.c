@@ -459,3 +459,48 @@ int sock_validate_hostname(const char *hostname, const int hostname_len) {
 
     return 1;
 }
+
+int sock_get_local_addr_by_remote(
+    struct sockaddr * addr, socklen_t *addr_len,
+    struct sockaddr * remote, socklen_t remote_len, error_monitor_t em)
+{
+    assert(remote->sa_family == AF_INET6 || remote->sa_family == AF_INET);
+
+    int sock = cpe_sock_open(remote->sa_family, SOCK_DGRAM, IPPROTO_UDP);
+    if (sock == -1) {
+        CPE_ERROR(
+            em, "sock_get_local_addr_by_remote: open socket fail, errno=%d (%s)",
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
+        return -1;
+    }
+
+    struct sockaddr_storage local;
+    bzero(&local, sizeof(local));
+    local.ss_family = remote->sa_family;
+    if (cpe_bind(sock, (struct sockaddr *)&local, remote->sa_family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6)) != 0) {
+        CPE_ERROR(
+            em, "sock_get_local_addr_by_remote: bind fail, errno=%d (%s)",
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
+        cpe_sock_close(sock);
+        return -1;
+    }
+
+    if (cpe_connect(sock, remote, remote_len) != 0) {
+        CPE_ERROR(
+            em, "sock_get_local_addr_by_remote: connect fail, errno=%d (%s)",
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
+        cpe_sock_close(sock);
+        return -1;
+    }
+
+    if (cpe_getsockname(sock, addr, addr_len) != 0) {
+        CPE_ERROR(
+            em, "sock_get_local_addr_by_remote: getsockname fail, errno=%d (%s)",
+            cpe_sock_errno(), cpe_sock_errstr(cpe_sock_errno()));
+        cpe_sock_close(sock);
+        return -1;
+    }
+
+    cpe_sock_close(sock);
+    return 0;
+}
