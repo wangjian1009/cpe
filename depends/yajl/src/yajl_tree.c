@@ -401,7 +401,7 @@ static int handle_null (void *ctx)
 /*
  * Public functions
  */
-yajl_val yajl_tree_parse (const char *input,
+yajl_val yajl_tree_parse_len (void const *input, size_t input_len,
                           char *error_buffer, size_t error_buffer_size)
 {
     static const yajl_callbacks callbacks =
@@ -434,13 +434,13 @@ yajl_val yajl_tree_parse (const char *input,
 
     status = yajl_parse(handle,
                         (unsigned char *) input,
-                        strlen (input));
+                        input_len);
     status = yajl_complete_parse (handle);
     if (status != yajl_status_ok) {
         if (error_buffer != NULL && error_buffer_size > 0) {
             char * err_str = (char *) yajl_get_error(handle, 1,
                                         (const unsigned char *) input,
-                                                     strlen(input));
+                                                     input_len);
             snprintf(error_buffer, error_buffer_size, "%s", err_str);
             YA_FREE(&(handle->alloc), err_str);
         }
@@ -451,6 +451,13 @@ yajl_val yajl_tree_parse (const char *input,
     yajl_free (handle);
     return (ctx.root);
 }
+
+YAJL_API yajl_val yajl_tree_parse (const char *input,
+                                   char *error_buffer, size_t error_buffer_size)
+{
+    return yajl_tree_parse_len(input, strlen(input), error_buffer, error_buffer_size);
+}
+
 
 yajl_val yajl_tree_get(yajl_val n, const char ** path, yajl_type type)
 {

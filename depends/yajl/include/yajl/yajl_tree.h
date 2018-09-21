@@ -118,6 +118,8 @@ struct yajl_val_s
  * null terminated message describing the error in more detail is stored in
  * \em error_buffer if it is not \c NULL.
  */
+YAJL_API yajl_val yajl_tree_parse_len (void const *input, size_t input_len,
+                                   char *error_buffer, size_t error_buffer_size);
 YAJL_API yajl_val yajl_tree_parse (const char *input,
                                    char *error_buffer, size_t error_buffer_size);
 
