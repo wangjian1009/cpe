@@ -5,6 +5,8 @@
 
 const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
 
+#define SECS_TO_FT_MULT 10000000
+
 int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 {
   FILETIME ft;
@@ -41,6 +43,53 @@ int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/)
 struct tm * localtime_r(const time_t *clock, struct tm *result) {
     *result = *localtime(clock);
     return result;
+}
+
+// Find 1st Jan 1970 as a FILETIME 
+static void get_base_time(LARGE_INTEGER *base_time)
+{
+	SYSTEMTIME st;
+	FILETIME ft;
+
+	memset(&st, 0, sizeof(st));
+	st.wYear = 1970;
+	st.wMonth = 1;
+	st.wDay = 1;
+	SystemTimeToFileTime(&st, &ft);
+
+	base_time->LowPart = ft.dwLowDateTime;
+	base_time->HighPart = ft.dwHighDateTime;
+	base_time->QuadPart /= SECS_TO_FT_MULT;
+}
+
+void get_localtime(struct timeval *tv, struct tm  *tm_p)
+{
+	LARGE_INTEGER li;
+	FILETIME ft;
+	SYSTEMTIME st;
+	static LARGE_INTEGER base_time;
+	static char get_base_time_flag = 0;
+
+	if (get_base_time_flag == 0)
+	{
+		get_base_time(&base_time);
+	}
+	li.QuadPart = tv->tv_sec;
+	li.QuadPart += base_time.QuadPart;
+	li.QuadPart *= SECS_TO_FT_MULT;
+
+	ft.dwLowDateTime = li.LowPart;
+	ft.dwHighDateTime = li.HighPart;
+	FileTimeToSystemTime(&ft, &st);
+
+	tm_p->tm_year = st.wYear - 1900;
+	tm_p->tm_mon = st.wMonth - 1;
+	tm_p->tm_mday = st.wDay;
+	tm_p->tm_wday = st.wDayOfWeek;
+
+	tm_p->tm_hour = st.wHour + 8;
+	tm_p->tm_min = st.wMinute;
+	tm_p->tm_sec = st.wSecond;
 }
 
 #endif

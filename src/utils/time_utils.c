@@ -182,3 +182,13 @@ int timeval_subtract(struct timeval *result, struct timeval *x, struct timeval *
 	/* Return 1 if result is negative. */
 	return x->tv_sec < y->tv_sec;
 }
+
+struct tm* time_get_localtime(struct timeval *tv, struct tm  *tm_p)
+{
+#ifdef _WIN32
+	get_localtime(tv, tm_p);
+	return tm_p;
+#else
+	return localtime(&tv->tv_sec);
+#endif
+}

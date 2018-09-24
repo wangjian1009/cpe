@@ -25,6 +25,8 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size);
 
 int timeval_subtract(struct timeval *result, struct timeval *x, struct timeval *y);
 
+struct tm* time_get_localtime(struct timeval *tv, struct tm  *tm_p);
+
 #ifdef __cplusplus
 }
 #endif
