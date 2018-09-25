@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9705200215A070B0011FF63 /* vfs_builder_backend.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051EA215A070B0011FF63 /* vfs_builder_backend.c */; };
+		C9705201215A070B0011FF63 /* vfs_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051EB215A070B0011FF63 /* vfs_stream.c */; };
+		C9705202215A070B0011FF63 /* vfs_mount_point.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051EC215A070B0011FF63 /* vfs_mount_point.c */; };
+		C9705203215A070B0011FF63 /* vfs_backend.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051EE215A070B0011FF63 /* vfs_backend.c */; };
+		C9705204215A070B0011FF63 /* vfs_file_md5.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051EF215A070B0011FF63 /* vfs_file_md5.c */; };
+		C9705205215A070B0011FF63 /* vfs_manage.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051F0215A070B0011FF63 /* vfs_manage.c */; };
+		C9705207215A070B0011FF63 /* vfs_backend_native.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051F5215A070B0011FF63 /* vfs_backend_native.c */; };
+		C9705208215A070B0011FF63 /* vfs_visitor.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051F6215A070B0011FF63 /* vfs_visitor.c */; };
+		C9705209215A070B0011FF63 /* vfs_builder_entry.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051FA215A070B0011FF63 /* vfs_builder_entry.c */; };
+		C970520A215A070B0011FF63 /* vfs_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051FB215A070B0011FF63 /* vfs_dir.c */; };
+		C970520B215A070B0011FF63 /* vfs_builder.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051FD215A070B0011FF63 /* vfs_builder.c */; };
+		C970520C215A070B0011FF63 /* vfs_file.c in Sources */ = {isa = PBXBuildFile; fileRef = C97051FF215A070B0011FF63 /* vfs_file.c */; };
 		C98F307D213D51AC00C64DC6 /* getdnssvraddrs.c in Sources */ = {isa = PBXBuildFile; fileRef = C98F307B213D51AB00C64DC6 /* getdnssvraddrs.c */; };
 		C98F307E213D51AC00C64DC6 /* getgateway.c in Sources */ = {isa = PBXBuildFile; fileRef = C98F307C213D51AC00C64DC6 /* getgateway.c */; };
 		C9F30FC82108B3F3006A7621 /* pal_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F30FBE2108B3F3006A7621 /* pal_socket.c */; };
@@ -113,6 +125,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		C97051D1215A068B0011FF63 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9F310BE2108B4C2006A7621 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -143,6 +164,38 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C97051D3215A068B0011FF63 /* libcpe_vfs.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcpe_vfs.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C97051DD215A06FC0011FF63 /* vfs_builder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_builder.h; sourceTree = "<group>"; };
+		C97051DE215A06FC0011FF63 /* vfs_dir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_dir.h; sourceTree = "<group>"; };
+		C97051DF215A06FC0011FF63 /* vfs_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_types.h; sourceTree = "<group>"; };
+		C97051E1215A06FC0011FF63 /* with_vfs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = with_vfs.hpp; sourceTree = "<group>"; };
+		C97051E2215A06FC0011FF63 /* vfs_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_file.h; sourceTree = "<group>"; };
+		C97051E3215A06FC0011FF63 /* vfs_mount_point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_mount_point.h; sourceTree = "<group>"; };
+		C97051E4215A06FC0011FF63 /* vfs_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_stream.h; sourceTree = "<group>"; };
+		C97051E5215A06FC0011FF63 /* vfs_manage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_manage.h; sourceTree = "<group>"; };
+		C97051E6215A06FC0011FF63 /* vfs_backend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_backend.h; sourceTree = "<group>"; };
+		C97051E7215A06FC0011FF63 /* vfs_entry_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_entry_info.h; sourceTree = "<group>"; };
+		C97051E8215A06FC0011FF63 /* vfs_visitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_visitor.h; sourceTree = "<group>"; };
+		C97051EA215A070B0011FF63 /* vfs_builder_backend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_builder_backend.c; sourceTree = "<group>"; };
+		C97051EB215A070B0011FF63 /* vfs_stream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_stream.c; sourceTree = "<group>"; };
+		C97051EC215A070B0011FF63 /* vfs_mount_point.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_mount_point.c; sourceTree = "<group>"; };
+		C97051ED215A070B0011FF63 /* vfs_dir_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_dir_i.h; sourceTree = "<group>"; };
+		C97051EE215A070B0011FF63 /* vfs_backend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_backend.c; sourceTree = "<group>"; };
+		C97051EF215A070B0011FF63 /* vfs_file_md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_file_md5.c; sourceTree = "<group>"; };
+		C97051F0215A070B0011FF63 /* vfs_manage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_manage.c; sourceTree = "<group>"; };
+		C97051F1215A070B0011FF63 /* vfs_builder_entry_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_builder_entry_i.h; sourceTree = "<group>"; };
+		C97051F2215A070B0011FF63 /* vfs_backend_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_backend_i.h; sourceTree = "<group>"; };
+		C97051F5215A070B0011FF63 /* vfs_backend_native.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_backend_native.c; sourceTree = "<group>"; };
+		C97051F6215A070B0011FF63 /* vfs_visitor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_visitor.c; sourceTree = "<group>"; };
+		C97051F7215A070B0011FF63 /* vfs_mount_point_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_mount_point_i.h; sourceTree = "<group>"; };
+		C97051F8215A070B0011FF63 /* vfs_manage_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_manage_i.h; sourceTree = "<group>"; };
+		C97051F9215A070B0011FF63 /* vfs_file_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_file_i.h; sourceTree = "<group>"; };
+		C97051FA215A070B0011FF63 /* vfs_builder_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_builder_entry.c; sourceTree = "<group>"; };
+		C97051FB215A070B0011FF63 /* vfs_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_dir.c; sourceTree = "<group>"; };
+		C97051FC215A070B0011FF63 /* vfs_builder_backend_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_builder_backend_i.h; sourceTree = "<group>"; };
+		C97051FD215A070B0011FF63 /* vfs_builder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_builder.c; sourceTree = "<group>"; };
+		C97051FE215A070B0011FF63 /* vfs_builder_i.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vfs_builder_i.h; sourceTree = "<group>"; };
+		C97051FF215A070B0011FF63 /* vfs_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vfs_file.c; sourceTree = "<group>"; };
 		C98F307B213D51AB00C64DC6 /* getdnssvraddrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getdnssvraddrs.c; sourceTree = "<group>"; };
 		C98F307C213D51AC00C64DC6 /* getgateway.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = getgateway.c; sourceTree = "<group>"; };
 		C9F30F9C2108B354006A7621 /* pal_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pal_error.h; sourceTree = "<group>"; };
@@ -358,6 +411,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C97051D0215A068B0011FF63 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9F310BD2108B4C2006A7621 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -382,9 +442,63 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C97051DC215A06FC0011FF63 /* vfs */ = {
+			isa = PBXGroup;
+			children = (
+				C97051DD215A06FC0011FF63 /* vfs_builder.h */,
+				C97051DE215A06FC0011FF63 /* vfs_dir.h */,
+				C97051DF215A06FC0011FF63 /* vfs_types.h */,
+				C97051E0215A06FC0011FF63 /* tests-env */,
+				C97051E2215A06FC0011FF63 /* vfs_file.h */,
+				C97051E3215A06FC0011FF63 /* vfs_mount_point.h */,
+				C97051E4215A06FC0011FF63 /* vfs_stream.h */,
+				C97051E5215A06FC0011FF63 /* vfs_manage.h */,
+				C97051E6215A06FC0011FF63 /* vfs_backend.h */,
+				C97051E7215A06FC0011FF63 /* vfs_entry_info.h */,
+				C97051E8215A06FC0011FF63 /* vfs_visitor.h */,
+			);
+			path = vfs;
+			sourceTree = "<group>";
+		};
+		C97051E0215A06FC0011FF63 /* tests-env */ = {
+			isa = PBXGroup;
+			children = (
+				C97051E1215A06FC0011FF63 /* with_vfs.hpp */,
+			);
+			path = "tests-env";
+			sourceTree = "<group>";
+		};
+		C97051E9215A070B0011FF63 /* vfs */ = {
+			isa = PBXGroup;
+			children = (
+				C97051EA215A070B0011FF63 /* vfs_builder_backend.c */,
+				C97051EB215A070B0011FF63 /* vfs_stream.c */,
+				C97051EC215A070B0011FF63 /* vfs_mount_point.c */,
+				C97051ED215A070B0011FF63 /* vfs_dir_i.h */,
+				C97051EE215A070B0011FF63 /* vfs_backend.c */,
+				C97051EF215A070B0011FF63 /* vfs_file_md5.c */,
+				C97051F0215A070B0011FF63 /* vfs_manage.c */,
+				C97051F1215A070B0011FF63 /* vfs_builder_entry_i.h */,
+				C97051F2215A070B0011FF63 /* vfs_backend_i.h */,
+				C97051F5215A070B0011FF63 /* vfs_backend_native.c */,
+				C97051F6215A070B0011FF63 /* vfs_visitor.c */,
+				C97051F7215A070B0011FF63 /* vfs_mount_point_i.h */,
+				C97051F8215A070B0011FF63 /* vfs_manage_i.h */,
+				C97051F9215A070B0011FF63 /* vfs_file_i.h */,
+				C97051FA215A070B0011FF63 /* vfs_builder_entry.c */,
+				C97051FB215A070B0011FF63 /* vfs_dir.c */,
+				C97051FC215A070B0011FF63 /* vfs_builder_backend_i.h */,
+				C97051FD215A070B0011FF63 /* vfs_builder.c */,
+				C97051FE215A070B0011FF63 /* vfs_builder_i.h */,
+				C97051FF215A070B0011FF63 /* vfs_file.c */,
+			);
+			path = vfs;
+			sourceTree = "<group>";
+		};
 		C9F30F9A2108B2EB006A7621 /* cpe */ = {
 			isa = PBXGroup;
 			children = (
+				C97051DC215A06FC0011FF63 /* vfs */,
 				C9F30FBA2108B363006A7621 /* utils_sock */,
 				C9F30F9B2108B354006A7621 /* pal */,
 				C9F47F922092B9A900FEB799 /* utils */,
@@ -664,6 +778,7 @@
 				C9F47EFA2092B92A00FEB799 /* libcpe_utils.a */,
 				C9F310C02108B4C2006A7621 /* libpcre.a */,
 				C9F311AD210C176D006A7621 /* libyajl.a */,
+				C97051D3215A068B0011FF63 /* libcpe_vfs.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -680,6 +795,7 @@
 		C9F47F0D2092B98200FEB799 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C97051E9215A070B0011FF63 /* vfs */,
 				C9F30FD42108B40E006A7621 /* utils */,
 				C9F30FD22108B40E006A7621 /* utils_sock */,
 				C9F30FBD2108B3F3006A7621 /* pal */,
@@ -750,6 +866,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C97051D2215A068B0011FF63 /* cpe_vfs */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C97051DB215A068B0011FF63 /* Build configuration list for PBXNativeTarget "cpe_vfs" */;
+			buildPhases = (
+				C97051CF215A068B0011FF63 /* Sources */,
+				C97051D0215A068B0011FF63 /* Frameworks */,
+				C97051D1215A068B0011FF63 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = cpe_vfs;
+			productName = cpe_vfs;
+			productReference = C97051D3215A068B0011FF63 /* libcpe_vfs.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		C9F310BF2108B4C2006A7621 /* pcre */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9F310C62108B4C2006A7621 /* Build configuration list for PBXNativeTarget "pcre" */;
@@ -810,6 +943,9 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "汪 键";
 				TargetAttributes = {
+					C97051D2215A068B0011FF63 = {
+						CreatedOnToolsVersion = 10.0;
+					};
 					C9F310BF2108B4C2006A7621 = {
 						CreatedOnToolsVersion = 9.4.1;
 					};
@@ -836,11 +972,31 @@
 				C9F47EF92092B92A00FEB799 /* cpe_utils */,
 				C9F310BF2108B4C2006A7621 /* pcre */,
 				C9F311AC210C176D006A7621 /* yajl */,
+				C97051D2215A068B0011FF63 /* cpe_vfs */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C97051CF215A068B0011FF63 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C970520C215A070B0011FF63 /* vfs_file.c in Sources */,
+				C9705209215A070B0011FF63 /* vfs_builder_entry.c in Sources */,
+				C9705203215A070B0011FF63 /* vfs_backend.c in Sources */,
+				C970520A215A070B0011FF63 /* vfs_dir.c in Sources */,
+				C970520B215A070B0011FF63 /* vfs_builder.c in Sources */,
+				C9705208215A070B0011FF63 /* vfs_visitor.c in Sources */,
+				C9705207215A070B0011FF63 /* vfs_backend_native.c in Sources */,
+				C9705204215A070B0011FF63 /* vfs_file_md5.c in Sources */,
+				C9705205215A070B0011FF63 /* vfs_manage.c in Sources */,
+				C9705200215A070B0011FF63 /* vfs_builder_backend.c in Sources */,
+				C9705202215A070B0011FF63 /* vfs_mount_point.c in Sources */,
+				C9705201215A070B0011FF63 /* vfs_stream.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C9F310BC2108B4C2006A7621 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -968,6 +1124,31 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		C97051D9215A068B0011FF63 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = ../../include;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C97051DA215A068B0011FF63 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = ../../include;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		C9F310C72108B4C2006A7621 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1169,6 +1350,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C97051DB215A068B0011FF63 /* Build configuration list for PBXNativeTarget "cpe_vfs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C97051D9215A068B0011FF63 /* Debug */,
+				C97051DA215A068B0011FF63 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C9F310C62108B4C2006A7621 /* Build configuration list for PBXNativeTarget "pcre" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
