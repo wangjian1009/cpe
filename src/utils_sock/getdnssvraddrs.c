@@ -130,7 +130,7 @@ static int getdnssvraddrs_cfg_resolve(
 
     struct mem_buffer buffer;
     mem_buffer_init(&buffer, NULL);
-    do {
+    while(*addr_count + 1 < addr_capacity) {
         if (file_stream_read_line(&buffer, &line, &data_len, fp, NULL) != 0) {
             CPE_ERROR(
                 em, "getdnssvraddrs: load from %s: read line fail, errno=%d (%s)",
@@ -142,8 +142,16 @@ static int getdnssvraddrs_cfg_resolve(
         if (line == NULL) break;
 
         if (cpe_str_start_with(line, "ns")) {
-            //TODO:
-            //if (net_dns_manage_load_ns_by_str(manage, driver, scope, cpe_str_trim_head(line + strlen("ns"))) != 0) rv = -1;
+            socklen_t addr_len = sizeof(dnssevraddrs[0]);
+            if (sock_ip_init((struct sockaddr *)&dnssevraddrs[*addr_count], &addr_len, cpe_str_trim_head(line + strlen("ns")), 0, NULL) == 0) {
+                (*addr_count)++;
+            }
+        }
+        else if (cpe_str_start_with(line, "nameserver")) {
+            socklen_t addr_len = sizeof(dnssevraddrs[0]);
+            if (sock_ip_init((struct sockaddr *)&dnssevraddrs[*addr_count], &addr_len, cpe_str_trim_head(line + strlen("nameserver")), 0, NULL) == 0) {
+                (*addr_count)++;
+            }
         }
         else if (cpe_str_start_with(line, "domain")) {
         }
@@ -155,7 +163,7 @@ static int getdnssvraddrs_cfg_resolve(
         }
         else if (cpe_str_start_with(line, "options")) {
         }
-    } while(1);
+    };
 
     mem_buffer_clear(&buffer);
     file_stream_close(fp, em);
