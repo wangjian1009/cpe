@@ -61,7 +61,11 @@ static void cpe_hash_table_standalone_allocate_bins(cpe_hash_table_standalone_t 
 
     uint32_t bins_size = table->bin_count * sizeof(struct cpe_hash_table_standalone_entry_priv_list);
     table->bins = mem_alloc(table->m_alloc, bins_size);
-    bzero(table->bins, bins_size);
+
+    uint32_t i;
+    for(i = 0; i < table->bin_count; ++i) {
+        TAILQ_INIT(&table->bins[i]);
+    }
 }
 
 static struct cpe_hash_table_standalone_entry_priv *
@@ -240,7 +244,7 @@ cpe_hash_table_standalone_get_or_create_hash(cpe_hash_table_standalone_t table, 
 
         TAILQ_FOREACH(curr, bin, in_bucket) {
             if (table->equals(table->user_data, key, curr->public.key)) {
-                *is_new = 0;
+                if (is_new) *is_new = 0;
                 return &curr->public;
             }
         }
@@ -260,7 +264,7 @@ cpe_hash_table_standalone_get_or_create_hash(cpe_hash_table_standalone_t table, 
     TAILQ_INSERT_TAIL(&table->bins[bin_index], entry, in_bucket);
 
     table->entry_count++;
-    *is_new = 1;
+    if (is_new) *is_new = 1;
     return &entry->public;
 }
 
