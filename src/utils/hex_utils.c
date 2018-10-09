@@ -1,4 +1,5 @@
 #include "cpe/pal/pal_stdlib.h"
+#include "cpe/pal/pal_string.h"
 #include "cpe/utils/hex_utils.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/stream_mem.h" 
@@ -96,4 +97,129 @@ void cpe_uint32_2_hex(char * o, uint32_t v) {
     o[5] = s_hex_num2char[(v >> 8) & 0xF];
     o[6] = s_hex_num2char[(v >> 4) & 0xF];
     o[7] = s_hex_num2char[(v >> 0) & 0xF];
+}
+
+int cpe_hex_to_uint32(uint32_t *v, const char * str_value) {
+    int i;
+    uint32_t r = 0;
+    for(i = 0; i < (sizeof(*v) * 2); ++i) {
+        char c = str_value[i];
+
+        r <<= 4;
+        if (c >= '0' && c <= '9') {
+            r += c - '0';
+        }
+        else if (c >= 'a' && c <= 'f') {
+            r += (c - 'a' + 10);
+        }
+        else if (c >= 'A' && c <= 'F') {
+            r += (c - 'A' + 10);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    *v = r;
+    return 0;
+}
+
+void cpe_uint64_2_hex(char * o, uint64_t v) {
+    o[0] = s_hex_num2char[(v >> 60) & 0xF];
+    o[1] = s_hex_num2char[(v >> 56) & 0xF];
+    o[2] = s_hex_num2char[(v >> 52) & 0xF];
+    o[3] = s_hex_num2char[(v >> 48) & 0xF];
+    o[4] = s_hex_num2char[(v >> 44) & 0xF];
+    o[5] = s_hex_num2char[(v >> 40) & 0xF];
+    o[6] = s_hex_num2char[(v >> 36) & 0xF];
+    o[7] = s_hex_num2char[(v >> 32) & 0xF];
+    o[8] = s_hex_num2char[(v >> 28) & 0xF];
+    o[9] = s_hex_num2char[(v >> 24) & 0xF];
+    o[10] = s_hex_num2char[(v >> 20) & 0xF];
+    o[11] = s_hex_num2char[(v >> 16) & 0xF];
+    o[12] = s_hex_num2char[(v >> 12) & 0xF];
+    o[13] = s_hex_num2char[(v >> 8) & 0xF];
+    o[14] = s_hex_num2char[(v >> 4) & 0xF];
+    o[15] = s_hex_num2char[(v >> 0) & 0xF];
+}
+
+int cpe_hex_to_uint64(uint64_t *v, const char * str_value) {
+    int i;
+    uint64_t r = 0;
+    for(i = 0; i < sizeof(*v) * 2; ++i) {
+        char c = str_value[i];
+
+        r <<= 4;
+        if (c >= '0' && c <= '9') {
+            r += c - '0';
+        }
+        else if (c >= 'a' && c <= 'f') {
+            r += (c - 'a' + 10);
+        }
+        else if (c >= 'A' && c <= 'F') {
+            r += (c - 'A' + 10);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    *v = r;
+    return 0;
+}
+
+int cpe_hex_str_to_uint64(uint64_t *v, const char * str_value) {
+    int len = strlen(str_value);
+    if (len > (sizeof(*v) * 2)) return -1;
+    
+    int i;
+    uint64_t r = 0;
+    for(i = 0; i < len; ++i) {
+        char c = str_value[i];
+
+        r <<= 4;
+        if (c >= '0' && c <= '9') {
+            r += c - '0';
+        }
+        else if (c >= 'a' && c <= 'f') {
+            r += (c - 'a' + 10);
+        }
+        else if (c >= 'A' && c <= 'F') {
+            r += (c - 'A' + 10);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    *v = r;
+    return 0;
+}
+
+int cpe_hex_str_to_uint32(uint32_t *v, const char * str_value) {
+    int len = strlen(str_value);
+    if (len > (sizeof(*v) * 2)) return -1;
+
+    int i;
+    uint32_t r = 0;
+    for(i = 0; i < len; ++i) {
+        char c = str_value[i];
+
+        r <<= 4;
+        if (c >= '0' && c <= '9') {
+            r += c - '0';
+        }
+        else if (c >= 'a' && c <= 'f') {
+            r += (c - 'a' + 10);
+        }
+        else if (c >= 'A' && c <= 'F') {
+            r += (c - 'A' + 10);
+        }
+        else {
+            return -1;
+        }
+    }
+
+    *v = r;
+    return 0;
 }
