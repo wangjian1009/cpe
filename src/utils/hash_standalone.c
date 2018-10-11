@@ -177,15 +177,14 @@ void cpe_hash_table_standalone_ensure_size(struct cpe_hash_table_standalone *tab
             uint32_t i;
             for (i = 0; i < old_bin_count; i++) {
                 struct cpe_hash_table_standalone_entry_priv_list * old_bin = &old_bins[i];
-                struct cpe_hash_table_standalone_entry_priv_list * new_bin = &table->bins[i];
-                while(TAILQ_EMPTY(old_bin)) {
+                while(!TAILQ_EMPTY(old_bin)) {
                     struct cpe_hash_table_standalone_entry_priv * entry = TAILQ_FIRST(old_bin);
 
                     TAILQ_REMOVE(old_bin, entry, in_bucket);
                     
                     uint32_t  bin_index = bin_index(table, entry->public.hash);
 
-                    TAILQ_INSERT_TAIL(&new_bin[bin_index], entry, in_bucket);
+                    TAILQ_INSERT_TAIL(&table->bins[bin_index], entry, in_bucket);
                 }
             }
 
