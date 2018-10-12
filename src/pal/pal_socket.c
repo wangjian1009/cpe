@@ -69,15 +69,11 @@ int cpe_sock_set_none_block(int fd, int is_non_block) {
 }
 
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
-#if defined _MSC_VER
-    return 0;
-#else
-#if defined CPE_OS_LINUX || defined CPE_OS_CYGWIN
-    return 0;
-#else
+#if defined SO_NOSIGPIPE
 	int opt = is_no_sigpipe ? 1 : 0;
 	return setsockopt(fd , SOL_SOCKET , SO_NOSIGPIPE , &opt , sizeof(opt) );
-#endif
+#else
+    return 0;
 #endif
 }
 
