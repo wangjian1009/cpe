@@ -7,6 +7,9 @@
 
 #include <sys/system_properties.h>
 
+#define MAX_DNS_PROPERTIES 2
+#define DNS_PROP_NAME_PREFIX "net.dns"
+
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
     uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
@@ -22,11 +25,11 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count,
 
         struct sockaddr_storage * addr = dnssevraddrs + *addr_count;
         socklen_t addr_len = sizeof(*addr);
-        if (sock_ipv4_init((struct sockaddr *)addr, &addr_len, buf1, 0, NULL) == 0) {
-            *addr_count++;
+        if (sock_ipv4_init((struct sockaddr *)addr, &addr_len, propvalue, 0, NULL) == 0) {
+            (*addr_count)++;
         }
-        else if (sock_ipv6_init((struct sockaddr *)addr, &addr_len, url, port, NULL) == 0) {
-            *addr_count++;
+        else if (sock_ipv6_init((struct sockaddr *)addr, &addr_len, propvalue, 0, NULL) == 0) {
+            (*addr_count)++;
         }
     }
 

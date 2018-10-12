@@ -14,6 +14,8 @@ LOCAL_SRC_FILES += $(addprefix $(LOCAL_PATH)/../../src/pal/,\
                    $(wildcard $(LOCAL_PATH)/../../src/utils/*.c) \
                     $(addprefix $(LOCAL_PATH)/../../src/utils_sock/,\
                        sock_utils.c \
+                       getgateway.c \
+                       getdnssvraddrs.c \
                     )
 
 include $(BUILD_STATIC_LIBRARY)
