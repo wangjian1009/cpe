@@ -169,10 +169,10 @@ int cpe_hex_to_uint64(uint64_t *v, const char * str_value) {
 }
 
 int cpe_hex_str_to_uint64(uint64_t *v, const char * str_value) {
-    int len = strlen(str_value);
+    size_t len = strlen(str_value);
     if (len > (sizeof(*v) * 2)) return -1;
     
-    int i;
+    size_t i;
     uint64_t r = 0;
     for(i = 0; i < len; ++i) {
         char c = str_value[i];
@@ -197,10 +197,10 @@ int cpe_hex_str_to_uint64(uint64_t *v, const char * str_value) {
 }
 
 int cpe_hex_str_to_uint32(uint32_t *v, const char * str_value) {
-    int len = strlen(str_value);
+    size_t len = strlen(str_value);
     if (len > (sizeof(*v) * 2)) return -1;
 
-    int i;
+    size_t i;
     uint32_t r = 0;
     for(i = 0; i < len; ++i) {
         char c = str_value[i];
