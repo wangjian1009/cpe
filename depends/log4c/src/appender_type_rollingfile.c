@@ -17,8 +17,10 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#if LOG4C_WITH_PTHREAD    
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
+#endif
 #endif
 #include <log4c/appender.h>
 #include <log4c/appender_type_rollingfile.h>
@@ -41,7 +43,9 @@ struct __rollingfile_udata {
   long rfu_current_file_size; 
   FILE *rfu_current_fp;
   char *rfu_base_filename;
+#if LOG4C_WITH_PTHREAD    
   pthread_mutex_t rfu_mutex;
+#endif
 };
 
 static int rollingfile_open_zero_file(char *filename, long *fsp, FILE **fpp);
@@ -76,8 +80,9 @@ static int rollingfile_open(log4c_appender_t* this)
  }
 
  rfup->rfu_current_file_size = 0; 
+#if LOG4C_WITH_PTHREAD    
  pthread_mutex_init(&rfup->rfu_mutex, NULL);
-
+#endif
  /* this will open the right file and set the current fp */
  rfup->rfu_base_filename = rollingfile_make_base_name(
 				       rfup->rfu_conf.rfc_logdir,
@@ -136,8 +141,10 @@ static int rollingfile_append(log4c_appender_t* this,
 
   sd_debug("rollingfile_append[");
  
+#if LOG4C_WITH_PTHREAD    
   pthread_mutex_lock(&rfup->rfu_mutex);  /***** LOCK ****/
-
+#endif
+  
   if ( rfup->rfu_conf.rfc_policy != NULL) {
 
     /* some policy set */
@@ -179,7 +186,9 @@ static int rollingfile_append(log4c_appender_t* this,
                 " rollover failed)");
     }
    sd_debug("]");
+#if LOG4C_WITH_PTHREAD    
   pthread_mutex_unlock(&rfup->rfu_mutex);  /****** UNLOCK *****/
+#endif
   return (rc);
 
 }
@@ -196,7 +205,9 @@ static int rollingfile_close(log4c_appender_t* this)
  
     rfup = log4c_appender_get_udata(this);
  
+#if LOG4C_WITH_PTHREAD    
     pthread_mutex_lock(&rfup->rfu_mutex);  /***** LOCK ****/  
+#endif
     rc = (rfup->rfu_current_fp ? fclose(rfup->rfu_current_fp) : 0);
     rfup->rfu_current_fp = NULL;
     
@@ -222,7 +233,9 @@ static int rollingfile_close(log4c_appender_t* this)
       }
     }
     
+#if LOG4C_WITH_PTHREAD    
     pthread_mutex_unlock(&rfup->rfu_mutex);  /****** UNLOCK *****/
+#endif
   }
   sd_debug("]");
   return(rc);
