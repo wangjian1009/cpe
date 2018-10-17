@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -22,14 +23,14 @@ void cpe_daemonize(error_monitor_t em) {
     pid_t pid;  
     struct rlimit rl;  
     struct sigaction sa;  
-    int temp;  
+    int rv;  
   
     /*首先要调用umask将文件模式创建屏蔽字设置为0.由继承得来的文件模式创建屏蔽字可能会拒绝设置某些权限 */
     umask(0);  
   
     /*获取最大的文件描述号  */
-    temp = getrlimit(RLIMIT_NOFILE, &rl);  
-    if(temp < 0) {
+    rv = getrlimit(RLIMIT_NOFILE, &rl);  
+    if(rv < 0) {
         CPE_ERROR(em, "daemonize: can't get file limit, exit");
         exit(-1);
     }
@@ -46,14 +47,14 @@ void cpe_daemonize(error_monitor_t em) {
     else if (pid != 0) {
         exit(0);
     }
-  
+
     /* 调用setsid以创建一个新会话。执行三个操作，（a）成为新会话的首进程，（b）成为一个新进程的组长进程，（c）没有控制终端。 */
     setsid();
     sa.sa_handler = SIG_IGN;  
     sigemptyset(&sa.sa_mask);  
     sa.sa_flags = 0;  
-    temp = sigaction(SIGHUP, &sa, NULL);  
-    if(temp < 0) {
+    rv = sigaction(SIGHUP, &sa, NULL);  
+    if(rv < 0) {
         CPE_ERROR(em, "daemonize: can't ignore SIGHUP, exit");
         exit(-1);
     }
@@ -70,8 +71,8 @@ void cpe_daemonize(error_monitor_t em) {
     }
 
     /* 将当前工作目录更改为根目录。进程活动时，其工作目录所在的文件系统不能卸下。一般需要将工作目录改变到根目录。对于需要转储核心，写运行日志的进程将工作目录改变到特定目录 */
-    temp = chdir("/");  
-    if(temp < 0) {
+    rv = chdir("/");  
+    if(rv < 0) {
         CPE_ERROR(em, "daemonize: can't change directoy to '/', exit");
         assert(0);
         exit(-1);
@@ -85,18 +86,18 @@ void cpe_daemonize(error_monitor_t em) {
     for(i=0; i<rl.rlim_max; i++) {
         close(i);
     }
-  
+
     /* 重定向0,1,2到/dev/null，使任何一个试图读标准输入，写标准输出和标准出错的程序库都不会产生任何效果。 */
-    fd0 = open("/dev/null", O_RDWR);  
-    fd1 = dup(0);  
-    fd2 = dup(0);  
+    fd0 = open("/dev/null", O_RDWR);
+    fd1 = dup(0);
+    fd2 = dup(0);
 
     assert(fd0 == 0);
     assert(fd1 == 1);
     assert(fd2 == 2);
     
-    if(fd0 != 0 || fd1 != 1 || fd2 != 2) {  
-        CPE_ERROR(em, "daemonize: unexpected file descriptors %d %d %d, exit", fd0, fd1, fd2);  
+    if(fd0 != 0 || fd1 != 1 || fd2 != 2) {
+        CPE_ERROR(em, "daemonize: unexpected file descriptors %d %d %d, exit", fd0, fd1, fd2);
         assert(0);
         exit(-1);
     }
@@ -203,6 +204,54 @@ int cpe_kill_by_pidfile(const char * pidfile, int sig, error_monitor_t em) {
     fclose(f);
     
     return 0;
+}
+
+int cpe_process_keepalive(error_monitor_t em, uint8_t * is_child, uint8_t * exit_flag) {
+    while(1) {
+        int pid = fork();
+        if (pid < 0) {
+            CPE_ERROR(em, "fork error: %d: %s", pid, strerror(errno));
+            if (is_child) *is_child = 0;
+            return -1;
+        }
+        else if (pid == 0) {
+            if (is_child) *is_child = 1;
+            return 0;
+        }
+        else {
+            if (is_child) *is_child = 0;
+
+            signal(SIGCHLD, SIG_DFL);
+            int status = 0;
+            int ret = waitpid(pid, &status, 0);
+            if (ret < 0) {
+                if (exit_flag && *exit_flag) {
+                    return 0;
+                }
+                else {
+                    CPE_ERROR(em, "waitpid: %d error: %d: %s", pid, ret, strerror(errno));
+                    return -1;
+                }
+            }
+
+            if (WIFEXITED(status)) {
+                return 0;
+            }
+            else if (WIFSIGNALED(status)) {
+                CPE_ERROR(
+                    em, "process: %d, terminated by signal: '%s'",
+                    pid, strsignal(WTERMSIG(status)));
+                usleep(1000 * 1000);
+                continue;
+            }
+            else {
+                CPE_ERROR(em, "process: %d terminated, waitpid status: %d", pid, status);
+                return -1;
+            }
+        }
+    }
+
+    return -1;
 }
 
 #endif
