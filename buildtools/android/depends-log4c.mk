@@ -9,7 +9,8 @@ LOCAL_CFLAGS += -DHAVE_CONFIG_H -DLOG4C_RCPATH=\"\" -Wno-unused
 LOCAL_C_INCLUDES +=  $(LOCAL_PATH)/../../depends/log4c/include \
                      $(LOCAL_PATH)/../../depends/log4c/include/log4c \
                      $(LOCAL_PATH)/../../depends/log4c/src \
-                     $(LOCAL_PATH)/../../depends/log4c/src/android
+                     $(LOCAL_PATH)/../../depends/log4c/src/android \
+                     $(LOCAL_PATH)/../../include
 
 LOCAL_SRC_FILES += $(addprefix $(LOCAL_PATH)/../../depends/log4c/src/, \
                          rc.c \
