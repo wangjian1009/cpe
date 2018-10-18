@@ -45,6 +45,11 @@ struct tm * localtime_r(const time_t *clock, struct tm *result) {
     return result;
 }
 
+struct tm * gmtime_r(const time_t *clock, struct tm *result) {
+    *result = *gmtime(clock);
+    return result;
+}
+
 // Find 1st Jan 1970 as a FILETIME 
 static void get_base_time(LARGE_INTEGER *base_time)
 {

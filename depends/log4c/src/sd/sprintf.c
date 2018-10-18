@@ -14,10 +14,6 @@ static const char version[] = "$Id$";
 #include <sd/malloc.h>
 #include <sd/sd_xplatform.h>
 
-#if defined _MSC_VER
-# define va_copy(t, s) (t) = (s)
-#endif
-
 /******************************************************************************/
 extern char* sd_sprintf(const char* a_fmt, ...)
 {

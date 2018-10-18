@@ -13,7 +13,6 @@ static const char version[] = "$Id$";
 #include <sd/sprintf.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 /*******************************************************************************/
 static const char* dated_r_format(
@@ -23,22 +22,8 @@ static const char* dated_r_format(
     int n, i;
     struct tm	tm;
 
-#ifndef _WIN32
-/* delete by lokiwang
-#ifndef __HP_cc
-#warning gmtime() routine should be defined in sd_xplatform
-#endif
-*/
-    gmtime_r(&a_event->evt_timestamp.tv_sec, &tm);
-#else
-    /* xxx Need a CreateMutex/ReleaseMutex or something here
-     */
-    { 
-	struct tm *tmp = NULL;
-	tmp = gmtime(&a_event->evt_timestamp.tv_sec);
-	tm = *tmp; /* struct copy */
-    }
-#endif
+	time_t tt = (time_t)a_event->evt_timestamp.tv_sec;
+    localtime_r(&tt, &tm);
 
     n = snprintf(a_event->evt_buffer.buf_data, a_event->evt_buffer.buf_size,
 		 "%04d%02d%02d %02d:%02d:%02d.%03ld %-8s %s - %s\n",

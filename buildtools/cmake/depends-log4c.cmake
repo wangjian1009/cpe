@@ -5,8 +5,6 @@ set(log4c_source
   ${log4c_base}/src/init.c
   ${log4c_base}/src/appender_type_stream.c
   ${log4c_base}/src/appender_type_stream2.c
-  ${log4c_base}/src/appender_type_syslog.c
-  ${log4c_base}/src/appender_type_mmap.c
   ${log4c_base}/src/layout_type_basic.c
   ${log4c_base}/src/layout_type_dated.c
   ${log4c_base}/src/layout_type_basic_r.c
@@ -56,6 +54,7 @@ set_property(TARGET log4c PROPERTY INCLUDE_DIRECTORIES
   ${log4c_base}/include/log4c
   ${log4c_base}/src
   ${log4c_base}/src/${OS_NAME}
+  ${CMAKE_CURRENT_LIST_DIR}/../include
   )
 
 set_property(TARGET log4c PROPERTY COMPILE_OPTIONS ${log4c_compile_options})

@@ -8,12 +8,11 @@
 #ifndef __sd_xplatform_h
 #define __sd_xplatform_h
 
+#include "cpe/pal/pal_time.h"
 #ifndef _WIN32
 #include <unistd.h>
-#include <sys/time.h>
 #include <sys/stat.h>
 #else
-#include <time.h>
 #include <io.h> /* needed for _access  */
 #include <windows.h>
 #include <winsock.h>
@@ -55,13 +54,7 @@ extern int sd_getopt(int argc, char *const *argv, const char *opts);
 #endif
 
 
-#ifdef _WIN32
-#define SD_GETTIMEOFDAY(a,b) sd_gettimeofday(a,b)
-extern int sd_gettimeofday(LPFILETIME lpft, void* tzp);
-#else
 #define SD_GETTIMEOFDAY(a,b) gettimeofday(a,b)
-extern int sd_gettimeofday(struct timeval* tp, void* tzp);
-#endif
 
 #ifdef _WIN32
 #define FILE_SEP "\\"

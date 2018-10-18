@@ -23,9 +23,7 @@
 #include <log4c/defs.h>
 #include <log4c/buffer.h>
 #include <log4c/location_info.h>
-#ifndef _WIN32
-#include <sys/time.h>
-#endif
+#include "cpe/pal/pal_time.h"
 
 __LOG4C_BEGIN_DECLS
 
@@ -56,11 +54,7 @@ typedef struct
 /* ok, this is probably not a good way to do it--should define a common type here
 and have the base acessor function do the mapping
 */
-#ifndef _WIN32
     struct timeval evt_timestamp;
-#else
-    FILETIME evt_timestamp;
-#endif
     const log4c_location_info_t* evt_loc;
 
 } log4c_logging_event_t;
