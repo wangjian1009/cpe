@@ -33,6 +33,14 @@ set(log4c_source
   ${log4c_base}/src/sd/domnode-xml-scanner.c
   )
 
+if (OS_NAME MATCHES "mac" OR OS_NAME MATCHES "linux")
+set(log4c_source
+  ${log4c_source}
+  ${log4c_base}/src/appender_type_syslog.c
+  ${log4c_base}/src/appender_type_mmap.c
+  )
+endif ()
+
 set(log4c_compile_options
   -DHAVE_CONFIG_H
   -DLOG4C_RCPATH=\"\"
