@@ -339,3 +339,5 @@ const char * cpe_md5_dump(cpe_md5_value_t value, mem_buffer_t buffer) {
 
     return mem_buffer_make_continuous(buffer, 0);
 }
+
+struct cpe_md5_value CPE_MD5_INVALID = { { 0, 0, 0, 0, 0, 0 } };

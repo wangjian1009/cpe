@@ -29,7 +29,9 @@ uint32_t cpe_hash_md5(cpe_md5_value_t value);
 void cpe_md5_print(write_stream_t s, cpe_md5_value_t value);
 const char * cpe_md5_dump(cpe_md5_value_t value, mem_buffer_t buff);
 int cpe_md5_parse(cpe_md5_value_t value, const char * str);
-    
+
+extern struct cpe_md5_value CPE_MD5_INVALID;
+
 #ifdef __cplusplus
 }
 #endif
