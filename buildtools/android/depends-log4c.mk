@@ -12,7 +12,7 @@ LOCAL_C_INCLUDES +=  $(LOCAL_PATH)/../../depends/log4c/include \
                      $(LOCAL_PATH)/../../depends/log4c/src/android \
                      $(LOCAL_PATH)/../../include
 
-LOCAL_SRC_FILES += $(addprefix $(LOCAL_PATH)/../../depends/log4c/src/, \
+LOCAL_SRC_FILES += $(addprefix ../../depends/log4c/src/, \
                          rc.c \
                          init.c \
                          appender_type_stream.c \
@@ -32,7 +32,7 @@ LOCAL_SRC_FILES += $(addprefix $(LOCAL_PATH)/../../depends/log4c/src/, \
                          appender_type_rollingfile.c \
                          rollingpolicy.c \
                          rollingpolicy_type_sizewin.c) \
-                    $(addprefix $(LOCAL_PATH)/../../depends/log4c/src/sd/, \
+                    $(addprefix ../../depends/log4c/src/sd/, \
                          stack.c \
                          list.c \
                          malloc.c \
