@@ -110,8 +110,10 @@ ringbuffer_alloc(ringbuffer_t rb, int size) {
         int free_size = 0;
         ringbuffer_block_t blk = block_ptr(rb, rb->head);
         do {
-            if (blk->length >= sizeof(struct ringbuffer_block) && blk->id >= 0)
+            if (blk->length >= sizeof(struct ringbuffer_block) && blk->id >= 0) {
                 return NULL;
+            }
+            
             free_size += ALIGN(blk->length);
             if (free_size >= align_length) {
                 return _alloc(rb, free_size , size);
