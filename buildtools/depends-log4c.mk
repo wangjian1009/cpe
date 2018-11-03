@@ -1,7 +1,7 @@
 log4c_base:=$(call my-dir)/../depends/log4c
 log4c_output:=$(OUTPUT_PATH)/lib/liblog4c.a
 log4c_cpp_flags:=-I$(log4c_base)/include -I$(log4c_base)/include/log4c -I$(log4c_base)/src -I$(log4c_base)/src/$(OS_NAME) -I$(call my-dir)/../include
-log4c_c_flags:=-DHAVE_CONFIG_H -DLOG4C_RCPATH=\"\" -Wno-unused
+log4c_c_flags:=-DHAVE_CONFIG_H -DLOG4C_RCPATH=\"\" -Wno-unused -Wno-deprecated-declarations
 log4c_src:=$(addprefix $(log4c_base)/src/, \
                          rc.c \
                          init.c \

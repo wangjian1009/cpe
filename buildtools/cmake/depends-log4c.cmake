@@ -51,7 +51,7 @@ elseif (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_IS_GNUCC)
 set(log4c_compile_options
   ${log4c_compile_options}
   -Wno-unused
-  -Wdeprecated-declarations
+  -Wno-deprecated-declarations
   )
 endif ()
 
