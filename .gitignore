@@ -1,3 +1,4 @@
 .gradle
 *.xcuserdatad
 xcuserdata
+.DS_Store
