@@ -11,6 +11,14 @@
 #include <limits.h>
 #endif
 
+#ifdef __cplusplus
+#  define CPE_BEGIN_DECL extern "C" {
+#  define CPE_END_DECL }
+#else
+#  define CPE_BEGIN_DECL
+#  define CPE_END_DECL
+#endif
+
 #if _MSC_VER
 typedef int socklen_t;
 typedef int ssize_t;
