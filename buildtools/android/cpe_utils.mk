@@ -8,14 +8,14 @@ LOCAL_CFLAGS += $(if $(filter 0,$(APKD)),,-DDEBUG=1) \
 
 LOCAL_C_INCLUDES +=  $(LOCAL_PATH)/../../include
 
-LOCAL_SRC_FILES += $(addprefix $(LOCAL_PATH)/../../src/pal/,\
+LOCAL_SRC_FILES += $(addprefix ../../src/pal/,\
                        pal_socket.c \
                    ) \
-                   $(wildcard $(LOCAL_PATH)/../../src/utils/*.c) \
-                    $(addprefix $(LOCAL_PATH)/../../src/utils_sock/,\
+                   $(patsubst $(LOCAL_PATH)/%,%,$(wildcard $(LOCAL_PATH)/../../src/utils/*.c)) \
+                   $(addprefix ../../src/utils_sock/,\
                        sock_utils.c \
                        getgateway.c \
                        getdnssvraddrs.c \
-                    )
+                   )
 
 include $(BUILD_STATIC_LIBRARY)

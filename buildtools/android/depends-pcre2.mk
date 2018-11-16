@@ -6,7 +6,7 @@ LOCAL_MODULE := pcre2
 LOCAL_CFLAGS += $(if $(filter 0,$(APKD)),,-DDEBUG=1)
 LOCAL_CFLAGS += -DPCRE2_CODE_UNIT_WIDTH=8 -DHAVE_CONFIG_H
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../depends/pcre2/include 
-LOCAL_SRC_FILES +=  $(addprefix $(LOCAL_PATH)/../../depends/pcre2/src/,\
+LOCAL_SRC_FILES +=  $(addprefix ../../depends/pcre2/src/,\
                         pcre2_auto_possess.c \
                         pcre2_chartables.c \
                         pcre2_compile.c \
