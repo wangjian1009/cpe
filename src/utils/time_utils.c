@@ -6,6 +6,7 @@
 #include "cpe/pal/pal_time.h"
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_stdlib.h"
 #include "cpe/utils/time_utils.h"
 
 int64_t cur_time_ms(void) {
@@ -160,12 +161,10 @@ const char * time_to_str(time_t time, void * buf, size_t buf_size) {
 
 time_t time_from_str_tz(const char * str_time) {
     struct tm tm;
-
-#ifdef _WIN32
-    int year, month, day, hour, minute,second, gmtoff_min, gmtoff_sec;
+    int year, month, day, hour, minute, second, gmtoff_min, gmtoff_sec;
     int r;
 
-    r = sscanf(str_time, "%d-%d-%dT%d:%d:%d%d:%d", &year, &month, &day, &hour, &minute, &gmtoff_min, &gmtoff_sec);
+    r = sscanf(str_time, "%d-%d-%dT%d:%d:%d%d:%d", &year, &month, &day, &hour, &minute, &second, &gmtoff_min, &gmtoff_sec);
     if (r != strlen(str_time)) return 0;
 
     tm.tm_year  = year-1900;
@@ -174,15 +173,9 @@ time_t time_from_str_tz(const char * str_time) {
     tm.tm_hour  = hour;
     tm.tm_min   = minute;
     tm.tm_sec   = second;
-    tm.tm_isdst = 0;
-    tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
-        
-#else
-
-    strptime(str_time, "%Y-%m-%dT%H:%M:%S%z", &tm);
     tm.tm_isdst = -1;
-
-#endif
+    tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
+    
     return mktime(&tm);
 }
 
@@ -191,7 +184,21 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     struct tm tm_buf;
     tm = localtime_r(&time, &tm_buf);
 
-    strftime(buf, buf_size, "%Y-%m-%dT%H:%M:%S%z", tm);
+    int gmtoff_min = abs(tm->tm_gmtoff) / (60 * 60);
+    int gmtoff_sec = abs(tm->tm_gmtoff) - gmtoff_min * (60 * 60);
+
+    snprintf(
+        buf, buf_size, "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%c%0.2d%0.2d",
+        (int)(tm->tm_year + 1900),
+        (int)(tm->tm_mon + 1),
+        (int)tm->tm_mday,
+        (int)tm->tm_hour,
+        (int)tm->tm_min,
+        (int)tm->tm_sec,
+        (tm->tm_gmtoff >= 0 ? '+' : '-'),
+        gmtoff_min,
+        gmtoff_sec);
+
     return buf;
 }
 
