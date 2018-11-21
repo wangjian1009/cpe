@@ -158,6 +158,43 @@ const char * time_to_str(time_t time, void * buf, size_t buf_size) {
     return buf;
 }
 
+time_t time_from_str_tz(const char * str_time) {
+    struct tm tm;
+
+#ifdef _WIN32
+    int year, month, day, hour, minute,second, gmtoff;
+    int r;
+
+    r = sscanf(str_time, "%d-%d-%d %d:%d:%d %d", &year, &month, &day, &hour, &minute, &gmtoff);
+    if (r != strlen(str_time)) return 0;
+
+    tm.tm_year  = year-1900;
+    tm.tm_mon   = month-1;
+    tm.tm_mday  = day;
+    tm.tm_hour  = hour;
+    tm.tm_min   = minute;
+    tm.tm_sec   = second;
+    tm.tm_isdst = 0;
+    tm.tm_gmtoff = (long)gmtoff;
+        
+#else
+
+    strptime(str_time, "%Y-%m-%d %H:%M:%S %z", &tm);
+    tm.tm_isdst = -1;
+
+#endif
+    return mktime(&tm);
+}
+
+const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
+    struct tm *tm;
+    struct tm tm_buf;
+    tm = localtime_r(&time, &tm_buf);
+
+    strftime(buf, buf_size, "%Y-%m-%d %H:%M:%S %z", tm);
+    return buf;
+}
+
 /* Subtract the `struct timeval' values X and Y,
    storing the result in RESULT.
    Return 1 if the difference is negative, otherwise 0.  */
