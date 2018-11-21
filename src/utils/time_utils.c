@@ -162,10 +162,10 @@ time_t time_from_str_tz(const char * str_time) {
     struct tm tm;
 
 #ifdef _WIN32
-    int year, month, day, hour, minute,second, gmtoff;
+    int year, month, day, hour, minute,second, gmtoff_min, gmtoff_sec;
     int r;
 
-    r = sscanf(str_time, "%d-%d-%d %d:%d:%d %d", &year, &month, &day, &hour, &minute, &gmtoff);
+    r = sscanf(str_time, "%d-%d-%dT%d:%d:%d%d:%d", &year, &month, &day, &hour, &minute, &gmtoff_min, &gmtoff_sec);
     if (r != strlen(str_time)) return 0;
 
     tm.tm_year  = year-1900;
@@ -175,11 +175,11 @@ time_t time_from_str_tz(const char * str_time) {
     tm.tm_min   = minute;
     tm.tm_sec   = second;
     tm.tm_isdst = 0;
-    tm.tm_gmtoff = (long)gmtoff;
+    tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
         
 #else
 
-    strptime(str_time, "%Y-%m-%d %H:%M:%S %z", &tm);
+    strptime(str_time, "%Y-%m-%dT%H:%M:%S%z", &tm);
     tm.tm_isdst = -1;
 
 #endif
@@ -191,7 +191,7 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     struct tm tm_buf;
     tm = localtime_r(&time, &tm_buf);
 
-    strftime(buf, buf_size, "%Y-%m-%d %H:%M:%S %z", tm);
+    strftime(buf, buf_size, "%Y-%m-%dT%H:%M:%S%z", tm);
     return buf;
 }
 
