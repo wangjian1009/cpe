@@ -9,6 +9,11 @@
 #include "cpe/pal/pal_stdlib.h"
 #include "cpe/utils/time_utils.h"
 
+#if !defined __USE_BSD
+#    define tm_gmtoff __tm_gmtoff
+#    define tm_zone   __tm_zone
+#endif
+
 int64_t cur_time_ms(void) {
     struct timeval ptv;
 	if (gettimeofday(&ptv, NULL)) return 0;
@@ -188,7 +193,7 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     int gmtoff_sec = abs(tm->tm_gmtoff) - gmtoff_min * (60 * 60);
 
     snprintf(
-        buf, buf_size, "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%c%0.2d%0.2d",
+        (char*)buf, buf_size, "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%c%0.2d%0.2d",
         (int)(tm->tm_year + 1900),
         (int)(tm->tm_mon + 1),
         (int)tm->tm_mday,
