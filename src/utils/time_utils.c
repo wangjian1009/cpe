@@ -9,7 +9,7 @@
 #include "cpe/pal/pal_stdlib.h"
 #include "cpe/utils/time_utils.h"
 
-#if !defined __USE_BSD
+#if CPE_OS_LINUX
 #    define tm_gmtoff __tm_gmtoff
 #    define tm_zone   __tm_zone
 #endif
