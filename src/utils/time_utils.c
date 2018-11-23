@@ -160,8 +160,8 @@ const char * time_to_str(time_t time, void * buf, size_t buf_size) {
     struct tm tm_buf;
     tm = localtime_r(&time, &tm_buf);
 
-    strftime(buf, buf_size, "%Y-%m-%d %H:%M:%S", tm);
-    return buf;
+    strftime((char*)buf, buf_size, "%Y-%m-%d %H:%M:%S", tm);
+    return (char*)buf;
 }
 
 time_t time_from_str_tz(const char * str_time) {
@@ -179,8 +179,10 @@ time_t time_from_str_tz(const char * str_time) {
     tm.tm_min   = minute;
     tm.tm_sec   = second;
     tm.tm_isdst = -1;
+#if ! defined _MSC_VER
     tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
-    
+#endif
+
     return mktime(&tm);
 }
 
@@ -189,8 +191,15 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     struct tm tm_buf;
     tm = localtime_r(&time, &tm_buf);
 
-    int gmtoff_min = abs(tm->tm_gmtoff) / (60 * 60);
-    int gmtoff_sec = abs(tm->tm_gmtoff) - gmtoff_min * (60 * 60);
+#if _MSC_VER
+    TIME_ZONE_INFORMATION tz_buf;
+    GetTimeZoneInformation(&tz_buf);
+    int gmtoff = tz_buf.Bias;
+#else
+    int gmtoff = tm->tm_gmtoff;
+#endif
+    int gmtoff_min = abs(gmtoff) / (60 * 60);
+    int gmtoff_sec = abs(gmtoff) - gmtoff_min * (60 * 60);
 
     snprintf(
         (char*)buf, buf_size, "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2d%c%0.2d%0.2d",
@@ -200,11 +209,11 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
         (int)tm->tm_hour,
         (int)tm->tm_min,
         (int)tm->tm_sec,
-        (tm->tm_gmtoff >= 0 ? '+' : '-'),
+        (gmtoff >= 0 ? '+' : '-'),
         gmtoff_min,
         gmtoff_sec);
 
-    return buf;
+    return (char*)buf;
 }
 
 /* Subtract the `struct timeval' values X and Y,
