@@ -93,7 +93,7 @@ char * cpe_str_mem_dup(mem_allocrator_t alloc, const char * str) {
     if (str == NULL) return NULL;
     
     capacity = strlen(str) + 1;
-    buf = mem_alloc(alloc, capacity);
+    buf = (char*)mem_alloc(alloc, capacity);
     if (buf == NULL) return NULL;
     memcpy(buf, str, capacity);
     return buf;
@@ -103,7 +103,7 @@ char * cpe_str_mem_dup_range(mem_allocrator_t alloc, const char * str, const cha
     size_t capacity = end - str;
     char * buf;
 
-    buf = mem_alloc(alloc, capacity + 1);
+    buf = (char*)mem_alloc(alloc, capacity + 1);
     if (buf == NULL) return NULL;
     memcpy(buf, str, capacity);
     buf[capacity] = 0;
