@@ -3,10 +3,16 @@
 #include "cpe/pal/pal_dirent.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/file.h"
+#include "cpe/utils/string_utils.h"
 #include "cpe/vfs/vfs_entry_info.h"
 #include "vfs_backend_i.h"
 #include "vfs_file_i.h"
 #include "vfs_dir_i.h"
+
+struct vfs_backend_native_dir_data {
+    char * m_path;
+    DIR * m_dirp;
+};
 
 extern DIR * dir_open(const char * path, int ignoreError, error_monitor_t em);
 extern void dir_close(DIR * dirp, error_monitor_t em);
@@ -151,22 +157,29 @@ static int vfs_native_file_rm(void * ctx, void * env, const char * path) {
 
 static int vfs_native_dir_open(void * ctx, void * env, vfs_dir_t dir, const char * path) {
     vfs_mgr_t mgr = ctx;
-    DIR * dirp = dir_open(vfs_backend_make_path(mgr, env, path), 0, mgr->m_em);
+    struct vfs_backend_native_dir_data * dir_data = vfs_dir_data(dir);
+    const char * full_path = vfs_backend_make_path(mgr, env, path);
+    
+    DIR * dirp = dir_open(full_path, 0, mgr->m_em);
     if (dirp == NULL) return -1;
 
-    *(DIR **)vfs_dir_data(dir) = dirp;
-        
+    dir_data->m_dirp = dirp;
+    dir_data->m_path = cpe_str_mem_dup(mgr->m_alloc, full_path);
     return 0;
 }
 
 static void vfs_native_dir_close(void * ctx, vfs_dir_t dir) {
     vfs_mgr_t mgr = ctx;
-    DIR * dirp = *(DIR **)vfs_dir_data(dir);
-    dir_close(dirp, mgr->m_em);
+    struct vfs_backend_native_dir_data * dir_data = vfs_dir_data(dir);
+
+    dir_close(dir_data->m_dirp, mgr->m_em);
+    mem_free(mgr->m_alloc, dir_data->m_path);
 }
 
 struct vfs_native_dir_it_data {
+    vfs_mgr_t m_mgr;
     DIR * m_dirp;
+    char * m_path;    
     struct vfs_entry_info m_entry;
 };
 
@@ -175,6 +188,22 @@ static vfs_entry_info_t vfs_native_dir_it_next(struct vfs_entry_info_it * it) {
     struct dirent * dp;
     
     while((dp = readdir(it_data->m_dirp))) {
+        if (dp->d_type == DT_UNKNOWN) {
+            const char * d_path_full = vfs_backend_make_path(it_data->m_mgr, it_data->m_path, dp->d_name);
+            struct stat stat_buf;
+            if (stat(d_path_full, &stat_buf) < 0) continue;
+
+            if (S_ISDIR(stat_buf.st_mode)) {
+                dp->d_type = DT_DIR;
+            }
+            else if (S_ISREG(stat_buf.st_mode)) {
+                dp->d_type = DT_REG;
+            }
+            else {
+                continue;
+            }
+        }
+
         if (dp->d_type == DT_DIR || dp->d_type == DT_REG) break;
     }
     if (dp == NULL) return NULL;
@@ -185,12 +214,16 @@ static vfs_entry_info_t vfs_native_dir_it_next(struct vfs_entry_info_it * it) {
 }
 
 static void vfs_native_dir_read(void * ctx, vfs_dir_t dir, vfs_entry_info_it_t it) {
+    vfs_mgr_t mgr = ctx;
     struct vfs_native_dir_it_data * it_data = (void*)it->m_data;
-    
+    struct vfs_backend_native_dir_data * dir_data = vfs_dir_data(dir);
+
     //typedef char check_it_data_size[sizeof(it->m_data) < sizeof(struct vfs_native_dir_it_data) ? -1 : 1];
 
     it->next = vfs_native_dir_it_next;
-    it_data->m_dirp = *(DIR **)vfs_dir_data(dir);
+    it_data->m_mgr = mgr;
+    it_data->m_dirp = dir_data->m_dirp;
+    it_data->m_path = dir_data->m_path;
 }
 
 static uint8_t vfs_native_dir_exist(void * ctx, void * env, const char * path) {
@@ -225,10 +258,11 @@ int vfs_backend_native_create(vfs_mgr_t mgr) {
             vfs_native_file_seek, vfs_native_file_tell, vfs_native_file_eof,
             vfs_native_file_size,
             vfs_native_file_size_by_path,
+            NULL,
             vfs_native_file_exist,
             vfs_native_file_rm,
             /*dir*/
-            sizeof(DIR *), vfs_native_dir_open, vfs_native_dir_close, vfs_native_dir_read,
+            sizeof(struct vfs_backend_native_dir_data), vfs_native_dir_open, vfs_native_dir_close, vfs_native_dir_read,
             vfs_native_dir_exist,
             vfs_native_dir_rm,
             vfs_native_dir_mk,

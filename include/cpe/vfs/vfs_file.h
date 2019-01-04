@@ -36,6 +36,8 @@ int vfs_file_copy(vfs_mgr_t vfs, const char * output, const char * input);
 uint8_t vfs_file_check_md5_str(vfs_mgr_t mgr, const char * path, const char * md5);
 uint8_t vfs_file_check_md5(vfs_mgr_t mgr, const char * path, cpe_md5_value_t md5);
 
+void const * vfs_file_inline_data(vfs_file_t f);
+
 #ifdef __cplusplus
 }
 #endif

@@ -25,6 +25,7 @@ struct vfs_backend {
     vfs_file_eof_fun_t m_file_eof;
     vfs_file_size_fun_t m_file_size;
     vfs_file_size_by_path_fun_t m_file_size_by_path;
+    vfs_file_inline_data_fun_t m_file_inline_data;
     vfs_file_exist_fun_t m_file_exist;
     vfs_file_rm_fun_t m_file_rm;
     uint32_t m_dir_capacity;

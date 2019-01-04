@@ -139,6 +139,12 @@ uint8_t vfs_file_eof(vfs_file_t f) {
         : 1;
 }
 
+void const * vfs_file_inline_data(vfs_file_t f) {
+    return f->m_backend->m_file_inline_data
+        ?  f->m_backend->m_file_inline_data(f->m_backend->m_ctx, f)
+        : NULL;
+}
+
 ssize_t vfs_file_load_to_buffer_by_path(mem_buffer_t buffer, vfs_mgr_t mgr, const char * path) {
     vfs_file_t f = vfs_file_open(mgr, path, "rb");
     

@@ -387,6 +387,7 @@ vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
             vfs_builder_file_seek, vfs_builder_file_tell, vfs_builder_file_eof,
             vfs_builder_file_size,
             vfs_builder_file_size_by_path,
+            NULL,
             vfs_builder_file_exist,
             vfs_builder_file_rm,
             /*dir*/

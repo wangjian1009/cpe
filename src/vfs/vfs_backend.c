@@ -14,6 +14,7 @@ vfs_backend_create(
     vfs_file_seek_fun_t file_seek, vfs_file_tell_fun_t file_tell, vfs_file_eof_fun_t file_eof_p,
     vfs_file_size_fun_t file_size,
     vfs_file_size_by_path_fun_t file_size_by_path,
+    vfs_file_inline_data_fun_t file_inline_data,
     vfs_file_exist_fun_t file_exist,
     vfs_file_rm_fun_t file_rm,
     /*dir*/
@@ -53,6 +54,7 @@ vfs_backend_create(
     backend->m_file_eof = file_eof_p;
     backend->m_file_size = file_size;
     backend->m_file_size_by_path = file_size_by_path;
+    backend->m_file_inline_data = file_inline_data;
     backend->m_file_exist = file_exist;
     backend->m_file_rm = file_rm;
     backend->m_dir_capacity = dir_capacity;

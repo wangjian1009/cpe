@@ -18,6 +18,7 @@ typedef uint8_t (*vfs_file_eof_fun_t)(void * ctx, vfs_file_t file);
 typedef int (*vfs_file_flush_fun_t)(void * ctx, vfs_file_t file);
 typedef ssize_t (*vfs_file_size_fun_t)(void * ctx, vfs_file_t file);
 typedef ssize_t (*vfs_file_size_by_path_fun_t)(void * ctx, void * env, const char * path);
+typedef void const * (*vfs_file_inline_data_fun_t)(void * ctx, vfs_file_t file);    
 typedef uint8_t (*vfs_file_exist_fun_t)(void * ctx, void * env, const char * path);
 typedef int (*vfs_file_rm_fun_t)(void * ctx, void * env, const char * path);    
 
@@ -38,6 +39,7 @@ vfs_backend_t vfs_backend_create(
     vfs_file_seek_fun_t file_seek, vfs_file_tell_fun_t file_tell, vfs_file_eof_fun_t file_eof_p,
     vfs_file_size_fun_t file_size,
     vfs_file_size_by_path_fun_t file_size_by_path,
+    vfs_file_inline_data_fun_t file_inline_data,
     vfs_file_exist_fun_t file_exist,
     vfs_file_rm_fun_t file_rm,
     /*dir*/
