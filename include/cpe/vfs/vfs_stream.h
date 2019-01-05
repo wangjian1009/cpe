@@ -30,7 +30,7 @@ int vfs_read_stream_read(struct read_stream * stream, void * buf, size_t size);
 void vfs_read_stream_init(struct vfs_read_stream * stream, vfs_file_t f);
 
 #define VFS_READ_STREAM_INITIALIZER(__file)                        \
-    { CPE_READ_STREAM_INITIALIZER(vfs_stream_read), __fp }
+    { CPE_READ_STREAM_INITIALIZER(vfs_read_stream_read), __file }
 
 
 #ifdef __cplusplus
