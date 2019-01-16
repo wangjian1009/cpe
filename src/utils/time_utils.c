@@ -196,7 +196,7 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     GetTimeZoneInformation(&tz_buf);
     int gmtoff = tz_buf.Bias;
 #else
-    int gmtoff = tm->tm_gmtoff;
+    int gmtoff = (int)tm->tm_gmtoff;
 #endif
     int gmtoff_min = abs(gmtoff) / (60 * 60);
     int gmtoff_sec = abs(gmtoff) - gmtoff_min * (60 * 60);
