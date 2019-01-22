@@ -10,7 +10,11 @@
 #define MAX_DNS_PROPERTIES 2
 #define DNS_PROP_NAME_PREFIX "net.dns"
 
+dns_resolver_fun_t g_android_dns_resolver = NULL;
+    
 int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count, error_monitor_t em) {
+    if (g_android_dns_resolver) return g_android_dns_resolver(dnssevraddrs, addr_count, em);
+    
     uint8_t addr_capacity = *addr_count;
     *addr_count = 0;
 
