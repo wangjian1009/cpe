@@ -414,3 +414,21 @@ vfs_mount_point_child_find_by_path_ex(vfs_mount_point_t parent, const char * pat
     
     return parent;
 }
+
+vfs_mount_point_t vfs_mount_point_mount_native(vfs_mount_point_t base, const char * path, const char * native_path) {
+    vfs_mgr_t vfs_mgr = base->m_mgr;
+
+    char * env = cpe_str_mem_dup(vfs_mgr->m_alloc, native_path);
+    if (env == NULL) {
+        CPE_ERROR(vfs_mgr->m_em, "vfs_mount_point_mount_native: dup native path fail!");
+        return NULL;
+    }
+    
+    vfs_mount_point_t mount = vfs_mount_point_mount(base, path, env, vfs_backend_native(vfs_mgr));
+    if (mount == NULL) {
+        mem_free(vfs_mgr->m_alloc, env);
+        return NULL;
+    }
+
+    return mount;
+}

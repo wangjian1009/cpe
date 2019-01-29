@@ -15,7 +15,9 @@ vfs_mount_point_t vfs_mount_point_find_child_by_name(vfs_mount_point_t p, const 
 
 int vfs_mount_point_set_bridger_to(vfs_mount_point_t mp, vfs_mount_point_t to);    
 int vfs_mount_point_set_bridger_to_by_path(vfs_mount_point_t mp, const char * path);
-    
+
+vfs_mount_point_t vfs_mount_point_mount_native(vfs_mount_point_t base, const char * path, const char * native_path);
+
 #ifdef __cplusplus
 }
 #endif
