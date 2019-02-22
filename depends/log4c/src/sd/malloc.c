@@ -32,8 +32,10 @@
 
 #if defined(__APPLE__)
 # include <sys/time.h>
+#if defined TARGET_OS_IPHONE || defined TARGET_IPHONE_SIMULATOR
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
+#endif
 #endif /* __APPLE__ */
 
 typedef void (*sd_malloc_handler_t)();
