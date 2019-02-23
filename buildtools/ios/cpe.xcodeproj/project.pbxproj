@@ -1412,6 +1412,7 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_ENUM_CONVERSION = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1419,6 +1420,9 @@
 					"LOG4C_RCPATH=\\\"\\\"",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
 				HEADER_SEARCH_PATHS = (
 					../../depends/log4c/include,
 					../../depends/log4c/include/log4c,
@@ -1436,6 +1440,7 @@
 			buildSettings = {
 				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_ENUM_CONVERSION = NO;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_STYLE = Automatic;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -1443,6 +1448,9 @@
 					"LOG4C_RCPATH=\\\"\\\"",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
+				GCC_WARN_UNUSED_VALUE = NO;
+				GCC_WARN_UNUSED_VARIABLE = NO;
 				HEADER_SEARCH_PATHS = (
 					../../depends/log4c/include,
 					../../depends/log4c/include/log4c,
