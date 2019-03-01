@@ -104,8 +104,32 @@ _alloc(ringbuffer_t rb, int total_size , int size) {
 
 ringbuffer_block_t
 ringbuffer_alloc(ringbuffer_t rb, int size) {
-    int align_length = ALIGN(sizeof(struct ringbuffer_block) + size);
     int i;
+    
+    if (size == 0) {
+        for (i=0;i<2;i++) {
+            ringbuffer_block_t blk = block_ptr(rb, rb->head);
+            ringbuffer_block_t next = block_next(rb, blk);
+            while(next) {
+                if (next->id != -1) {
+                    next = NULL;
+                }
+                else {
+                    blk->length += next->length;
+                }
+            }
+
+            int blk_left_size = blk->length - sizeof(struct ringbuffer_block) - blk->offset;
+            if (blk_left_size == 0) {
+                rb->head = 0;
+            }
+            else {
+                size = blk_left_size;
+            }
+        }
+    }
+    
+    int align_length = ALIGN(sizeof(struct ringbuffer_block) + size);
     for (i=0;i<2;i++) {
         int free_size = 0;
         ringbuffer_block_t blk = block_ptr(rb, rb->head);
