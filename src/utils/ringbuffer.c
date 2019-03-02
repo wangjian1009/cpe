@@ -109,15 +109,15 @@ ringbuffer_alloc(ringbuffer_t rb, int size) {
     if (size == 0) {
         for (i=0;i<2;i++) {
             ringbuffer_block_t blk = block_ptr(rb, rb->head);
-            ringbuffer_block_t next = block_next(rb, blk);
-            while(next) {
-                if (next->id != -1) {
-                    next = NULL;
+            do {
+                ringbuffer_block_t next = block_next(rb, blk);
+                if (next == NULL || next->id != -1) {
+                    break;
                 }
                 else {
                     blk->length += next->length;
                 }
-            }
+            } while(1);
 
             int blk_left_size = blk->length - sizeof(struct ringbuffer_block) - blk->offset;
             if (blk_left_size == 0) {
