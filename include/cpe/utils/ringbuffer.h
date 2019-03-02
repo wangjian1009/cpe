@@ -9,13 +9,14 @@
  */
 
 struct ringbuffer_block {
+	int capacity;
 	int length;
 	int offset;
 	int id;
 	int next;
 };
 
-ringbuffer_t ringbuffer_new(int size);
+ringbuffer_t ringbuffer_new(int size, error_monitor_t em);
 void ringbuffer_delete(ringbuffer_t rb);
 
 ringbuffer_block_t ringbuffer_alloc(ringbuffer_t rb, int size);

@@ -3,11 +3,13 @@
 #include "cpe/pal/pal_stdlib.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/ringbuffer.h"
+#include "cpe/utils/error.h"
 #include "cpe/utils/stream_buffer.h"
 
 #define ALIGN(s) (((s) + 3 ) & ~3)
 
 struct ringbuffer {
+    error_monitor_t m_em;
     int size;
     int head;
 };
@@ -26,26 +28,54 @@ block_ptr(ringbuffer_t rb, int offset) {
 
 INLINE ringbuffer_block_t
 block_next(ringbuffer_t rb, ringbuffer_block_t blk) {
-    int align_length = ALIGN(blk->length);
+    assert(ALIGN(blk->capacity) == blk->capacity);
+
     int head = block_offset(rb, blk);
-    if (align_length + head == rb->size) {
+
+    assert(head + blk->capacity <= rb->size);
+    
+    if (head + blk->capacity == rb->size) {
         return NULL;
     }
-    assert(align_length + head < rb->size);
-    return block_ptr(rb, head + align_length);
+    else {
+        return block_ptr(rb, head + blk->capacity);
+    }
+}
+
+INLINE ringbuffer_block_t
+link_follow_free_block(ringbuffer_t rb, ringbuffer_block_t blk) {
+    ringbuffer_block_t next = NULL;
+    for(next = block_next(rb, blk); next; next = block_next(rb, blk)) {
+        CPE_ERROR(rb->m_em, "          blk(length=%d, offset=%d, id=%d, next=%d)", blk->length, blk->offset, blk->id, blk->next);
+        CPE_ERROR(rb->m_em, "               next(length=%d, offset=%d, id=%d, next=%d)", next->length, next->offset, next->id, next->next);
+                
+        if (next->id != -1) {
+            break;
+        }
+
+        assert(ALIGN(blk->capacity) == blk->capacity);
+        assert(ALIGN(next->capacity) == next->capacity);
+        
+        blk->capacity += next->capacity;
+    }
+    return next;
 }
 
 ringbuffer_t
-ringbuffer_new(int size) {
+ringbuffer_new(int size, error_monitor_t em) {
     ringbuffer_block_t blk;
     ringbuffer_t rb;
-    
+
+    assert(size == ALIGN(size));
+
     rb = malloc(sizeof(*rb) + size);
+    rb->m_em = em;
     rb->size = size;
     rb->head = 0;
 
     blk = block_ptr(rb, 0);
     blk->length = size;
+    blk->capacity = size;
     blk->id = -1;
     return rb;
 }
@@ -77,76 +107,76 @@ ringbuffer_unlink(ringbuffer_t rb , ringbuffer_block_t * head) {
     return r;
 }
 
-static ringbuffer_block_t
-_alloc(ringbuffer_t rb, int total_size , int size) {
-    ringbuffer_block_t blk = block_ptr(rb, rb->head);
-    ringbuffer_block_t next;
-    int align_length = ALIGN(sizeof(struct ringbuffer_block) + size);
-
-    blk->length = sizeof(struct ringbuffer_block) + size;
-    blk->offset = 0;
-    blk->next = -1;
-    blk->id = -1;
-    next = block_next(rb, blk);
-    if (next) {
-        rb->head = block_offset(rb, next);
-        if (align_length < total_size) {
-            next->length = total_size - align_length;
-            if (next->length >= sizeof(struct ringbuffer_block)) {
-                next->id = -1;
-            }
-        }
-    } else {
-        rb->head = 0;
-    }
-    return blk;
-}
-
 ringbuffer_block_t
 ringbuffer_alloc(ringbuffer_t rb, int size) {
-    int i;
+    ringbuffer_block_t blk;
+
+TRY_AGAIN:
+
+    blk = block_ptr(rb, rb->head);
+    if (blk->id != -1) {
+        if (rb->head == 0) {
+            return NULL;
+        }
+        else { 
+            rb->head = 0;
+            CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(1) xxxxx");
+            goto TRY_AGAIN;
+        }
+    }
+
+    ringbuffer_block_t next = link_follow_free_block(rb, blk);
+    blk->length = blk->capacity;
     
     if (size == 0) {
-        for (i=0;i<2;i++) {
-            ringbuffer_block_t blk = block_ptr(rb, rb->head);
-            do {
-                ringbuffer_block_t next = block_next(rb, blk);
-                if (next == NULL || next->id != -1) {
-                    break;
-                }
-                else {
-                    blk->length += next->length;
-                }
-            } while(1);
-
-            int blk_left_size = blk->length - sizeof(struct ringbuffer_block) - blk->offset;
-            if (blk_left_size == 0) {
+        rb->head = next ? block_offset(rb, next) : 0;
+    }
+    else {
+        int blk_capacity = blk->capacity;
+        int total_size = size + sizeof(struct ringbuffer_block);
+        
+        if (total_size > blk_capacity) {
+            if (rb->head == 0) {
+                return NULL;
+            }
+            else { 
                 rb->head = 0;
+                CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(2) xxxxx");
+                goto TRY_AGAIN;
+            }
+        }
+        else {
+            blk->length = total_size;
+
+            int blk_at_least_capacity = ALIGN(blk->length);
+            
+            int left_capacity = blk_capacity - blk_at_least_capacity;
+            if (left_capacity > sizeof(struct ringbuffer_block)) {
+                /*生成一个新的块 */
+                blk->capacity = blk_at_least_capacity;
+
+                ringbuffer_block_t new_next = block_next(rb, blk);
+                new_next->capacity = left_capacity;
+                new_next->length = left_capacity;
+                new_next->offset = 0;
+                new_next->id = -1;
+                new_next->next = -1;
+                rb->head = block_offset(rb, new_next);
             }
             else {
-                size = blk_left_size;
+                rb->head = next ? block_offset(rb, next) : 0;
             }
         }
     }
+
+    blk->next = -1;
+    blk->offset = 0;
     
-    int align_length = ALIGN(sizeof(struct ringbuffer_block) + size);
-    for (i=0;i<2;i++) {
-        int free_size = 0;
-        ringbuffer_block_t blk = block_ptr(rb, rb->head);
-        do {
-            if (blk->length >= sizeof(struct ringbuffer_block) && blk->id >= 0) {
-                return NULL;
-            }
-            
-            free_size += ALIGN(blk->length);
-            if (free_size >= align_length) {
-                return _alloc(rb, free_size , size);
-            }
-            blk = block_next(rb, blk);
-        } while(blk);
-        rb->head = 0;
-    }
-    return NULL;
+    CPE_ERROR(
+        rb->m_em, "ringbuffer_alloc success: length=%d, capacity=%d, offset=%d, id=%d, next=%d, head=%d",
+        blk->length, blk->capacity, blk->offset, blk->id, blk->next, rb->head);
+    
+    return blk;
 }
 
 static int
@@ -182,26 +212,51 @@ ringbuffer_collect(ringbuffer_t rb) {
 
 void
 ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
-    int align_length;
-    int old_length;
+    CPE_ERROR(rb->m_em, "ringbuffer_shrink: blk.start=%d, blk.capacity=%d, head=%d",
+              block_offset(rb, blk), blk->capacity, rb->head);
 
+    assert(
+        (rb->head == 0 && (block_offset(rb, blk) + blk->capacity == rb->size))
+        || (block_offset(rb, blk) + blk->capacity == rb->head));
+    
     if (size == 0) {
         rb->head = block_offset(rb, blk);
+        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk");
         return;
     }
-    align_length = ALIGN(sizeof(struct ringbuffer_block) + size);
-    old_length = ALIGN(blk->length);
-    assert(align_length <= old_length);
-    blk->length = size + sizeof(struct ringbuffer_block);
-    if (align_length == old_length) {
-        return;
+
+    ringbuffer_block_t next = link_follow_free_block(rb, blk);
+        
+    int blk_capacity = blk->capacity;
+    
+    int total_size = size + sizeof(struct ringbuffer_block);
+    CPE_ERROR(rb->m_em, "xxxx: size=%d, total-size=%d, blk.length=%d, blk.capacity=%d", size, total_size, blk->length, blk->capacity);
+    assert(total_size <= blk->length);
+
+    int blk_at_least_capacity = ALIGN(blk->length);
+    blk->length = total_size;
+    
+    int left_capacity = blk_capacity - blk_at_least_capacity;
+
+    if (left_capacity > sizeof(struct ringbuffer_block)) {
+        /*生成一个新的块 */
+        blk->capacity = blk_at_least_capacity;
+
+        ringbuffer_block_t new_next = block_next(rb, blk);
+        new_next->capacity = left_capacity;
+        new_next->length = left_capacity;
+        new_next->offset = 0;
+        new_next->id = -1;
+        new_next->next = -1;
+        rb->head = block_offset(rb, new_next);
     }
-    blk = block_next(rb, blk);
-    blk->length = old_length - align_length;
-    if (blk->length >= sizeof(struct ringbuffer_block)) {
-        blk->id = -1;
+    else {
+        rb->head = next ? block_offset(rb, next) : 0;
     }
-    rb->head = block_offset(rb, blk);
+
+    CPE_ERROR(
+        rb->m_em, "ringbuffer_shrink success: length=%d, capacity=%d, offset=%d, id=%d, next=%d",
+        blk->length, blk->capacity, blk->offset, blk->id, blk->next);
 }
 
 static int
