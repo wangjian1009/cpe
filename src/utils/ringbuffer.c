@@ -233,7 +233,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     CPE_ERROR(rb->m_em, "xxxx: size=%d, total-size=%d, blk.length=%d, blk.capacity=%d", size, total_size, blk->length, blk->capacity);
     assert(total_size <= blk->length);
 
-    int blk_at_least_capacity = ALIGN(blk->length);
+    int blk_at_least_capacity = ALIGN(total_size);
     blk->length = total_size;
     
     int left_capacity = blk_capacity - blk_at_least_capacity;
