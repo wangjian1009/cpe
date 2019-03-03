@@ -46,8 +46,10 @@ INLINE ringbuffer_block_t
 link_follow_free_block(ringbuffer_t rb, ringbuffer_block_t blk) {
     ringbuffer_block_t next = NULL;
     for(next = block_next(rb, blk); next; next = block_next(rb, blk)) {
-        CPE_ERROR(rb->m_em, "          blk(length=%d, offset=%d, id=%d, next=%d)", blk->length, blk->offset, blk->id, blk->next);
-        CPE_ERROR(rb->m_em, "               next(length=%d, offset=%d, id=%d, next=%d)", next->length, next->offset, next->id, next->next);
+        CPE_ERROR(rb->m_em, "          blk(capacity=%d, length=%d, offset=%d, id=%d, next=%d)",
+                  blk->capacity, blk->length, blk->offset, blk->id, blk->next);
+        CPE_ERROR(rb->m_em, "               next(capacity=%d, length=%d, offset=%d, id=%d, next=%d)",
+                  blk->capacity, next->length, next->offset, next->id, next->next);
                 
         if (next->id != -1) {
             break;
