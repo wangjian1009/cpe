@@ -46,10 +46,10 @@ INLINE ringbuffer_block_t
 link_follow_free_block(ringbuffer_t rb, ringbuffer_block_t blk) {
     ringbuffer_block_t next = NULL;
     for(next = block_next(rb, blk); next; next = block_next(rb, blk)) {
-        CPE_ERROR(rb->m_em, "          blk(capacity=%d, length=%d, offset=%d, id=%d, next=%d)",
-                  blk->capacity, blk->length, blk->offset, blk->id, blk->next);
-        CPE_ERROR(rb->m_em, "               next(capacity=%d, length=%d, offset=%d, id=%d, next=%d)",
-                  blk->capacity, next->length, next->offset, next->id, next->next);
+        /* CPE_ERROR(rb->m_em, "          blk(capacity=%d, length=%d, offset=%d, id=%d, next=%d)", */
+        /*           blk->capacity, blk->length, blk->offset, blk->id, blk->next); */
+        /* CPE_ERROR(rb->m_em, "               next(capacity=%d, length=%d, offset=%d, id=%d, next=%d)", */
+        /*           blk->capacity, next->length, next->offset, next->id, next->next); */
                 
         if (next->id != -1) {
             break;
@@ -122,7 +122,7 @@ TRY_AGAIN:
         }
         else { 
             rb->head = 0;
-            CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(1) xxxxx");
+            CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(1)");
             goto TRY_AGAIN;
         }
     }
@@ -143,7 +143,7 @@ TRY_AGAIN:
             }
             else { 
                 rb->head = 0;
-                CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(2) xxxxx");
+                CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(2)");
                 goto TRY_AGAIN;
             }
         }
@@ -174,9 +174,9 @@ TRY_AGAIN:
     blk->next = -1;
     blk->offset = 0;
     
-    CPE_ERROR(
-        rb->m_em, "ringbuffer_alloc success: length=%d, capacity=%d, offset=%d, id=%d, next=%d, head=%d",
-        blk->length, blk->capacity, blk->offset, blk->id, blk->next, rb->head);
+    /* CPE_ERROR( */
+    /*     rb->m_em, "ringbuffer_alloc success: length=%d, capacity=%d, offset=%d, id=%d, next=%d, head=%d", */
+    /*     blk->length, blk->capacity, blk->offset, blk->id, blk->next, rb->head); */
     
     return blk;
 }
@@ -214,8 +214,8 @@ ringbuffer_collect(ringbuffer_t rb) {
 
 void
 ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
-    CPE_ERROR(rb->m_em, "ringbuffer_shrink: blk.start=%d, blk.capacity=%d, head=%d",
-              block_offset(rb, blk), blk->capacity, rb->head);
+    /* CPE_ERROR(rb->m_em, "ringbuffer_shrink: blk.start=%d, blk.capacity=%d, head=%d", */
+    /*           block_offset(rb, blk), blk->capacity, rb->head); */
 
     assert(
         (rb->head == 0 && (block_offset(rb, blk) + blk->capacity == rb->size))
@@ -223,7 +223,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     
     if (size == 0) {
         rb->head = block_offset(rb, blk);
-        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk");
+        /* CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk"); */
         return;
     }
 
@@ -232,7 +232,6 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     int blk_capacity = blk->capacity;
     
     int total_size = size + sizeof(struct ringbuffer_block);
-    CPE_ERROR(rb->m_em, "xxxx: size=%d, total-size=%d, blk.length=%d, blk.capacity=%d", size, total_size, blk->length, blk->capacity);
     assert(total_size <= blk->length);
 
     int blk_at_least_capacity = ALIGN(total_size);
@@ -256,9 +255,9 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
         rb->head = next ? block_offset(rb, next) : 0;
     }
 
-    CPE_ERROR(
-        rb->m_em, "ringbuffer_shrink success: length=%d, capacity=%d, offset=%d, id=%d, next=%d",
-        blk->length, blk->capacity, blk->offset, blk->id, blk->next);
+    /* CPE_ERROR( */
+    /*     rb->m_em, "ringbuffer_shrink success: length=%d, capacity=%d, offset=%d, id=%d, next=%d", */
+    /*     blk->length, blk->capacity, blk->offset, blk->id, blk->next); */
 }
 
 static int
