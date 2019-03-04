@@ -223,7 +223,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     
     if (size == 0) {
         rb->head = block_offset(rb, blk);
-        /* CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk"); */
+        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk, head=%d");
         return;
     }
 
@@ -255,9 +255,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
         rb->head = next ? block_offset(rb, next) : 0;
     }
 
-    /* CPE_ERROR( */
-    /*     rb->m_em, "ringbuffer_shrink success: length=%d, capacity=%d, offset=%d, id=%d, next=%d", */
-    /*     blk->length, blk->capacity, blk->offset, blk->id, blk->next); */
+    CPE_ERROR(rb->m_em, "ringbuffer_shrink success: head=%d", rb->head);
 }
 
 static int
