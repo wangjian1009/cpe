@@ -122,7 +122,7 @@ TRY_AGAIN:
         }
         else { 
             rb->head = 0;
-            CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(1)");
+            CPE_INFO(rb->m_em, "ringbuffer_block: move head to begin(1)");
             goto TRY_AGAIN;
         }
     }
@@ -143,7 +143,7 @@ TRY_AGAIN:
             }
             else { 
                 rb->head = 0;
-                CPE_ERROR(rb->m_em, "ringbuffer_block: move head to begin(2)");
+                CPE_INFO(rb->m_em, "ringbuffer_block: move head to begin(2)");
                 goto TRY_AGAIN;
             }
         }
@@ -223,7 +223,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     
     if (size == 0) {
         rb->head = block_offset(rb, blk);
-        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk, head=%d", rb->head);
+        //CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk, head=%d", rb->head);
         return;
     }
 
@@ -255,7 +255,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
         rb->head = next ? block_offset(rb, next) : 0;
     }
 
-    CPE_ERROR(rb->m_em, "ringbuffer_shrink success: head=%d", rb->head);
+    //CPE_ERROR(rb->m_em, "ringbuffer_shrink success: head=%d", rb->head);
 }
 
 static int
