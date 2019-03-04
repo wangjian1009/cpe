@@ -223,7 +223,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
     
     if (size == 0) {
         rb->head = block_offset(rb, blk);
-        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk, head=%d");
+        CPE_ERROR(rb->m_em, "ringbuffer_shrink: return all blk, head=%d", rb->head);
         return;
     }
 
