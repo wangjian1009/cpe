@@ -1,3 +1,4 @@
+#include "cpe/pal/pal_time.h"
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_strings.h"
 #include "cpe/utils/error.h"
@@ -89,11 +90,25 @@ void cpe_error_log_to_file(struct error_info * info, void * context, const char 
 }
 
 void cpe_error_log_to_consol(struct error_info * info, void * context, const char * fmt, va_list args) {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+
+	time_t tt = tv.tv_sec;
+    struct tm tm;
+    localtime_r(&tt, &tm);
+
 #if defined(_MSC_VER)
 	char buf[1024];
     size_t s;
     s = 0;
 
+    s += snprintf(
+        buf, sizeof(buf),
+        "%04d%02d%02d %02d:%02d:%02d.%03d ",
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+        tm.tm_hour, tm.tm_min, tm.tm_sec,
+        (int)(tv.tv_usec / 1000));
+    
     if (info->m_file) s += snprintf(buf, sizeof(buf), "%s(%d): ", info->m_file, info->m_line > 0 ? info->m_line : 0);
     else if (info->m_line >= 0) s += snprintf(buf + s, sizeof(buf) - s, "%d: ", info->m_line);
 
@@ -101,6 +116,12 @@ void cpe_error_log_to_consol(struct error_info * info, void * context, const cha
     OutputDebugStringA(buf);
     OutputDebugStringA("\n");
 #endif
+    printf(
+        "%04d%02d%02d %02d:%02d:%02d.%03d ",
+        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+        tm.tm_hour, tm.tm_min, tm.tm_sec,
+        (int)(tv.tv_usec / 1000));
+    
     if (info->m_file) printf("%s:%d: ", info->m_file, info->m_line > 0 ? info->m_line : 0);
     else if (info->m_line >= 0) printf("%d: ", info->m_line);
 
