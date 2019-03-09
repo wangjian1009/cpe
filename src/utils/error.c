@@ -104,8 +104,7 @@ void cpe_error_log_to_consol(struct error_info * info, void * context, const cha
 
     s += snprintf(
         buf, sizeof(buf),
-        "%04d%02d%02d %02d:%02d:%02d.%03d ",
-        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+        "%02d:%02d:%02d.%03d ",
         tm.tm_hour, tm.tm_min, tm.tm_sec,
         (int)(tv.tv_usec / 1000));
     
@@ -117,8 +116,7 @@ void cpe_error_log_to_consol(struct error_info * info, void * context, const cha
     OutputDebugStringA("\n");
 #endif
     printf(
-        "%04d%02d%02d %02d:%02d:%02d.%03d ",
-        tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+        "%02d:%02d:%02d.%03d ",
         tm.tm_hour, tm.tm_min, tm.tm_sec,
         (int)(tv.tv_usec / 1000));
     
