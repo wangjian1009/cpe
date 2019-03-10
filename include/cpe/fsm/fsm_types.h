@@ -3,7 +3,6 @@
 #include "cpe/pal/pal_types.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/stream.h"
-#include "cpe/tl/tl_types.h"
 
 #ifdef __cplusplus
 extern "C" {
