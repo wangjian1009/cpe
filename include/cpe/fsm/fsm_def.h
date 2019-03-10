@@ -29,11 +29,6 @@ void fsm_def_state_set_action(
     fsm_machine_action_t enter,
     fsm_machine_action_t leave);
 
-void fsm_def_state_set_timeout(
-    fsm_def_state_t s,
-    tl_time_t span,
-    fsm_machine_action_t timeout);
-
 int fsm_def_state_add_transition(
     fsm_def_state_t s,
     fsm_def_transition_t transition);
