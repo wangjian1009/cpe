@@ -1,11 +1,12 @@
 #include <assert.h>
 #include "cpe/utils/buffer.h"
 #include "cpe/utils/stream_buffer.h"
+#include "cpe/utils/string_utils.h"
 #include "cpe/fsm/fsm_ins.h"
 #include "cpe/fsm/fsm_def.h"
 #include "fsm_internal_ops.h"
 
-int fsm_machine_init_ex(fsm_machine_t fsm, fsm_def_machine_t fsm_def, fsm_def_state_t init_state, void * ctx, int debug) {
+int fsm_machine_init_ex(fsm_machine_t fsm, fsm_def_machine_t fsm_def, fsm_def_state_t init_state, void * ctx, const char * id, int debug) {
     fsm->m_def = fsm_def;
     fsm->m_curent_state = fsm_def_state_id(init_state);
     fsm->m_ctx = ctx;
@@ -13,9 +14,16 @@ int fsm_machine_init_ex(fsm_machine_t fsm, fsm_def_machine_t fsm_def, fsm_def_st
     fsm->m_debug = debug ? 1 : 0;
     fsm->m_monitors = NULL;
 
+    if (id) {
+        cpe_str_dup(fsm->m_ctx_id, sizeof(fsm->m_ctx_id), id);
+    }
+    else {
+        snprintf(fsm->m_ctx_id, sizeof(fsm->m_ctx_id), "%p", fsm);
+    }
+    
     if (fsm->m_debug) {
-        CPE_INFO(fsm_def->m_em, "%s(%p): init", fsm_def_machine_name(fsm_def), fsm);
-        CPE_INFO(fsm_def->m_em, "%s(%p): state %s: enter", fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(init_state));
+        CPE_INFO(fsm_def->m_em, "%s.%s: init", fsm_def_machine_name(fsm_def), fsm->m_ctx_id);
+        CPE_INFO(fsm_def->m_em, "%s.%s: state %s: enter", fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(init_state));
     }
 
     if (init_state->m_enter) init_state->m_enter(fsm, init_state, NULL);
@@ -23,7 +31,7 @@ int fsm_machine_init_ex(fsm_machine_t fsm, fsm_def_machine_t fsm_def, fsm_def_st
     return 0;
 }
 
-int fsm_machine_init(fsm_machine_t fsm, fsm_def_machine_t fsm_def, const char * init_state_name, void * ctx, int debug) {
+int fsm_machine_init(fsm_machine_t fsm, fsm_def_machine_t fsm_def, const char * init_state_name, void * ctx, const char * id, int debug) {
     fsm_def_state_t init_state;
     if (init_state_name) {
         init_state = fsm_def_state_find_by_name(fsm_def, init_state_name);
@@ -45,7 +53,7 @@ int fsm_machine_init(fsm_machine_t fsm, fsm_def_machine_t fsm_def, const char * 
         }
     }
 
-    return fsm_machine_init_ex(fsm, fsm_def, init_state, ctx, debug);
+    return fsm_machine_init_ex(fsm, fsm_def, init_state, ctx, id, debug);
 }
 
 void fsm_machine_fini(fsm_machine_t fsm) {
@@ -56,20 +64,20 @@ void fsm_machine_fini(fsm_machine_t fsm) {
     cur_state = fsm_def_state_find_by_id(fsm->m_def, fsm->m_curent_state);
     if (cur_state == NULL) {
         CPE_ERROR(
-            fsm->m_def->m_em, "%s(%p): fini: curent state %d not exist!",
-            fsm_def_machine_name(fsm->m_def), fsm, fsm->m_curent_state);
+            fsm->m_def->m_em, "%s.%s: fini: curent state %d not exist!",
+            fsm_def_machine_name(fsm->m_def), fsm->m_ctx_id, fsm->m_curent_state);
     }
     else {
         if (fsm->m_debug) {
             CPE_INFO(
-                fsm->m_def->m_em, "%s(%p): state %s: leave",
-                fsm_def_machine_name(fsm->m_def), fsm, fsm_def_state_name(cur_state));   
+                fsm->m_def->m_em, "%s.%s: state %s: leave",
+                fsm_def_machine_name(fsm->m_def), fsm->m_ctx_id, fsm_def_state_name(cur_state));   
         }
         if (cur_state->m_leave) cur_state->m_leave(fsm, cur_state, NULL);
     }
     
     if (fsm->m_debug) {
-        CPE_INFO(fsm->m_def->m_em, "%s(%p): fini", fsm_def_machine_name(fsm->m_def), fsm);
+        CPE_INFO(fsm->m_def->m_em, "%s.%s: fini", fsm_def_machine_name(fsm->m_def), fsm->m_ctx_id);
     }
 
     while(fsm->m_monitors) {
@@ -123,14 +131,15 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
         if (fsm_def->m_dumper) {
             struct mem_buffer buff;
             CPE_ERROR(
-                fsm_def->m_em, "%s(%p): apply event %s: curent state %d not exist!",
-                fsm_def_machine_name(fsm_def), fsm, fsm_machine_dump_event(fsm_def, evt, &buff), fsm->m_curent_state);
+                fsm_def->m_em, "%s.%s: apply event %s: curent state %d not exist!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id,
+                fsm_machine_dump_event(fsm_def, evt, &buff), fsm->m_curent_state);
             mem_buffer_clear(&buff);
         }
         else {
             CPE_ERROR(
-                fsm_def->m_em, "%s(%p): apply event: curent state %d not exist!",
-                fsm_def_machine_name(fsm_def), fsm, fsm->m_curent_state);
+                fsm_def->m_em, "%s.%s: apply event: curent state %d not exist!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm->m_curent_state);
         }
         return -1;
     }
@@ -158,15 +167,15 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
             if (fsm_def->m_dumper) {
                 struct mem_buffer buff;
                 CPE_INFO(
-                    fsm_def->m_em, "%s(%p): state %s: process event %s ok, no state change!",
-                    fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state),
+                    fsm_def->m_em, "%s.%s: state %s: process event %s ok, no state change!",
+                    fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state),
                     fsm_machine_dump_event(fsm_def, evt, &buff));
                 mem_buffer_clear(&buff);
             }
             else {
                 CPE_INFO(
-                    fsm_def->m_em, "%s(%p): state %s: process event ok, no state change!",
-                    fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state));
+                    fsm_def->m_em, "%s.%s: state %s: process event ok, no state change!",
+                    fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state));
             }
         }
         goto COMPLETE;
@@ -177,15 +186,15 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
             if (fsm_def->m_dumper) {
                 struct mem_buffer buff;
                 CPE_INFO(
-                    fsm_def->m_em, "%s(%p): state %s: no trans process event %s, trans count = %d!",
-                    fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state),
+                    fsm_def->m_em, "%s.%s: state %s: no trans process event %s, trans count = %d!",
+                    fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state),
                     fsm_machine_dump_event(fsm_def, evt, &buff), cur_state->m_trans_count);
                 mem_buffer_clear(&buff);
             }
             else {
                 CPE_INFO(
-                    fsm_def->m_em, "%s(%p): state %s: no trans process event, trans count = %d!",
-                    fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state), cur_state->m_trans_count);
+                    fsm_def->m_em, "%s.%s: state %s: no trans process event, trans count = %d!",
+                    fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state), cur_state->m_trans_count);
             }
         }
         return -1;
@@ -196,15 +205,15 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
         if (fsm_def->m_dumper) {
             struct mem_buffer buff;
             CPE_ERROR(
-                fsm_def->m_em, "%s(%p): state %s: apply event %s: next state %d not exist!",
-                fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state),
+                fsm_def->m_em, "%s.%s: state %s: apply event %s: next state %d not exist!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state),
                 fsm_machine_dump_event(fsm_def, evt, &buff), next_state_id);
             mem_buffer_clear(&buff);
         }
         else {
             CPE_ERROR(
-                fsm_def->m_em, "%s(%p): state %s: apply event: next state %d not exist!",
-                fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state), next_state_id);
+                fsm_def->m_em, "%s.%s: state %s: apply event: next state %d not exist!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state), next_state_id);
         }
         return -1;
     }
@@ -213,24 +222,24 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
         if (fsm_def->m_dumper) {
             struct mem_buffer buff;
             CPE_INFO(
-                fsm_def->m_em, "%s(%p): state %s: apply event %s: next state is %s(%d)!",
-                fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state),
+                fsm_def->m_em, "%s.%s: state %s: apply event %s: next state is %s(%d)!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state),
                 fsm_machine_dump_event(fsm_def, evt, &buff),
                 fsm_def_state_name(next_state), next_state_id);
             mem_buffer_clear(&buff);
         }
         else {
             CPE_INFO(
-                fsm_def->m_em, "%s(%p): state %s: apply event: next state is %s(%d)!",
-                fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state),
+                fsm_def->m_em, "%s.%s: state %s: apply event: next state is %s(%d)!",
+                fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state),
                 fsm_def_state_name(next_state), next_state_id);
         }
     }
 
     if (fsm->m_debug) {
         CPE_INFO(
-            fsm_def->m_em, "%s(%p): state %s: leave",
-            fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(cur_state));
+            fsm_def->m_em, "%s.%s: state %s: leave",
+            fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(cur_state));
     }
     if (cur_state->m_leave) cur_state->m_leave(fsm, cur_state, NULL);
 
@@ -239,8 +248,8 @@ int fsm_machine_apply_event(fsm_machine_t fsm, void * evt) {
 
     if (fsm->m_debug) {
         CPE_INFO(
-            fsm_def->m_em, "%s(%p): state %s: enter",
-            fsm_def_machine_name(fsm_def), fsm, fsm_def_state_name(next_state));
+            fsm_def->m_em, "%s.%s: state %s: enter",
+            fsm_def_machine_name(fsm_def), fsm->m_ctx_id, fsm_def_state_name(next_state));
     }
     if (next_state->m_enter) next_state->m_enter(fsm, cur_state, evt);
 

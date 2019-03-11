@@ -11,13 +11,14 @@ extern "C" {
 struct fsm_machine {
     fsm_def_machine_t m_def;
     void * m_ctx;
+    char m_ctx_id[32];
     int m_debug;
     int32_t m_curent_state;
     void * m_curent_state_ctx;
     void * m_monitors;
 };
 
-int fsm_machine_init(fsm_machine_t fsm, fsm_def_machine_t fsm_def, const char * init_state, void * ctx, int debug);
+int fsm_machine_init(fsm_machine_t fsm, fsm_def_machine_t fsm_def, const char * init_state, void * ctx, const char * id, int debug);
 void fsm_machine_fini(fsm_machine_t fsm);
 void * fsm_machine_context(fsm_machine_t fsm);
 void fsm_machine_set_debug(fsm_machine_t fsm, int debug);
