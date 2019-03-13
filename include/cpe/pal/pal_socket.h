@@ -76,6 +76,8 @@ int cpe_sock_set_none_block(int fd, int is_non_block);
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr);
 int cpe_sock_set_reuseport(int socket, int is_reuseport);
 int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe);
+int cpe_sock_set_recv_timeout(int fd, int timeout_ms);
+int cpe_sock_set_send_timeout(int fd, int timeout_ms);
 
 #ifdef MSG_NOSIGNAL
 #define CPE_SOCKET_DEFAULT_SEND_FLAGS MSG_NOSIGNAL

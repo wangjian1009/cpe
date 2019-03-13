@@ -107,3 +107,19 @@ int cpe_sock_set_reuseport(int fd, int is_reuseport) {
 #endif
 }
 
+int cpe_sock_set_recv_timeout(int fd, int timeout_ms) {
+    struct timeval timeout;
+	timeout.tv_sec = (int)(timeout_ms / 1000);
+	timeout.tv_usec = timeout_ms - ((int)timeout.tv_sec * 1000);
+
+    return setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+}
+
+int cpe_sock_set_send_timeout(int fd, int timeout_ms) {
+    struct timeval timeout;
+	timeout.tv_sec = (long)(timeout_ms / 1000);
+	timeout.tv_usec = (timeout_ms - ((int)timeout.tv_sec * 1000));
+
+    return setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+}
+
