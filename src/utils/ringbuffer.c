@@ -433,7 +433,7 @@ void ringbuffer_dump_i(write_stream_t s, ringbuffer_t rb) {
             if (i > 1024) break;
 
             if (blk->length >= sizeof(*blk)) {
-                stream_printf(s, "%d | id=%d, len=%d", block_offset(rb, blk), blk->id, (int)blk->length);
+                stream_printf(s, "%d | id=%d, len=%d, capacity=%d", block_offset(rb, blk), blk->id, (int)blk->length, (int)blk->capacity);
                 if (blk->offset > 0) {
                     stream_printf(s, ", data-len=%d+%d", blk->offset, (int)(blk->length - sizeof(*blk) - blk->offset));
                 }
@@ -459,7 +459,7 @@ void ringbuffer_dump_i(write_stream_t s, ringbuffer_t rb) {
     }
 }
 
-const char * ringbuffer_dump(mem_buffer_t buffer, ringbuffer_t rb) {
+const char * ringbuffer_dump_to_bufffer(mem_buffer_t buffer, ringbuffer_t rb) {
     struct write_stream_buffer s = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
     mem_buffer_clear_data(buffer);
 
@@ -468,4 +468,38 @@ const char * ringbuffer_dump(mem_buffer_t buffer, ringbuffer_t rb) {
     mem_buffer_append_char(buffer, 0);
 
     return mem_buffer_make_continuous(buffer, 0);
+}
+
+void ringbuffer_dump(ringbuffer_t rb) {
+    ringbuffer_block_t blk = block_ptr(rb, 0);
+    int i = 0;
+    
+    CPE_INFO(rb->m_em, "ringbuffer: total-size=%d, head=%d", rb->size, rb->head);
+    while (blk) {
+        ++i;
+
+        if (blk->length >= sizeof(*blk)) {
+            char line_buf[128];
+            int n = snprintf(
+                line_buf, sizeof(line_buf),
+                "%d | id=%d, len=%d, capacity=%d", block_offset(rb, blk), blk->id, (int)blk->length, (int)blk->capacity);
+            if (blk->offset > 0) {
+                n += snprintf(line_buf + n, sizeof(line_buf) - n, ", data-len=%d+%d", blk->offset, (int)(blk->length - sizeof(*blk) - blk->offset));
+            }
+            else {
+                n += snprintf(line_buf + n, sizeof(line_buf) - n, ", data-len=%d", (int)(blk->length - sizeof(*blk)));
+            }
+                        
+            if (blk->id >=0) {
+                snprintf(line_buf + n, sizeof(line_buf) - n, ", next=%d", blk->next);
+            }
+
+            CPE_INFO(rb->m_em, "%s", line_buf);
+        }
+        else {
+            CPE_INFO(rb->m_em, "%d | ??? len=%d, ", block_offset(rb, blk), blk->length);
+        }
+
+        blk = block_next(rb, blk);
+    }
 }

@@ -35,7 +35,8 @@ int ringbuffer_data(ringbuffer_t rb, ringbuffer_block_t blk, int size, int skip,
 void * ringbuffer_copy(ringbuffer_t rb, ringbuffer_block_t from, int skip, ringbuffer_block_t to);
 ringbuffer_block_t ringbuffer_yield(ringbuffer_t rb, ringbuffer_block_t blk, int skip);
 
-const char * ringbuffer_dump(mem_buffer_t buff, ringbuffer_t rb);
+const char * ringbuffer_dump_to_bufffer(mem_buffer_t buff, ringbuffer_t rb);
+void ringbuffer_dump(ringbuffer_t rb);
 
 #endif
 
