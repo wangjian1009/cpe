@@ -426,6 +426,8 @@ ringbuffer_yield(ringbuffer_t rb, ringbuffer_block_t blk, int skip) {
         }
         blk = block_ptr(rb, blk->next);
         assert(blk->offset == 0);
+        assert(blk->prev >= 0);
+        blk->prev = -1;
         skip -= length;
         length = blk->length - sizeof(struct ringbuffer_block);
     }
