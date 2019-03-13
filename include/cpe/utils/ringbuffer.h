@@ -13,6 +13,7 @@ struct ringbuffer_block {
 	int length;
 	int offset;
 	int id;
+    int prev;
 	int next;
 };
 
@@ -22,6 +23,9 @@ void ringbuffer_delete(ringbuffer_t rb);
 ringbuffer_block_t ringbuffer_alloc(ringbuffer_t rb, int size);
 void ringbuffer_link(ringbuffer_t rb , ringbuffer_block_t prev, ringbuffer_block_t next);
 ringbuffer_block_t ringbuffer_unlink(ringbuffer_t rb , ringbuffer_block_t * head);
+
+typedef int (*ringbuffer_move_block_fun_t)(void * ctx, ringbuffer_t rb, ringbuffer_block_t old_block, ringbuffer_block_t new_block);
+int ringbuffer_gc(ringbuffer_t rb, void * move_block_ctx, ringbuffer_move_block_fun_t move_block_fun);
 
 int ringbuffer_collect(ringbuffer_t rb);
 void ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size);

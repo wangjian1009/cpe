@@ -95,6 +95,7 @@ ringbuffer_link(ringbuffer_t rb , ringbuffer_block_t head, ringbuffer_block_t ne
     }
     ringbuffer_block_set_id(rb, next, head->id);
     head->next = block_offset(rb, next);
+    next->prev = block_offset(rb, head);
 }
 
 ringbuffer_block_t
@@ -104,6 +105,11 @@ ringbuffer_unlink(ringbuffer_t rb , ringbuffer_block_t * head) {
     if (r == NULL) return NULL;
 
     *head = r->next >= 0 ? block_ptr(rb, r->next) : NULL;
+    if (*head) {
+        assert((*head)->prev == block_offset(rb, r));
+        (*head)->prev = -1;
+    }
+    
     r->next = -1;
     
     return r;
@@ -162,6 +168,7 @@ TRY_AGAIN:
                 new_next->length = left_capacity;
                 new_next->offset = 0;
                 new_next->id = -1;
+                new_next->prev = -1;
                 new_next->next = -1;
                 rb->head = block_offset(rb, new_next);
             }
@@ -172,6 +179,7 @@ TRY_AGAIN:
     }
 
     blk->next = -1;
+    blk->prev = -1;
     blk->offset = 0;
     
     /* CPE_ERROR( */
@@ -248,6 +256,7 @@ ringbuffer_shrink(ringbuffer_t rb, ringbuffer_block_t blk, int size) {
         new_next->length = left_capacity;
         new_next->offset = 0;
         new_next->id = -1;
+        new_next->prev = -1;
         new_next->next = -1;
         rb->head = block_offset(rb, new_next);
     }
@@ -422,6 +431,77 @@ ringbuffer_yield(ringbuffer_t rb, ringbuffer_block_t blk, int skip) {
     }
 }
 
+int ringbuffer_gc(ringbuffer_t rb, void * move_block_ctx, ringbuffer_move_block_fun_t move_block_fun) {
+    ringbuffer_block_t free_blk = NULL;
+    
+    ringbuffer_block_t check_blk = block_ptr(rb, 0);
+    while(check_blk) {
+        if (check_blk->id == -1) {
+            /*找到一个空块, 将后续空块首先都连接起来 */
+            assert(free_blk == NULL);
+            
+            free_blk = check_blk;
+            check_blk = link_follow_free_block(rb, check_blk);
+        }
+        else {
+            if (free_blk == NULL) {
+                check_blk = block_next(rb, check_blk);
+            }
+            else {
+                void * cur_data = NULL;
+                int cur_data_sz = ringbuffer_block_data(rb, check_blk, 0, &cur_data);
+                assert(cur_data_sz > 0);
+
+                int total_capacity = free_blk->capacity + check_blk->capacity;
+
+                ringbuffer_block_t new_blk = free_blk;
+                new_blk->length = cur_data_sz + sizeof(struct ringbuffer_block);
+                new_blk->capacity = ALIGN(new_blk->length);
+                new_blk->offset = 0;
+                new_blk->id = check_blk->id;
+                new_blk->prev = check_blk->prev;
+                new_blk->next = check_blk->next;
+                memmove(new_blk + 1, cur_data, cur_data_sz);
+
+                if (new_blk->next >= 0) {
+                    block_ptr(rb, new_blk->next)->prev = block_offset(rb, new_blk);
+                }
+
+                if (new_blk->prev) {
+                    block_ptr(rb, new_blk->prev)->next = block_offset(rb, new_blk);
+                }
+                
+                free_blk = block_next(rb, new_blk);
+                assert(free_blk);
+
+                free_blk->capacity = total_capacity - new_blk->capacity;
+                free_blk->length = free_blk->capacity;
+                free_blk->offset = 0;
+                free_blk->id = -1;
+                free_blk->prev = -1;
+                free_blk->next = -1;
+
+                if (new_blk->prev < 0) {
+                    int rv = move_block_fun(move_block_ctx, rb, check_blk, new_blk);
+                    if (rv != 0) {
+                        rb->head = free_blk ? block_offset(rb, free_blk) : 0;
+                        return rv;
+                    }
+                }
+
+                check_blk = block_next(rb, free_blk);
+                if (check_blk->id == -1) {
+                    check_blk = link_follow_free_block(rb, free_blk);
+                }
+            }
+        }
+    }
+
+    rb->head = free_blk ? block_offset(rb, free_blk) : 0;
+
+    return 0;
+}
+
 void ringbuffer_dump_i(write_stream_t s, ringbuffer_t rb) {
     if (rb) {
         ringbuffer_block_t blk = block_ptr(rb,0);
@@ -442,7 +522,7 @@ void ringbuffer_dump_i(write_stream_t s, ringbuffer_t rb) {
                 }
                         
                 if (blk->id >=0) {
-                    stream_printf(s, ", next=%d", blk->next);
+                    stream_printf(s, ", prev=%d, next=%d", blk->prev, blk->next);
                 }
             }
             else {
