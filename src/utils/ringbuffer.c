@@ -469,7 +469,7 @@ int ringbuffer_gc(ringbuffer_t rb, void * move_block_ctx, ringbuffer_move_block_
                     block_ptr(rb, new_blk->next)->prev = block_offset(rb, new_blk);
                 }
 
-                if (new_blk->prev) {
+                if (new_blk->prev >= 0) {
                     block_ptr(rb, new_blk->prev)->next = block_offset(rb, new_blk);
                 }
                 
@@ -564,7 +564,7 @@ void ringbuffer_dump(ringbuffer_t rb) {
             char line_buf[128];
             int n = snprintf(
                 line_buf, sizeof(line_buf),
-                "%d | id=%d, len=%d, capacity=%d", block_offset(rb, blk), blk->id, (int)blk->length, (int)blk->capacity);
+                "    %d | id=%d, len=%d, capacity=%d", block_offset(rb, blk), blk->id, (int)blk->length, (int)blk->capacity);
             if (blk->offset > 0) {
                 n += snprintf(line_buf + n, sizeof(line_buf) - n, ", data-len=%d+%d", blk->offset, (int)(blk->length - sizeof(*blk) - blk->offset));
             }
@@ -573,13 +573,13 @@ void ringbuffer_dump(ringbuffer_t rb) {
             }
                         
             if (blk->id >=0) {
-                snprintf(line_buf + n, sizeof(line_buf) - n, ", next=%d", blk->next);
+                snprintf(line_buf + n, sizeof(line_buf) - n, ", prev=%d, next=%d", blk->prev, blk->next);
             }
 
             CPE_INFO(rb->m_em, "%s", line_buf);
         }
         else {
-            CPE_INFO(rb->m_em, "%d | ??? len=%d, ", block_offset(rb, blk), blk->length);
+            CPE_INFO(rb->m_em, "    %d | ??? len=%d, ", block_offset(rb, blk), blk->length);
         }
 
         blk = block_next(rb, blk);
