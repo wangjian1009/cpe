@@ -90,12 +90,31 @@ ringbuffer_delete(ringbuffer_t rb) {
 void
 ringbuffer_link(ringbuffer_t rb , ringbuffer_block_t head, ringbuffer_block_t next) {
     assert(head);
+    assert(next);
+    assert(next->length > sizeof(struct ringbuffer_block) - next->offset);
+    
     while (head->next >=0) {
         head = block_ptr(rb, head->next);
     }
-    ringbuffer_block_set_id(rb, next, head->id);
-    head->next = block_offset(rb, next);
-    next->prev = block_offset(rb, head);
+
+    if (block_next(rb, head) == next) {
+        uint16_t head_length = head->length;
+
+        void * next_data;
+        int next_data_length = ringbuffer_block_data(rb, next, 0, &next_data);
+        assert(next_data_length > 0);
+
+        head->capacity += next->capacity;
+        head->next = next->next;
+        head->length += next_data_length;
+
+        memmove(((char *)head) + head_length, next_data, next_data_length);
+    }
+    else {
+        ringbuffer_block_set_id(rb, next, head->id);
+        head->next = block_offset(rb, next);
+        next->prev = block_offset(rb, head);
+    }
 }
 
 ringbuffer_block_t
