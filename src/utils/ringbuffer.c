@@ -14,19 +14,19 @@ struct ringbuffer {
     int head;
 };
 
-INLINE int
+int
 block_offset(ringbuffer_t rb, ringbuffer_block_t blk) {
     char * start = (char *)(rb + 1);
     return (int)((char *)blk - start);
 }
 
-INLINE ringbuffer_block_t
+ringbuffer_block_t
 block_ptr(ringbuffer_t rb, int offset) {
     char * start = (char *)(rb + 1);
     return (ringbuffer_block_t)(start + offset);
 }
 
-INLINE ringbuffer_block_t
+ringbuffer_block_t
 block_next(ringbuffer_t rb, ringbuffer_block_t blk) {
     assert(ALIGN(blk->capacity) == blk->capacity);
 
@@ -42,7 +42,7 @@ block_next(ringbuffer_t rb, ringbuffer_block_t blk) {
     }
 }
 
-INLINE ringbuffer_block_t
+ringbuffer_block_t
 link_follow_free_block(ringbuffer_t rb, ringbuffer_block_t blk) {
     ringbuffer_block_t next = NULL;
     for(next = block_next(rb, blk); next; next = block_next(rb, blk)) {
