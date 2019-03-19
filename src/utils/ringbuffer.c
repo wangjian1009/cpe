@@ -511,7 +511,7 @@ int ringbuffer_gc(ringbuffer_t rb, void * move_block_ctx, ringbuffer_move_block_
                 }
 
                 check_blk = block_next(rb, free_blk);
-                if (check_blk->id == -1) {
+                if (check_blk && check_blk->id == -1) {
                     check_blk = link_follow_free_block(rb, free_blk);
                 }
             }
