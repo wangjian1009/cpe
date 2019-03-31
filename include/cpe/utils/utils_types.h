@@ -47,6 +47,8 @@ typedef struct ringbuffer_block * ringbuffer_block_t;
 typedef struct cpe_raw_array * cpe_raw_array_t;
 typedef struct cpe_string_array * cpe_string_array_t;
 
+typedef struct cpe_traffic_bps * cpe_traffic_bps_t;
+
 typedef struct cpe_hash_table_standalone * cpe_hash_table_standalone_t;
 typedef struct cpe_hash_table_standalone_entry * cpe_hash_table_standalone_entry_t;
 typedef struct cpe_hash_table_standalone_iterator * cpe_hash_table_standalone_iterator_t;
