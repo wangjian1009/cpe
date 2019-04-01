@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C911EB392251AC4800285F39 /* traffic_bps.c in Sources */ = {isa = PBXBuildFile; fileRef = C911EB382251AC4800285F39 /* traffic_bps.c */; };
 		C926B484221FF42D00B8F3A4 /* priority.c in Sources */ = {isa = PBXBuildFile; fileRef = C926B442221FF42D00B8F3A4 /* priority.c */; };
 		C926B485221FF42D00B8F3A4 /* sd_xplatform.c in Sources */ = {isa = PBXBuildFile; fileRef = C926B445221FF42D00B8F3A4 /* sd_xplatform.c */; };
 		C926B486221FF42D00B8F3A4 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = C926B446221FF42D00B8F3A4 /* list.c */; };
@@ -214,6 +215,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C911EB382251AC4800285F39 /* traffic_bps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = traffic_bps.c; sourceTree = "<group>"; };
+		C911EB3A2251AC5A00285F39 /* traffic_bps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = traffic_bps.h; sourceTree = "<group>"; };
 		C926B423221FF40700B8F3A4 /* liblog4c.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblog4c.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C926B427221FF42C00B8F3A4 /* appender_type_rollingfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = appender_type_rollingfile.h; sourceTree = "<group>"; };
 		C926B428221FF42C00B8F3A4 /* logging_event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = logging_event.h; sourceTree = "<group>"; };
@@ -857,6 +860,7 @@
 		C9F30FD42108B40E006A7621 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				C911EB382251AC4800285F39 /* traffic_bps.c */,
 				C9F3119B210AB1CB006A7621 /* sha1.c */,
 				C9F30FD52108B40E006A7621 /* memory_debug.c */,
 				C9F30FD62108B40E006A7621 /* time_utils.c */,
@@ -1089,6 +1093,7 @@
 		C9F47F922092B9A900FEB799 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				C911EB3A2251AC5A00285F39 /* traffic_bps.h */,
 				C9F311A5210AB1E3006A7621 /* array.h */,
 				C9F311A2210AB1E3006A7621 /* hash_algo.h */,
 				C9F311A3210AB1E3006A7621 /* hash_standalone.h */,
@@ -1480,6 +1485,7 @@
 				C9F310632108B40E006A7621 /* prand.c in Sources */,
 				C9F310602108B40E006A7621 /* rwpipe.c in Sources */,
 				C9F310732108B40E006A7621 /* graph_dijkstra.c in Sources */,
+				C911EB392251AC4800285F39 /* traffic_bps.c in Sources */,
 				C98F307E213D51AC00C64DC6 /* getgateway.c in Sources */,
 				C9F310AF2108B40E006A7621 /* stream_file.c in Sources */,
 				C9F3105F2108B40E006A7621 /* array.c in Sources */,
