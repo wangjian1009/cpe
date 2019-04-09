@@ -146,8 +146,8 @@ TRY_AGAIN:
             return NULL;
         }
         else { 
+            CPE_INFO(rb->m_em, "ringbuffer_block: move head from %d to begin(1)", rb->head);
             rb->head = 0;
-            CPE_INFO(rb->m_em, "ringbuffer_block: move head to begin(1)");
             goto TRY_AGAIN;
         }
     }
@@ -167,8 +167,8 @@ TRY_AGAIN:
                 return NULL;
             }
             else { 
+                CPE_INFO(rb->m_em, "ringbuffer_block: move head from %d to begin(2)", rb->head);
                 rb->head = 0;
-                CPE_INFO(rb->m_em, "ringbuffer_block: move head to begin(2)");
                 goto TRY_AGAIN;
             }
         }
