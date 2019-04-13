@@ -69,6 +69,8 @@ int cpe_str_to_double(double * r, const char * p);
 const char * cpe_str_format_ipv4(char * buf, size_t capacity, uint32_t ip);
 uint8_t cpe_str_is_ipv4(const char * ip);
 
+const char * cpe_str_rchr_range(const char * begin, const char * end, char p);
+
 char * cpe_str_read_and_remove_arg(char * p, const char * arg_name, char sep /*,*/, char pair /*=*/);
 int cpe_str_read_arg(char * r, size_t r_capacity, const char * p, const char * arg_name, char sep /*,*/, char pair /*=*/);
 int cpe_str_read_arg_range(char * r, size_t r_capacity, const char * i, const char * i_end, const char * arg_name, char sep /*,*/, char pair /*=*/);

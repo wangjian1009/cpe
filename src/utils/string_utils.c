@@ -877,3 +877,13 @@ uint8_t cpe_str_is_ipv4(const char * ip) {
     
     return part == 4 ? 1 : 0;
 }
+
+const char * cpe_str_rchr_range(const char * begin, const char * end, char c) {
+    const char * p;
+
+    for(p = end - 1; p >= begin; p--) {
+        if (*p == c) return p;
+    }
+    
+    return NULL;
+}
