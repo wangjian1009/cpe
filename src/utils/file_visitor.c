@@ -12,7 +12,9 @@ dir_search_i(
     mem_buffer_t buffer)
 {
     DIR * dirp;
+#if ! defined ANDROID
     struct dirent dbuf;
+#endif    
     struct dirent * dp;
     char * path;
     int rv;
