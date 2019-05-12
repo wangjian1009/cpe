@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "cpe/pal/pal_stdio.h"
 #include "cpe/utils/buffer.h"
 #include "cpe/utils/stream_buffer.h"
 #include "cpe/utils/string_utils.h"

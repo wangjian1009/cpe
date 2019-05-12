@@ -17,6 +17,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/file.h>
+#include <sys/wait.h>
 
 void cpe_daemonize(error_monitor_t em) {
     int i, fd0, fd1, fd2;  

@@ -2,6 +2,7 @@
 #include "cpe/pal/pal_platform.h"
 #include "cpe/pal/pal_stdlib.h"
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_stdio.h"
 #include "cpe/utils/ringbuffer.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/stream_buffer.h"
