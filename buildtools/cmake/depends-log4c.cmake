@@ -33,7 +33,7 @@ set(log4c_source
   ${log4c_base}/src/sd/domnode-xml-scanner.c
   )
 
-if (OS_NAME MATCHES "mac" OR OS_NAME MATCHES "linux")
+if (OS_NAME MATCHES "mac" OR OS_NAME MATCHES "linux" OR OS_NAME MATCHES "android")
 set(log4c_source
   ${log4c_source}
   ${log4c_base}/src/appender_type_syslog.c
