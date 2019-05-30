@@ -528,7 +528,7 @@ struct fwmark_command {
 
 sock_protect_vpn_fun_t g_android_sock_protect_vpn = NULL;
 int sock_protect_vpn(int fd, error_monitor_t em) {
-    if (g_android_sock_protect_vpn == NULL) {
+    if (g_android_sock_protect_vpn) {
         return g_android_sock_protect_vpn(fd, em);
     }
     
