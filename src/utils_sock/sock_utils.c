@@ -526,12 +526,7 @@ struct fwmark_command {
     uid_t uid;
 };
 
-sock_protect_vpn_fun_t g_android_sock_protect_vpn = NULL;
 int sock_protect_vpn(int fd, error_monitor_t em) {
-    if (g_android_sock_protect_vpn) {
-        return g_android_sock_protect_vpn(fd, em);
-    }
-    
     int chanel = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
     if (chanel < 0) {
         CPE_ERROR(em, "sock_protect_vpn: chanel create socket fail, errno=%d (%s)!", errno, strerror(errno));
