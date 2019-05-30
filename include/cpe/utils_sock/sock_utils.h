@@ -40,7 +40,14 @@ char * sock_get_local_addr(char * buf, size_t buf_capacity, int fd, uint8_t with
 int sock_get_local_addr_by_remote(
     struct sockaddr * addr, socklen_t *addr_len,
     struct sockaddr * remote, socklen_t remote_len, error_monitor_t em);
-    
+
+#if defined ANDROID
+typedef int (*sock_protect_vpn_fun_t)(int fd, error_monitor_t em);
+extern sock_protect_vpn_fun_t g_android_sock_protect_vpn;
+#endif
+
+int sock_protect_vpn(int fd, error_monitor_t em);
+
 #ifdef __cplusplus
 }
 #endif

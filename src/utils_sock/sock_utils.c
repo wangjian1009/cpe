@@ -504,3 +504,102 @@ int sock_get_local_addr_by_remote(
     cpe_sock_close(sock);
     return 0;
 }
+
+#ifdef ANDROID
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+
+enum fwmark_command_type {
+    fwmark_command_on_accept,
+    fwmark_command_on_connect,
+    fwmark_command_select_network,
+    fwmark_command_protect_from_vpn,
+    fwmark_command_select_for_user,
+    fwmark_command_query_user_access,
+    fwmark_command_on_connect_complete,
+};
+
+struct fwmark_command {
+    enum fwmark_command_type cmdId;
+    unsigned netId;
+    uid_t uid;
+};
+
+sock_protect_vpn_fun_t g_android_sock_protect_vpn = NULL;
+int sock_protect_vpn(int fd, error_monitor_t em) {
+    if (g_android_sock_protect_vpn == NULL) {
+        return g_android_sock_protect_vpn(fd, em);
+    }
+    
+    int chanel = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
+    if (chanel < 0) {
+        CPE_ERROR(em, "sock_protect_vpn: chanel create socket fail, errno=%d (%s)!", errno, strerror(errno));
+        return -1;
+    }
+
+    struct sockaddr_un FWMARK_SERVER_PATH = {AF_UNIX, "/dev/socket/fwmarkd"};
+    if (TEMP_FAILURE_RETRY(connect(chanel, (struct sockaddr *)&FWMARK_SERVER_PATH, sizeof(FWMARK_SERVER_PATH))) == -1) {
+        CPE_ERROR(em, "sock_protect_vpn: chanel socket connect fail, errno=%d (%s)!", errno, strerror(errno));
+        close(chanel);
+        return -1;
+    }
+
+    struct fwmark_command command = {fwmark_command_protect_from_vpn, 0, 0};
+    struct iovec iov[2] = {
+        { &command, sizeof(command) },
+        { NULL, 0 },
+    };
+
+    struct msghdr message;
+    bzero(&message, sizeof(message));
+    message.msg_iov = iov;
+    message.msg_iovlen = CPE_ARRAY_SIZE(iov);
+
+    union {
+        struct cmsghdr cmh;
+        char cmsg[CMSG_SPACE(sizeof(fd))];
+    } cmsgu;
+    bzero(&cmsgu, sizeof(cmsgu));
+    message.msg_control = cmsgu.cmsg;
+    message.msg_controllen = sizeof(cmsgu.cmsg);
+
+    struct cmsghdr * cmsgh = CMSG_FIRSTHDR(&message);
+    cmsgh->cmsg_len = CMSG_LEN(sizeof(fd));
+    cmsgh->cmsg_level = SOL_SOCKET;
+    cmsgh->cmsg_type = SCM_RIGHTS;
+    memcpy(CMSG_DATA(cmsgh), &fd, sizeof(fd));
+
+    if (TEMP_FAILURE_RETRY(sendmsg(chanel, &message, 0)) == -1) {
+        CPE_ERROR(em, "sock_protect_vpn: chanel sendmsg fail, errno=%d (%s)!", errno, strerror(errno));
+        close(chanel);
+        return -1;
+    }
+
+    int error = 0;
+
+    if (TEMP_FAILURE_RETRY(recv(chanel, &error, sizeof(error), 0)) == -1) {
+        CPE_ERROR(em, "sock_protect_vpn: chanel recv fail, errno=%d (%s)!", errno, strerror(errno));
+        close(chanel);
+        return -1;
+    }
+
+    if (error != 0) {
+        CPE_ERROR(em, "sock_protect_vpn: chanel recv error %d from svr", error);
+        close(chanel);
+        return -1;
+    }
+    
+    CPE_ERROR(em, "sock_protect_vpn: success");
+
+    close(chanel);
+    return 0;
+}
+
+#else
+
+int sock_protect_vpn(int fd, error_monitor_t em) {
+    return 0;
+}
+
+#endif
