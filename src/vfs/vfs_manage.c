@@ -52,7 +52,7 @@ vfs_mgr_create(mem_allocrator_t alloc, error_monitor_t em) {
 
     pname = "curent:";
     mgr->m_current = vfs_mount_point_create(mgr, pname, pname + strlen(pname), NULL, NULL, TAILQ_FIRST(&mgr->m_backends));
-    if (mgr->m_root == NULL) {
+    if (mgr->m_current == NULL) {
         vfs_mgr_free(mgr);
         return NULL;
     }
