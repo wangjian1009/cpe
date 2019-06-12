@@ -127,7 +127,7 @@ void cpe_raw_array_ensure_size(cpe_raw_array_t array, size_t desired_count) {
 
         void * new_items = mem_alloc(array->m_alloc, new_size);
         if (array->priv->allocated_size) {
-            memcpy(new_items, array->items, new_size);
+            memcpy(new_items, array->items, array->priv->allocated_size);
         }
 
         if (array->items) {
