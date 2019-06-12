@@ -399,6 +399,20 @@ int cpe_str_parse_timespan_ms(uint64_t * result, const char * astring) {
     return 0;
 }
 
+char * cpe_str_trim_head_range(char * p, const char * e) {
+    while(p < e) {
+        unsigned char v = *(unsigned char *)p;
+        if (isspace(v)) {
+            ++p;
+        }
+        else {
+            return p;
+        }
+    }
+
+    return p;
+}
+
 char * cpe_str_trim_head(char * p) {
     unsigned char v;
     while((v = *(unsigned char *)p) != 0) {

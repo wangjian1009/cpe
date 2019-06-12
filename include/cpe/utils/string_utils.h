@@ -50,6 +50,7 @@ uint64_t cpe_str_parse_timespan_ms_with_dft(const char * astring, uint64_t dft);
 int cpe_str_parse_timespan_ms(uint64_t * result, const char * astring);
 
 char * cpe_str_trim_head(char * p);
+char * cpe_str_trim_head_range(char * p, const char * e);
 char * cpe_str_trim_tail(char * p, const char * head);
 
 char * cpe_str_mask_uint16(uint16_t v, char * buf, size_t buf_size);
