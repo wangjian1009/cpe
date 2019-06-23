@@ -15,7 +15,6 @@ void cpe_string_buff_free(cpe_string_buff_t str_buff);
 const char * cpe_string_buff_add(cpe_string_buff_t str_buff, const char * str, uint32_t * str_id);
 void cpe_string_buff_remove(cpe_string_buff_t str_buff, const char * str);
 
-const char * 
 #ifdef __cplusplus
 }
 #endif

@@ -1,0 +1,4 @@
+module log4c [system] {
+  header "."
+  export *
+}
