@@ -1,10 +1,30 @@
 .PHONY: build install clean
 
 build:
-	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $(XCODE_SCHEME) -configuration $(XCODE_CONF) build | xcpretty --no-color
 
-install:
-	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $(XCODE_SCHEME) -configuration $(XCODE_CONF) install | xcpretty --no-color
+define xcode-define-scheme
 
-clean:
-	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $(XCODE_SCHEME) clean | xcpretty
+.PHONY: build-$1 install-$1 clean-$1
+
+build: build-$1
+install: install-$1
+clean: clean-$1
+
+.PHONY: $1
+$1: build-$1
+
+build-$1:
+	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) build \
+		| xcpretty --no-color
+
+install-$1:
+	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) install \
+		| xcpretty --no-color
+
+clean-$1:
+	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 clean \
+		| xcpretty --no-color
+
+endef
+
+$(eval $(foreach s,$(XCODE_SCHEMES),$(call xcode-define-scheme,$s)))
