@@ -62,7 +62,7 @@ set_property(TARGET log4c PROPERTY INCLUDE_DIRECTORIES
   ${log4c_base}/include/log4c
   ${log4c_base}/src
   ${log4c_base}/src/${OS_NAME}
-  ${CMAKE_CURRENT_LIST_DIR}/../include
+  ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
   )
 
 set_property(TARGET log4c PROPERTY COMPILE_OPTIONS ${log4c_compile_options})

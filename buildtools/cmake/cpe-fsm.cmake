@@ -6,6 +6,6 @@ add_library(cpe_fsm STATIC ${cpe_fsm_source})
 
 set_property(TARGET cpe_fsm PROPERTY INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../cpe/include
+    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
     ${cpe_fsm_base}/include
     )
