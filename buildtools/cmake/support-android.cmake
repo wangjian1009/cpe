@@ -1,0 +1,25 @@
+if (NOT ANDROID_NDK_HOME)
+    message(FATAL_ERROR "ANDROID_NDK_HOME not defined")
+else ()
+    message(STATUS "ANDROID_NDK_HOME=${ANDROID_NDK_HOME}")
+endif()
+
+if (NOT ANDROID_PLATFORM)
+    message(FATAL_ERROR "ANDROID_PLATFORM not defined")
+else()
+    message(STATUS "ANDROID_PLATFORM=${ANDROID_PLATFORM}")
+endif()
+
+if (NOT ANDROID_ARCH_ABI)
+    message(FATAL_ERROR "ANDROID_ARCH_ABI defined")
+else()
+    message(STATUS "ANDROID_ARCH_ABI=${ANDROID_ARCH_ABI}")
+endif()
+
+set(ANDROID_NDK ${ANDROID_NDK_HOME})
+set(CMAKE_SYSTEM_NAME Android)
+
+include(${ANDROID_NDK_HOME}/build/cmake/abis.cmake)
+include(${ANDROID_NDK_HOME}/build/cmake/platforms.cmake)
+include(${ANDROID_NDK_HOME}/build/cmake/system_libs.cmake)
+include(${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake)
