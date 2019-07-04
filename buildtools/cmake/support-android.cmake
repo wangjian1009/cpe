@@ -18,7 +18,6 @@ endif()
 
 set(ANDROID_NDK ${ANDROID_NDK_HOME})
 set(CMAKE_SYSTEM_NAME Android)
-
 include(${ANDROID_NDK_HOME}/build/cmake/abis.cmake)
 include(${ANDROID_NDK_HOME}/build/cmake/platforms.cmake)
 include(${ANDROID_NDK_HOME}/build/cmake/system_libs.cmake)
