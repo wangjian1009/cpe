@@ -1,5 +1,3 @@
-message(STATUS aaa ANDROID=${ANDROID})
-
 if (WIN32)
   set(GUI_TYPE WIN32)
   
