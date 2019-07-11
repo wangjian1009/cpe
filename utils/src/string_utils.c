@@ -901,3 +901,15 @@ const char * cpe_str_rchr_range(const char * begin, const char * end, char c) {
     
     return NULL;
 }
+
+int cpe_str_cmp_opt(const char * l, const char * r) {
+    if (l == NULL) {
+        return r == NULL ? 0 : -1;
+    }
+    else if (r == NULL) {
+        return 1;
+    }
+    else {
+        return strcmp(l, r);
+    }
+}
