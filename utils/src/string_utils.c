@@ -913,3 +913,7 @@ int cpe_str_cmp_opt(const char * l, const char * r) {
         return strcmp(l, r);
     }
 }
+
+const char * cpe_str_opt(const char * v, const char * dft) {
+    return v ? v : dft;
+}

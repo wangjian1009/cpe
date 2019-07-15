@@ -82,6 +82,7 @@ uint8_t cpe_str_is_in_list(const char * check, const char * list, char sep);
 void cpe_str_list_for_each(const char * list, char sep, void (*visit_fun)(void * ctx, const char * value), void * ctx);
 
 int cpe_str_cmp_opt(const char * l, const char * r);
+const char * cpe_str_opt(const char * v, const char * dft);
 
 #define CPE_STR_BUF_INIT(__b, __size) { __size, 0, __b, 0 }
 
