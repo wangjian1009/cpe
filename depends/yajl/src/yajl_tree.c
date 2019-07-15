@@ -292,7 +292,7 @@ static int handle_string (void *ctx,
 static int handle_number (void *ctx, const char *string, size_t string_length)
 {
     yajl_val v;
-    char *endptr;
+    char * endptr;
 
     v = value_alloc(yajl_t_number);
     if (v == NULL)
@@ -309,17 +309,15 @@ static int handle_number (void *ctx, const char *string, size_t string_length)
 
     v->u.number.flags = 0;
 
-    endptr = NULL;
     errno = 0;
     v->u.number.i = yajl_parse_integer((const unsigned char *) v->u.number.r,
                                        strlen(v->u.number.r));
-    if ((errno == 0) && (endptr != NULL) && (*endptr == 0))
+    if (errno == 0)
         v->u.number.flags |= YAJL_NUMBER_INT_VALID;
 
     endptr = NULL;
-    errno = 0;
     v->u.number.d = strtod(v->u.number.r, &endptr);
-    if ((errno == 0) && (endptr != NULL) && (*endptr == 0))
+    if ((endptr != NULL) && (*endptr == 0))
         v->u.number.flags |= YAJL_NUMBER_DOUBLE_VALID;
 
     return ((context_add_value(ctx, v) == 0) ? STATUS_CONTINUE : STATUS_ABORT);
