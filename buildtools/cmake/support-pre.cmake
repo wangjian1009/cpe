@@ -30,6 +30,8 @@ else()
   endif ()
 endif()
 
+message(STATUS "OS_NAME=${OS_NAME}")
+
 if (MSVC)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4819 /wd4103 /wd4101 /wd4715 /wd4996")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4819 /wd4103 /wd4101 /wd4715 /wd4996 /wd4018")
 endif ()
