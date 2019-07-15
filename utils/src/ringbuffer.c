@@ -139,7 +139,7 @@ ringbuffer_block_t
 ringbuffer_alloc(ringbuffer_t rb, int size) {
     ringbuffer_block_t blk;
 
-TRY_AGAIN:
+RINGBUFFER_TRY_AGAIN:
 
     blk = block_ptr(rb, rb->head);
     if (blk->id != -1) {
@@ -149,7 +149,7 @@ TRY_AGAIN:
         else { 
             CPE_INFO(rb->m_em, "ringbuffer_block: move head from %d to begin(1)", rb->head);
             rb->head = 0;
-            goto TRY_AGAIN;
+            goto RINGBUFFER_TRY_AGAIN;
         }
     }
 
@@ -170,7 +170,7 @@ TRY_AGAIN:
             else { 
                 CPE_INFO(rb->m_em, "ringbuffer_block: move head from %d to begin(2)", rb->head);
                 rb->head = 0;
-                goto TRY_AGAIN;
+                goto RINGBUFFER_TRY_AGAIN;
             }
         }
         else {
