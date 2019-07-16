@@ -24,7 +24,6 @@ set(log4c_source
   ${log4c_base}/src/sd/factory.c
   ${log4c_base}/src/sd/hash.c
   ${log4c_base}/src/sd/sprintf.c
-  ${log4c_base}/src/sd/test.c
   ${log4c_base}/src/sd/sd_xplatform.c
   ${log4c_base}/src/sd/error.c
   ${log4c_base}/src/sd/domnode.c
