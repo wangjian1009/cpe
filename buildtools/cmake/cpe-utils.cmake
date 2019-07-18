@@ -50,3 +50,17 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
     ${cpe_utils_sock_base}/include
   )
 # }}}
+# {{{ cpe_utils_json
+set(cpe_utils_json_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_json)
+
+file(GLOB cpe_utils_json_source ${cpe_utils_json_base}/src/*.c)
+
+add_library(cpe_utils_json STATIC ${cpe_utils_json_source})
+
+set_property(TARGET cpe_utils_json PROPERTY INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
+    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
+    ${CMAKE_CURRENT_LIST_DIR}/../../depends/yajl/include
+    ${cpe_utils_json_base}/include
+  )
+# }}}

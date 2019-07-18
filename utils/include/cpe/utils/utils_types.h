@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 typedef struct error_monitor * error_monitor_t;
+typedef struct error_info * error_info_t;
 typedef struct write_stream * write_stream_t;
 typedef struct read_stream * read_stream_t;
 typedef struct mem_allocrator * mem_allocrator_t;
