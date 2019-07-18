@@ -1,6 +1,7 @@
-#ifndef CPE_UTILS_JSON_TYPES_H
-#define CPE_UTILS_JSON_TYPES_H
-#include "cpe/utils/utils_types.h"
+#ifndef CPE_UTILS_YAJL_GEN_TYPES_H
+#define CPE_UTILS_YAJL_GEN_TYPES_H
+#include "yajl/yajl_tree.h"
+#include "yajl_utils_types.h"
 
 #ifdef __cplusplus
 extern "C" {
