@@ -17,7 +17,7 @@ struct cpe_yajl_val {
 #define _to_r(__v) (&((__v)->m_data))
 
 static char * cpe_yajl_tree_gen_dup_str(cpe_yajl_tree_gen_t gen, const char * value) {
-    char * v = mem_buffer_alloc(gen->m_buffer, sizeof(struct cpe_yajl_val));
+    char * v = mem_buffer_strdup(gen->m_buffer, value);
     if (v == NULL) {
         CPE_ERROR(gen->m_em, "yajl_tree_gen: dup string %s fail!", value);
         cpe_str_dup(gen->m_error_msg, sizeof(gen->m_error_msg), "out of memory");
