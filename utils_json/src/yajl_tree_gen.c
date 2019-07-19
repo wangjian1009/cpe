@@ -110,6 +110,54 @@ int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char *
     return 0;
 }
 
+yajl_val cpe_yajl_tree_object_add_object(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint32_t capacity) {
+    yajl_val v = cpe_yajl_tree_gen_object(gen, capacity);
+    if (v == NULL) return NULL;
+
+    if (cpe_yajl_tree_object_add(gen, o, key, v) != 0) return NULL;
+    
+    return v;
+}
+
+yajl_val cpe_yajl_tree_object_add_array(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint32_t capacity) {
+    yajl_val v = cpe_yajl_tree_gen_array(gen, capacity);
+    if (v == NULL) return NULL;
+
+    if (cpe_yajl_tree_object_add(gen, o, key, v) != 0) return NULL;
+    
+    return v;
+}
+
+int cpe_yajl_tree_object_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, const char * value) {
+    yajl_val v = cpe_yajl_tree_gen_string(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_object_add(gen, o, key, v);
+}
+
+int cpe_yajl_tree_object_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, int64_t value) {
+    yajl_val v = cpe_yajl_tree_gen_integer(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_object_add(gen, o, key, v);
+}
+
+int cpe_yajl_tree_object_add_double(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, double value) {
+    yajl_val v = cpe_yajl_tree_gen_double(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_object_add(gen, o, key, v);
+}
+
+int cpe_yajl_tree_object_add_bool(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint8_t value) {
+    yajl_val v = cpe_yajl_tree_gen_bool(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_object_add(gen, o, key, v);
+}
+
+int cpe_yajl_tree_object_add_null(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key) {
+    yajl_val v = cpe_yajl_tree_gen_null(gen);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_object_add(gen, o, key, v);
+}
+
 yajl_val cpe_yajl_tree_gen_array(cpe_yajl_tree_gen_t gen, uint32_t capacity) {
     cpe_yajl_val_t v = cpe_yajl_tree_gen_alloc(gen, yajl_t_array);
     if (v == NULL) return NULL;
@@ -171,7 +219,55 @@ int cpe_yajl_tree_array_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, yajl_val i_va
     return 0;
 }
 
-yajl_val cpe_yajl_tree_gen_str(cpe_yajl_tree_gen_t gen, const char * value) {
+yajl_val cpe_yajl_tree_array_add_object(cpe_yajl_tree_gen_t gen, yajl_val o, uint32_t capacity) {
+    yajl_val v = cpe_yajl_tree_gen_object(gen, capacity);
+    if (v == NULL) return NULL;
+
+    if (cpe_yajl_tree_array_add(gen, o, v) != 0) return NULL;
+    
+    return v;
+}
+
+yajl_val cpe_yajl_tree_array_add_array(cpe_yajl_tree_gen_t gen, yajl_val o, uint32_t capacity) {
+    yajl_val v = cpe_yajl_tree_gen_array(gen, capacity);
+    if (v == NULL) return NULL;
+
+    if (cpe_yajl_tree_array_add(gen, o, v) != 0) return NULL;
+    
+    return v;
+}
+
+int cpe_yajl_tree_array_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const char * value) {
+    yajl_val v = cpe_yajl_tree_gen_string(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+int cpe_yajl_tree_array_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, int64_t value) {
+    yajl_val v = cpe_yajl_tree_gen_integer(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+int cpe_yajl_tree_array_add_double(cpe_yajl_tree_gen_t gen, yajl_val o, double value) {
+    yajl_val v = cpe_yajl_tree_gen_double(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+int cpe_yajl_tree_array_add_bool(cpe_yajl_tree_gen_t gen, yajl_val o, uint8_t value) {
+    yajl_val v = cpe_yajl_tree_gen_bool(gen, value);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+int cpe_yajl_tree_array_add_null(cpe_yajl_tree_gen_t gen, yajl_val o) {
+    yajl_val v = cpe_yajl_tree_gen_null(gen);
+    if (v == NULL) return -1;
+    return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+yajl_val cpe_yajl_tree_gen_string(cpe_yajl_tree_gen_t gen, const char * value) {
     assert(value);
 
     cpe_yajl_val_t v = cpe_yajl_tree_gen_alloc(gen, yajl_t_string);

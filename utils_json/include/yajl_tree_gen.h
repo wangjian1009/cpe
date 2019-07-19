@@ -8,7 +8,6 @@ extern "C" {
 #endif
 
 typedef struct yajl_val_s * yajl_val;
-typedef struct cpe_yajl_tree_gen * cpe_yajl_tree_gen_t;
     
 struct cpe_yajl_tree_gen {
     mem_buffer_t m_buffer;
@@ -21,12 +20,26 @@ struct cpe_yajl_tree_gen {
 yajl_val cpe_yajl_tree_gen_object(cpe_yajl_tree_gen_t gen, uint32_t capaciity);
 int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, yajl_val value);
 int cpe_yajl_tree_object_add_opt(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, yajl_val value);
+yajl_val cpe_yajl_tree_object_add_object(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint32_t capacity);
+yajl_val cpe_yajl_tree_object_add_array(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint32_t capacity);    
+int cpe_yajl_tree_object_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, const char * value);
+int cpe_yajl_tree_object_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, int64_t value);
+int cpe_yajl_tree_object_add_double(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, double value);
+int cpe_yajl_tree_object_add_bool(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, uint8_t value);
+int cpe_yajl_tree_object_add_null(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key);
 
 yajl_val cpe_yajl_tree_gen_array(cpe_yajl_tree_gen_t gen, uint32_t capaciity);
 int cpe_yajl_tree_array_add(cpe_yajl_tree_gen_t gen, yajl_val o, yajl_val value);
 int cpe_yajl_tree_array_add_opt(cpe_yajl_tree_gen_t gen, yajl_val o, yajl_val value);
+yajl_val cpe_yajl_tree_array_add_object(cpe_yajl_tree_gen_t gen, yajl_val o, uint32_t capacity);
+yajl_val cpe_yajl_tree_array_add_array(cpe_yajl_tree_gen_t gen, yajl_val o, uint32_t capacity);    
+int cpe_yajl_tree_array_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const char * value);
+int cpe_yajl_tree_array_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, int64_t value);
+int cpe_yajl_tree_array_add_double(cpe_yajl_tree_gen_t gen, yajl_val o, double value);
+int cpe_yajl_tree_array_add_bool(cpe_yajl_tree_gen_t gen, yajl_val o, uint8_t value);
+int cpe_yajl_tree_array_add_null(cpe_yajl_tree_gen_t gen, yajl_val o);
 
-yajl_val cpe_yajl_tree_gen_str(cpe_yajl_tree_gen_t gen, const char * value);
+yajl_val cpe_yajl_tree_gen_string(cpe_yajl_tree_gen_t gen, const char * value);
 yajl_val cpe_yajl_tree_gen_null(cpe_yajl_tree_gen_t gen);
 yajl_val cpe_yajl_tree_gen_integer(cpe_yajl_tree_gen_t gen, int64_t value);
 yajl_val cpe_yajl_tree_gen_double(cpe_yajl_tree_gen_t gen, double value);
