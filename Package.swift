@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "cpe_pal", type: .static, targets: ["cpe_pal"]),
         .library(name: "cpe_utils", type: .static, targets: ["cpe_utils"]),
         .library(name: "cpe_utils_sock", type: .static, targets: ["cpe_utils_sock"]),
+        .library(name: "cpe_utils_json", type: .static, targets: ["cpe_utils_json"]),
         .library(name: "cpe_vfs", type: .static, targets: ["cpe_vfs"]),
         .library(name: "cpe_fsm", type: .static, targets: ["cpe_fsm"]),
     ],
@@ -50,6 +51,15 @@ let package = Package(
                , cSettings: [
                      .headerSearchPath("../pal/include"),
                      .headerSearchPath("../utils/include"),
+                 ]
+        ),
+        .target(name: "cpe_utils_json"
+               , path: "utils_json"
+               , sources: ["src"]
+               , cSettings: [
+                     .headerSearchPath("../pal/include"),
+                     .headerSearchPath("../utils/include"),
+                     .headerSearchPath("../depends/yajl/include"),
                  ]
         ),
         .target(name: "log4c"
