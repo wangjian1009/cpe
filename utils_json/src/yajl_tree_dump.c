@@ -53,3 +53,24 @@ const char * yajl_tree_dump(mem_buffer_t buff, yajl_val data) {
     
     return mem_buffer_make_continuous(buff, 0);
 }
+
+const char * cpe_yajl_tree_type_str(int type) {
+    switch(type) {
+    case yajl_t_string:
+        return "string";
+    case yajl_t_number:
+        return "number";
+    case yajl_t_object:
+        return "object";
+    case yajl_t_array:
+        return "array";
+    case yajl_t_true:
+        return "true";
+    case yajl_t_false:
+        return "false";
+    case yajl_t_null:
+        return "null";
+    default:
+        return "unknown";
+    }
+}

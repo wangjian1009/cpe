@@ -8,6 +8,8 @@ extern "C" {
 
 typedef struct cpe_yajl_tree_gen * cpe_yajl_tree_gen_t;
 
+const char * cpe_yajl_tree_type_str(int type);
+    
 #ifdef __cplusplus
 }
 #endif
