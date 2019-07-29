@@ -30,27 +30,26 @@ extern "C" {
 #else
 # define FMT_SIZE_T "%zd"
 
-# if (__WORDSIZE == 64)
-#   if defined __llvm__ || defined __clang__
-#     define FMT_UINT64_T "%llu"
-#     define FMT_INT64_T "%lld"
-#   else
-#     define FMT_UINT64_T "%lu"
-#     define FMT_INT64_T "%ld"
-#   endif
-#   define FMT_UINT32_T "%u"
-#   define FMT_INT32_T "%d"
-#   define FMT_UINT16_T "%hu"
-#   define FMT_INT16_T "%hd"
-# else
-#   define FMT_UINT64_T "%llu"
-
-#   define FMT_INT64_T "%lld"
-#   define FMT_UINT32_T "%u"
-#   define FMT_INT32_T "%d"
-#   define FMT_UINT16_T "%hu"
-#   define FMT_INT16_T "%hd"
-# endif
+/* # if (__WORDSIZE == 64) */
+/* #   if defined __llvm__ || defined __clang__ */
+/* #     define FMT_UINT64_T "%llu" */
+/* #     define FMT_INT64_T "%lld" */
+/* #   else */
+/* #     define FMT_UINT64_T "%lu" */
+/* #     define FMT_INT64_T "%ld" */
+/* #   endif */
+/* #   define FMT_UINT32_T "%u" */
+/* #   define FMT_INT32_T "%d" */
+/* #   define FMT_UINT16_T "%hu" */
+/* #   define FMT_INT16_T "%hd" */
+/* # else */
+#   define FMT_UINT64_T "%"PRIu64
+#   define FMT_INT64_T "%"PRIi64
+#   define FMT_UINT32_T "%"PRIu32
+#   define FMT_INT32_T "%"PRIi32
+#   define FMT_UINT16_T "%"PRIu16
+#   define FMT_INT16_T "%"PRIi16
+/* # endif */
 
 #endif
 
