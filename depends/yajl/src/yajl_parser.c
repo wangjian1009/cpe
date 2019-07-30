@@ -50,6 +50,11 @@ yajl_parse_integer(const unsigned char *number, unsigned int length)
     if (*pos == '+') { pos++; }
 
     while (pos < number + length) {
+        if (*pos < '0' || *pos > '9') {
+            errno = ERANGE;
+            return sign * ret;
+        }
+        
         if ( ret > MAX_VALUE_TO_MULTIPLY ) {
             errno = ERANGE;
             return sign == 1 ? LLONG_MAX : LLONG_MIN;
