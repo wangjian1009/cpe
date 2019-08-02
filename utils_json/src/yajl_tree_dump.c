@@ -7,7 +7,7 @@ void yajl_tree_print(write_stream_t ws, yajl_val data) {
         stream_printf(ws, "\"%s\"", yajl_get_string(data));
         break;
     case yajl_t_number:
-        stream_printf(ws, "\"%s\"", data->u.number.r);
+        stream_printf(ws, "%s", data->u.number.r);
         break;
     case yajl_t_object: {
         size_t i;
