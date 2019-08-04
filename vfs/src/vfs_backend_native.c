@@ -165,7 +165,7 @@ static int vfs_native_file_mv(void * ctx, void * from_env, const char * from_pat
     
     const char * to_path_full = vfs_backend_make_path(mgr, to_env, to_path);
 
-    return file_mv(from_path_full, to_path, mgr->m_em);
+    return file_mv(to_path_full, from_path_full, mgr->m_em);
 }
 
 static int vfs_native_dir_open(void * ctx, void * env, vfs_dir_t dir, const char * path) {
