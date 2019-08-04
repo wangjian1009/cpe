@@ -28,6 +28,7 @@ struct vfs_backend {
     vfs_file_inline_data_fun_t m_file_inline_data;
     vfs_file_exist_fun_t m_file_exist;
     vfs_file_rm_fun_t m_file_rm;
+    vfs_file_mv_fun_t m_file_mv;
     uint32_t m_dir_capacity;
     vfs_dir_open_fun_t m_dir_open;
     vfs_dir_close_fun_t m_dir_close;

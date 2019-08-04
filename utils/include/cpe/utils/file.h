@@ -24,6 +24,7 @@ ssize_t file_load_to_buffer(mem_buffer_t buffer, const char * file, error_monito
 ssize_t file_load_to_stream(write_stream_t stream, const char * file, error_monitor_t em);
 
 int file_rm(const char * file, error_monitor_t em);
+int file_mv(const char * to, const char * form, error_monitor_t em);
 int file_exist(const char * file, error_monitor_t em);
 ssize_t file_size(const char * file, error_monitor_t em);
 int file_copy(const char * output, const char * input, mode_t mode, error_monitor_t em);

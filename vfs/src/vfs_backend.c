@@ -17,6 +17,7 @@ vfs_backend_create(
     vfs_file_inline_data_fun_t file_inline_data,
     vfs_file_exist_fun_t file_exist,
     vfs_file_rm_fun_t file_rm,
+    vfs_file_mv_fun_t file_mv,
     /*dir*/
     uint32_t dir_capacity, vfs_dir_open_fun_t dir_open, vfs_dir_close_fun_t dir_close,
     vfs_dir_read_fun_t dir_read,
@@ -57,6 +58,7 @@ vfs_backend_create(
     backend->m_file_inline_data = file_inline_data;
     backend->m_file_exist = file_exist;
     backend->m_file_rm = file_rm;
+    backend->m_file_mv = file_mv;
     backend->m_dir_capacity = dir_capacity;
     backend->m_dir_open = dir_open;
     backend->m_dir_close = dir_close;

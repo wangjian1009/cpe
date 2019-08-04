@@ -32,6 +32,7 @@ ssize_t vfs_file_size(vfs_file_t f);
 ssize_t vfs_file_size_by_path(vfs_mgr_t mgr, const char * path);
 
 int vfs_file_copy(vfs_mgr_t vfs, const char * output, const char * input);
+int vfs_file_mv(vfs_mgr_t vfs, const char * from, const char * to, uint8_t can_use_copy);
 
 uint8_t vfs_file_check_md5_str(vfs_mgr_t mgr, const char * path, const char * md5);
 uint8_t vfs_file_check_md5(vfs_mgr_t mgr, const char * path, cpe_md5_value_t md5);

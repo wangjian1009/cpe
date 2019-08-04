@@ -274,3 +274,51 @@ int vfs_file_copy(vfs_mgr_t vfs, const char * output, const char * input) {
     
     return (int)totalSize;
 }
+
+static int vfs_file_mv_use_copy(vfs_mgr_t mgr, const char * to, const char * from) {
+    if (vfs_file_copy(mgr, to, from) != 0) return -1;
+    vfs_file_rm(mgr, from);
+    return 0;
+}
+
+int vfs_file_mv(vfs_mgr_t mgr, const char * to, const char * from, uint8_t can_use_copy) {
+    const char * from_path = from;
+    vfs_mount_point_t from_mount_point = vfs_mount_point_find_by_path(mgr, &from_path);
+    if (from_mount_point == NULL) {
+        CPE_ERROR(mgr->m_em, "vfs_file_open: mount point of path %s not exist!", from_path);
+        return -1;
+    }
+
+    const char * to_path = to;
+    vfs_mount_point_t to_mount_point = vfs_mount_point_find_by_path(mgr, &to_path);
+    if (to_mount_point == NULL) {
+        CPE_ERROR(mgr->m_em, "vfs_file_mv: mount point of path %s not exist!", to_path);
+        return -1;
+    }
+    
+    if (from_mount_point->m_backend == to_mount_point->m_backend) {
+        vfs_backend_t backend = from_mount_point->m_backend;
+        if (backend->m_file_mv) {
+            return from_mount_point->m_backend->m_file_mv(
+                backend->m_ctx, from_mount_point->m_backend_env, from_path, to_mount_point->m_backend_env, to_path);
+        }
+        else if (can_use_copy) {
+            return vfs_file_mv_use_copy(mgr, to, from);
+        }
+        else {
+            CPE_ERROR(mgr->m_em, "vfs_file_mv: backend %s not support mv!", from_mount_point->m_backend->m_name);
+            return -1;
+        }
+    }
+    else {
+        if (can_use_copy) {
+            return vfs_file_mv_use_copy(mgr, to, from);
+        }
+        else {
+            CPE_ERROR(
+                mgr->m_em, "vfs_file_mv: can`t move file from backend %s to backend %s!",
+                from_mount_point->m_backend->m_name, to_mount_point->m_backend->m_name);
+            return -1;
+        }
+    }
+}

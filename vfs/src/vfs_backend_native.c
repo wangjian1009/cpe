@@ -2,6 +2,7 @@
 #include <errno.h>
 #include "cpe/pal/pal_dirent.h"
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_stdio.h"
 #include "cpe/utils/file.h"
 #include "cpe/utils/string_utils.h"
 #include "cpe/vfs/vfs_entry_info.h"
@@ -155,6 +156,18 @@ static int vfs_native_file_rm(void * ctx, void * env, const char * path) {
     return file_rm(vfs_backend_make_path(mgr, env, path), mgr->m_em);
 }
 
+static int vfs_native_file_mv(void * ctx, void * from_env, const char * from_path, void * to_env, const char * to_path) {
+    vfs_mgr_t mgr = ctx;
+    //return dir_mk_recursion(vfs_backend_make_path(mgr, env, path), DIR_DEFAULT_MODE, mgr->m_em, mgr->m_alloc);
+    
+    char from_path_full[PATH_MAX];
+    cpe_str_dup(from_path_full, sizeof(from_path_full), vfs_backend_make_path(mgr, from_env, from_path));
+    
+    const char * to_path_full = vfs_backend_make_path(mgr, to_env, to_path);
+
+    return file_mv(from_path_full, to_path, mgr->m_em);
+}
+
 static int vfs_native_dir_open(void * ctx, void * env, vfs_dir_t dir, const char * path) {
     vfs_mgr_t mgr = ctx;
     struct vfs_backend_native_dir_data * dir_data = vfs_dir_data(dir);
@@ -261,6 +274,7 @@ int vfs_backend_native_create(vfs_mgr_t mgr) {
             NULL,
             vfs_native_file_exist,
             vfs_native_file_rm,
+            vfs_native_file_mv,
             /*dir*/
             sizeof(struct vfs_backend_native_dir_data), vfs_native_dir_open, vfs_native_dir_close, vfs_native_dir_read,
             vfs_native_dir_exist,

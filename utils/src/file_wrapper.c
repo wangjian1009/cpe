@@ -1,7 +1,8 @@
 #include <sys/stat.h>
-#include <errno.h>
+#include "cpe/pal/pal_errno.h"
 #include "cpe/pal/pal_unistd.h"
 #include "cpe/pal/pal_stdio.h"
+#include "cpe/pal/pal_strings.h"
 #include "cpe/pal/pal_dirent.h"
 #include "cpe/pal/pal_string.h"
 #include "file_internal.h"
@@ -186,65 +187,17 @@ int file_rm(const char *path, error_monitor_t em) {
     int rv;
     rv = unlink(path);
     if (rv != 0) {
-        switch(errno) {
-        case EACCES:
-            CPE_ERROR_EX(
-                em, errno,
-                "Search permission is denied for a component  of  the  path  prefix,"
-                "  or write  permission  is  denied on the directory containing"
-                " the directory entry to be removed.");
-            break;
-        case EBUSY:
-            CPE_ERROR_EX(
-                em, errno,
-                "The file named by the path argument cannot be unlinked  because  it"
-                "  is being used by the system or another process and the implementation"
-                " considers this an error.");
-            break;
-#if defined ELOOP
-        case ELOOP:
-            CPE_ERROR_EX(
-                em, errno,
-                "A loop exists in symbolic links encountered during  resolution  of"
-                " the path argument.");
-            break;
-#endif
-        case ENAMETOOLONG:
-            CPE_ERROR_EX(
-                em, errno,
-                "The length of the path argument exceeds {PATH_MAX} or a pathname"
-                " component is longer than {NAME_MAX}.");
-            break;
-        case ENOENT:
-            CPE_ERROR_EX(
-                em, errno,
-                "A component of path does not name an existing file or path is an empty string.");
-            break;
-        case ENOTDIR:
-            CPE_ERROR_EX(
-                em, errno,
-                "A component of the path prefix is not a directory.");
-            break;
-        case EPERM:
-            CPE_ERROR_EX(
-                em, errno,
-                "The  file  named by path is a directory, and either the calling process"
-                " does not have appropriate privileges, or the  implementation  prohibits"
-                " using unlink() on directories.");
-            break;
-        case EROFS:
-            CPE_ERROR_EX(
-                em, errno,
-                "The directory entry to be unlinked is part of a read-only file  system.");
-            break;
-        default:
-            CPE_ERROR_EX(
-                em, errno,
-                "unlink return unknown error, errno=%d.", errno);
-            break;
-        }
+        CPE_ERROR_EX(em, errno, "%s", strerror(errno));
     }
 
+    return rv;
+}
+
+int file_mv(const char * to, const char * from, error_monitor_t em) {
+    int rv = rename(from, to);
+    if (rv != 0) {
+        CPE_ERROR_EX(em, errno, "%s", strerror(errno));
+    }
     return rv;
 }
 
