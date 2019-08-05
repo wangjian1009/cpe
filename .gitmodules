@@ -1,0 +1,3 @@
+[submodule "depends/check"]
+	path = depends/check
+	url = https://github.com/libcheck/check.git
