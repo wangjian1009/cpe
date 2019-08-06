@@ -3,6 +3,7 @@
 #include "cpe/pal/pal_dirent.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_stdio.h"
+#include "cpe/pal/pal_limits.h"
 #include "cpe/utils/file.h"
 #include "cpe/utils/string_utils.h"
 #include "cpe/vfs/vfs_entry_info.h"

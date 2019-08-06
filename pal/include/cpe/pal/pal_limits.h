@@ -7,6 +7,7 @@ extern "C" {
 
 #if defined _WIN32 /*windows*/
 #include <stdint.h>
+#define PATH_MAX MAX_PATH
 #else /*ux*/
 #include <limits.h>
 #endif
