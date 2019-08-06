@@ -30,15 +30,35 @@ set(check_compile_options
   )
 endif ()
 
-add_library(check STATIC ${check_source})
-
 set(check_definitions ${check_definitions}
     HAVE_SNPRINTF=1
     HAVE_VSNPRINTF=1)
 
 if (APPLE)
-    set(check_definitions ${check_definitions} timer_t=int STRUCT_ITIMERSPEC_DEFINITION_MISSING HAVE_MKSTEMP=1)
-endif()    
+    set(check_definitions ${check_definitions}
+    timer_t=int
+    STRUCT_ITIMERSPEC_DEFINITION_MISSING
+    HAVE_MKSTEMP=1)
+endif()
+
+
+if (MSVC)
+    set(check_definitions ${check_definitions}
+    timer_t=int
+    clockid_t=int
+    STRUCT_ITIMERSPEC_DEFINITION_MISSING
+    HAVE__STRDUP=1
+    HAVE_STDINT_H=1
+    HAVE_GETLINE=1)
+
+    set(check_source ${check_source}
+    ${check_base}/lib/clock_gettime.c
+    ${check_base}/lib/gettimeofday.c
+    ${check_base}/lib/localtime_r.c)
+endif()
+
+add_library(check STATIC ${check_source})
+
 #set(check_definitions ${check_definitions} HAVE_LIBRT=1)
 
 set_property(TARGET check PROPERTY COMPILE_DEFINITIONS ${check_definitions})
