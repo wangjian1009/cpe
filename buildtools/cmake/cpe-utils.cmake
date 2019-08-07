@@ -64,3 +64,17 @@ set_property(TARGET cpe_utils_json PROPERTY INCLUDE_DIRECTORIES
     ${cpe_utils_json_base}/include
   )
 # }}}
+# {{{ cpe_utils_yaml
+set(cpe_utils_yaml_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_yaml)
+
+file(GLOB cpe_utils_yaml_source ${cpe_utils_yaml_base}/src/*.c)
+
+add_library(cpe_utils_yaml STATIC ${cpe_utils_yaml_source})
+
+set_property(TARGET cpe_utils_yaml PROPERTY INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
+    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
+    ${CMAKE_CURRENT_LIST_DIR}/../../depends/yaml/include
+    ${cpe_utils_yaml_base}/include
+  )
+# }}}
