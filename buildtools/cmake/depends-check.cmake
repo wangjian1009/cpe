@@ -34,7 +34,7 @@ set(check_definitions ${check_definitions}
   HAVE_SNPRINTF=1
   HAVE_VSNPRINTF=1)
 
-if (OS_NAME STREQUAL ios OR OS_NAME STREQUAL max)
+if (OS_NAME STREQUAL ios OR OS_NAME STREQUAL mac)
   #mac
   
   set(check_definitions ${check_definitions}
