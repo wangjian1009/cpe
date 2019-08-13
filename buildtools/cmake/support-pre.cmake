@@ -1,3 +1,27 @@
+message(STATUS "CMAKE_VERSION=${CMAKE_VERSION}")
+message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_BINARY_DIR=${CMAKE_BINARY_DIR}")
+message(STATUS "CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID}")
+message(STATUS "CMAKE_C_COMPILER_IS_GNUCC=${CMAKE_C_COMPILER_IS_GNUCC}")
+
+if (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_IS_GNUCC)
+  message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
+  message(STATUS "SANITIZE=${SANITIZE}")
+
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND SANITIZE)
+    add_compile_options(-fsanitize=${SANITIZE})
+    link_libraries("-fsanitize=${SANITIZE}")
+    message(STATUS "optional:-fsanitize=${SANITIZE}")
+  endif ()
+
+  add_compile_options(-fno-omit-frame-pointer)
+  message(STATUS "optional:-fno-omit-frame-pointer")
+
+  add_compile_options(-g -ggdb)
+  message(STATUS "optional:-g -ggdb")
+
+endif()
+
 if (WIN32)
   set(GUI_TYPE WIN32)
   
