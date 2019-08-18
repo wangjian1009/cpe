@@ -1,3 +1,6 @@
 [submodule "depends/check"]
 	path = depends/check
 	url = https://github.com/libcheck/check.git
+[submodule "depends/zlog"]
+	path = depends/zlog
+	url = git@github.com:HardySimpson/zlog.git
