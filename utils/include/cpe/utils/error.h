@@ -69,7 +69,23 @@ void cpe_error_monitor_remove_node(error_monitor_t monitor, struct error_monitor
     if (monitor) {                                                  \
         (monitor)->m_curent_location.m_errno = en;                  \
         (monitor)->m_curent_location.m_level = level;               \
+        uint8_t _clear_line = 0;                                    \
+        uint8_t _clear_file = 0;                                    \
+        if ((monitor)->m_curent_location.m_file == NULL) {          \
+            (monitor)->m_curent_location.m_file = __FILE__;        \
+            _clear_file = 1;                                        \
+        }                                                           \
+        if ((monitor)->m_curent_location.m_line == -1) {            \
+            (monitor)->m_curent_location.m_line = __LINE__;        \
+            _clear_line = 1;                                        \
+        }                                                           \
         cpe_error_do_notify((monitor), format, ##args);             \
+        if (_clear_file) {                                          \
+            (monitor)->m_curent_location.m_file = NULL;            \
+        }                                                           \
+        if (_clear_line) {                                          \
+            (monitor)->m_curent_location.m_line = -1;               \
+        }                                                           \
     }
 #endif
 #define CPE_DEF_ERROR_MONITOR_NODE_INITIALIZER(fun, context) \
