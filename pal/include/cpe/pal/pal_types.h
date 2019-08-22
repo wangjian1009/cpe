@@ -71,6 +71,10 @@ typedef int32_t ptr_int_t;
 typedef uint32_t ptr_uint_t;
 #endif
 
+#if ! defined NULL
+#define NULL 0
+#endif
+
 #define CPE_ARRAY_SIZE(__array) ((sizeof(__array) / sizeof(__array[0])))
 #define CPE_ENTRY_START(__typeName, __itemName)  (((char*)(&((struct __typeName *)1000)->__itemName)) - ((char*)1000))
 #define CPE_ENTRY_SIZE(__typeName, __itemName)  (sizeof(((struct __typeName *)1000)->__itemName))
