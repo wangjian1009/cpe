@@ -263,7 +263,7 @@ static int vfs_native_dir_mk_recursion(void * ctx, void * env, const char * path
 int vfs_backend_native_create(vfs_mgr_t mgr) {
     return
         vfs_backend_create(
-            mgr, "native", mgr,
+            mgr, "native", mgr, NULL,
             /*env*/
             vfs_backend_env_clear,
             /*file*/

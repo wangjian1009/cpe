@@ -5,7 +5,7 @@
 
 vfs_backend_t
 vfs_backend_create(
-    vfs_mgr_t mgr, const char * name, void * ctx,
+    vfs_mgr_t mgr, const char * name, void * ctx, vfs_backend_ctx_fini_fun_t ctx_fini,
     /*env*/
     vfs_backend_env_clear_fun_t env_clear,
     /*file*/
@@ -43,6 +43,7 @@ vfs_backend_create(
     cpe_str_dup(backend->m_name, sizeof(backend->m_name), name);
     TAILQ_INIT(&backend->m_mount_points);
     backend->m_ctx = ctx;
+    backend->m_ctx_fini = ctx_fini;
     backend->m_env_clear = env_clear;
     backend->m_file_capacity = file_capacity;
     backend->m_file_open = file_open;
@@ -78,6 +79,10 @@ void vfs_backend_free(vfs_backend_t backend) {
 
     while(!TAILQ_EMPTY(&backend->m_mount_points)) {
         vfs_mount_point_free(TAILQ_FIRST(&backend->m_mount_points));
+    }
+
+    if (backend->m_ctx_fini) {
+        backend->m_ctx_fini(backend->m_ctx);
     }
     
     TAILQ_REMOVE(&mgr->m_backends, backend, m_next);

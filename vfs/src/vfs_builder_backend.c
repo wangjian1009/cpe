@@ -363,6 +363,16 @@ static int vfs_builder_dir_mk_recursion(void * ctx, void * env, const char * pat
     return 0;
 }
 
+static void vfs_builder_backend_free(vfs_builder_backend_t builder_backend) {
+    vfs_mgr_t mgr = builder_backend->m_mgr;
+    
+    while(!TAILQ_EMPTY(&builder_backend->m_builders)) {
+        vfs_builder_free(TAILQ_FIRST(&builder_backend->m_builders));
+    }
+
+    mem_free(mgr->m_alloc, builder_backend);
+}
+
 vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
     vfs_builder_backend_t builder_backend;
     vfs_backend_t backend;
@@ -378,7 +388,7 @@ vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
     
     backend =
         vfs_backend_create(
-            mgr, "builder:", builder_backend,
+            mgr, "builder:", builder_backend, (vfs_backend_ctx_fini_fun_t)vfs_builder_backend_free,
             /*env*/
             NULL,
             /*file*/

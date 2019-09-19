@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 
+typedef void (*vfs_backend_ctx_fini_fun_t)(void *);
 typedef void (*vfs_backend_env_clear_fun_t)(void * ctx, void * env);
         
 typedef int (*vfs_file_open_fun_t)(void * ctx, void * env, vfs_file_t file, const char * path, const char * mode);
@@ -31,7 +32,7 @@ typedef int (*vfs_dir_rm_fun_t)(void * ctx, void * env, const char * path);
 typedef int (*vfs_dir_mk_fun_t)(void * ctx, void * env, const char * path);    
     
 vfs_backend_t vfs_backend_create(
-    vfs_mgr_t mgr, const char * name, void * ctx,
+    vfs_mgr_t mgr, const char * name, void * ctx, vfs_backend_ctx_fini_fun_t ctx_fini,
     /*env*/
     vfs_backend_env_clear_fun_t env_clear,
     /*file*/

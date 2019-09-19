@@ -13,6 +13,7 @@ struct vfs_backend {
     char m_name[32];
     vfs_mount_point_list_t m_mount_points;
     void * m_ctx;
+    vfs_backend_ctx_fini_fun_t m_ctx_fini;
     vfs_backend_env_clear_fun_t m_env_clear;
     uint32_t m_file_capacity;
     vfs_file_open_fun_t m_file_open;
