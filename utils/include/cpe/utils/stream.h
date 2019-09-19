@@ -26,6 +26,8 @@ int stream_toupper(struct write_stream * stream, const char * data);
 int stream_tolower_len(struct write_stream * stream, const char * data, size_t len);
 int stream_tolower(struct write_stream * stream, const char * data);
 
+int stream_write_from_stream(struct write_stream * stream, read_stream_t source);    
+
 int stream_do_flush_dummy(struct write_stream * stream);
 
 int stream_putc_count(struct write_stream * stream, char c, size_t n);

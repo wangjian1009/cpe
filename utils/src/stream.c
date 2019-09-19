@@ -13,6 +13,30 @@ int stream_do_flush_dummy(struct write_stream * stream) {
     return 0;
 }
 
+int stream_write_from_stream(struct write_stream * stream, read_stream_t source) {
+    char buffer[4096];
+    int writed_sz = 0;
+    int read_rv;
+    
+READ_ONCE:
+    read_rv = stream_read(source, buffer, sizeof(buffer));
+    if (read_rv < 0) return read_rv;
+    
+    if (read_rv == 0) return writed_sz;
+
+    int once_writed_sz = 0;
+    while(read_rv > 0) {
+        int write_rv = stream_write(stream, buffer + once_writed_sz, read_rv - once_writed_sz);
+        if (write_rv < 0) return write_rv;
+        if (write_rv == 0) return -1;
+        once_writed_sz += write_rv;
+        writed_sz += write_rv;
+        read_rv -= write_rv;
+    }
+
+    goto READ_ONCE;
+}
+
 int stream_do_write_to_buffer(struct write_stream * input_stream, const void * buf, size_t size) {
     struct write_stream_buffer * stream = (struct write_stream_buffer *)input_stream;
 
