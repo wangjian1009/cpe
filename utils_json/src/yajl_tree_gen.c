@@ -134,6 +134,15 @@ int cpe_yajl_tree_object_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const c
     return cpe_yajl_tree_object_add(gen, o, key, v);
 }
 
+int cpe_yajl_tree_object_add_string_opt(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, const char * value) {
+    if (value) {
+        return cpe_yajl_tree_object_add_string(gen, o, key, value);
+    }
+    else {
+        return cpe_yajl_tree_object_add_null(gen, o, key);
+    }
+}
+
 int cpe_yajl_tree_object_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, int64_t value) {
     yajl_val v = cpe_yajl_tree_gen_integer(gen, value);
     if (v == NULL) return -1;
@@ -241,6 +250,15 @@ int cpe_yajl_tree_array_add_string(cpe_yajl_tree_gen_t gen, yajl_val o, const ch
     yajl_val v = cpe_yajl_tree_gen_string(gen, value);
     if (v == NULL) return -1;
     return cpe_yajl_tree_array_add(gen, o, v);
+}
+
+int cpe_yajl_tree_array_add_string_opt(cpe_yajl_tree_gen_t gen, yajl_val o, const char * value) {
+    if (value) {
+        return cpe_yajl_tree_array_add_string(gen, o, value);
+    }
+    else {
+        return cpe_yajl_tree_array_add_null(gen, o);
+    }
 }
 
 int cpe_yajl_tree_array_add_integer(cpe_yajl_tree_gen_t gen, yajl_val o, int64_t value) {
