@@ -40,7 +40,64 @@ static cpe_yajl_val_t cpe_yajl_tree_gen_alloc(cpe_yajl_tree_gen_t gen, yajl_type
     
     return v;
 }
-    
+
+yajl_val cpe_yajl_tree_dup(cpe_yajl_tree_gen_t gen, yajl_val value) {
+    if (value == NULL) return NULL;
+
+    switch(value->type) {
+    case yajl_t_string:
+        return cpe_yajl_tree_gen_string(gen, yajl_get_string(value));
+    case yajl_t_number: {
+        cpe_yajl_val_t v = cpe_yajl_tree_gen_alloc(gen, yajl_t_number);
+        if (v == NULL) return NULL;
+
+        v->m_data.u.number.i = value->u.number.i;
+        v->m_data.u.number.d = value->u.number.d;
+        v->m_data.u.number.flags = value->u.number.flags;
+        v->m_data.u.number.r = cpe_yajl_tree_gen_dup_str(gen, value->u.number.r);
+        if (v->m_data.u.number.r == NULL) return NULL;
+
+        return _to_r(v);
+    }
+    case yajl_t_object: {
+        yajl_val obj = cpe_yajl_tree_gen_object(gen, value->u.object.len);
+        if (obj == NULL) return NULL;
+
+        uint32_t i;
+        for(i = 0; i < value->u.object.len; ++i) {
+            yajl_val child_value = cpe_yajl_tree_dup(gen, value->u.object.values[i]);
+            if (child_value) {
+                cpe_yajl_tree_object_add(gen, obj, value->u.object.keys[i], child_value);
+            }
+        }
+
+        return obj;
+    }
+    case yajl_t_array: {
+        yajl_val array = cpe_yajl_tree_gen_array(gen, value->u.array.len);
+        if (array == NULL) return NULL;
+
+        uint32_t i;
+        for(i = 0; i < value->u.array.len; ++i) {
+            yajl_val child_value = cpe_yajl_tree_dup(gen, value->u.array.values[i]);
+            if (child_value) {
+                cpe_yajl_tree_array_add(gen, array, child_value);
+            }
+        }
+        
+        return array;
+    }
+    case yajl_t_true:
+        return cpe_yajl_tree_gen_bool(gen, 1);
+    case yajl_t_false:
+        return cpe_yajl_tree_gen_bool(gen, 0);
+    case yajl_t_null:
+        return cpe_yajl_tree_gen_null(gen);
+    default:
+        return NULL;
+    }
+}
+
 yajl_val cpe_yajl_tree_gen_object(cpe_yajl_tree_gen_t gen, uint32_t capacity) {
     cpe_yajl_val_t v = cpe_yajl_tree_gen_alloc(gen, yajl_t_object);
     if (v == NULL) return NULL;

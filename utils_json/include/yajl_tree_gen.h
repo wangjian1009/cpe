@@ -17,6 +17,8 @@ struct cpe_yajl_tree_gen {
 
 #define CPE_YAJL_TREE_GEN_INIT(buffer, em) { (buffer), (em), "" }
 
+yajl_val cpe_yajl_tree_dup(cpe_yajl_tree_gen_t gen, yajl_val value);
+    
 yajl_val cpe_yajl_tree_gen_object(cpe_yajl_tree_gen_t gen, uint32_t capaciity);
 int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, yajl_val value);
 int cpe_yajl_tree_object_add_opt(cpe_yajl_tree_gen_t gen, yajl_val o, const char * key, yajl_val value);
