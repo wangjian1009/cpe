@@ -224,13 +224,14 @@ void * mem_buffer_alloc(struct mem_buffer * buffer, size_t size) {
 
     if (!buffer || size <= 0) return NULL;
 
-    TAILQ_FOREACH_REVERSE(check_trunk, &buffer->m_trunks, mem_buffer_trunk_list, m_next) {
+    check_trunk = TAILQ_LAST(&buffer->m_trunks, mem_buffer_trunk_list);
+    if (check_trunk) {
+        assert(check_trunk->m_capacity >= check_trunk->m_size);
+        
         size_t trunk_size = check_trunk->m_capacity - check_trunk->m_size;
         if (size <= trunk_size) {
             found_trunk = check_trunk;
         }
-
-        if (check_trunk->m_size > 0) break;
     }
     
     if (found_trunk == NULL) {
