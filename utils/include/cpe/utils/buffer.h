@@ -70,7 +70,8 @@ ssize_t mem_buffer_append_char(mem_buffer_t buffer, char);
 ssize_t mem_buffer_read(void * buf, size_t size, mem_buffer_t buffer);
 void * mem_buffer_make_continuous(mem_buffer_t buffer, size_t reserve);
 void * mem_buffer_make_exactly(mem_buffer_t buffer);
-void * mem_buffer_alloc(mem_buffer_t buffer, size_t size);
+void * mem_buffer_alloc_with_align(mem_buffer_t buffer, size_t size, uint8_t align);
+#define mem_buffer_alloc(__buffer, __size) mem_buffer_alloc_with_align((__buffer), (__size), 1)
 
 char * mem_buffer_strdup(mem_buffer_t buffer, const char * s);
 char * mem_buffer_strdup_len(mem_buffer_t buffer, const char * s, size_t sLen);

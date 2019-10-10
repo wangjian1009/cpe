@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string.h>
+#include "cpe/pal/pal_platform.h"
 #include "cpe/utils/stream_buffer.h"
 #include "buffer_private.h"
 
@@ -217,7 +218,7 @@ void * mem_buffer_make_exactly(struct mem_buffer * buffer) {
     return mem_trunk_data(trunk);
 }
 
-void * mem_buffer_alloc(struct mem_buffer * buffer, size_t size) {
+void * mem_buffer_alloc_with_align(struct mem_buffer * buffer, size_t size, uint8_t align) {
     void * result;
     struct mem_buffer_trunk * check_trunk;
     struct mem_buffer_trunk * found_trunk = NULL;
@@ -227,9 +228,19 @@ void * mem_buffer_alloc(struct mem_buffer * buffer, size_t size) {
     check_trunk = TAILQ_LAST(&buffer->m_trunks, mem_buffer_trunk_list);
     if (check_trunk) {
         assert(check_trunk->m_capacity >= check_trunk->m_size);
-        
-        size_t trunk_size = check_trunk->m_capacity - check_trunk->m_size;
-        if (size <= trunk_size) {
+
+        size_t check_trunk_size = check_trunk->m_size;
+        CPE_PAL_CALC_ALIGN(check_trunk_size, align);
+
+        if (check_trunk->m_capacity > check_trunk_size
+            && size <= (check_trunk->m_capacity - check_trunk_size)
+            )
+        {
+            if (check_trunk_size > check_trunk->m_size) {
+                size_t adj_size = check_trunk_size - check_trunk->m_size;
+                check_trunk->m_size += adj_size;
+                buffer->m_size += adj_size;
+            }
             found_trunk = check_trunk;
         }
     }

@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_string.h"
+#include "cpe/pal/pal_platform.h"
 #include "yajl/yajl_tree.h"
 #include "cpe/utils/buffer.h"
 #include "cpe/utils/string_utils.h"
@@ -28,7 +29,7 @@ static char * cpe_yajl_tree_gen_dup_str(cpe_yajl_tree_gen_t gen, const char * va
 }
 
 static cpe_yajl_val_t cpe_yajl_tree_gen_alloc(cpe_yajl_tree_gen_t gen, yajl_type type) {
-    cpe_yajl_val_t v = mem_buffer_alloc(gen->m_buffer, sizeof(struct cpe_yajl_val));
+    cpe_yajl_val_t v = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(struct cpe_yajl_val), CPE_DEFAULT_ALIGN);
     if (v == NULL) {
         CPE_ERROR(gen->m_em, "yajl_tree_gen: gen node fail!");
         cpe_str_dup(gen->m_error_msg, sizeof(gen->m_error_msg), "out of memory");
@@ -105,8 +106,8 @@ yajl_val cpe_yajl_tree_gen_object(cpe_yajl_tree_gen_t gen, uint32_t capacity) {
     if (capacity == 0) capacity = 8;
 
     v->m_capacity = capacity;
-    v->m_data.u.object.keys = mem_buffer_alloc(gen->m_buffer, sizeof(v->m_data.u.object.keys[0]) * capacity);
-    v->m_data.u.object.values = mem_buffer_alloc(gen->m_buffer, sizeof(v->m_data.u.object.values[0]) * capacity);
+    v->m_data.u.object.keys = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(v->m_data.u.object.keys[0]) * capacity, CPE_DEFAULT_ALIGN);
+    v->m_data.u.object.values = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(v->m_data.u.object.values[0]) * capacity, CPE_DEFAULT_ALIGN);
 
     if (v->m_data.u.object.keys == NULL || v->m_data.u.object.values == NULL) {
         CPE_ERROR(gen->m_em, "yajl_tree_gen: gen object value buf fail, capacity=%d!", capacity);
@@ -140,8 +141,8 @@ int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char *
 
     if ((uint32_t)o->m_data.u.object.len >= o->m_capacity) {
         uint32_t new_capacity = o->m_capacity < 8 ? 8 : o->m_capacity * 2;
-        const char ** new_keys = mem_buffer_alloc(gen->m_buffer, sizeof(o->m_data.u.object.keys[0]) * new_capacity);
-        yajl_val * new_values = mem_buffer_alloc(gen->m_buffer, sizeof(o->m_data.u.object.values[0]) * new_capacity);
+        const char ** new_keys = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(o->m_data.u.object.keys[0]) * new_capacity, CPE_DEFAULT_ALIGN);
+        yajl_val * new_values = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(o->m_data.u.object.values[0]) * new_capacity, CPE_DEFAULT_ALIGN);
 
         if (new_keys == NULL || new_values == NULL) {
             CPE_ERROR(gen->m_em, "yajl_tree_gen: gen object value buf fail, capacity=%d!", new_capacity);
@@ -231,7 +232,7 @@ yajl_val cpe_yajl_tree_gen_array(cpe_yajl_tree_gen_t gen, uint32_t capacity) {
     if (capacity == 0) capacity = 8;
 
     v->m_capacity = capacity;
-    v->m_data.u.array.values = mem_buffer_alloc(gen->m_buffer, sizeof(v->m_data.u.array.values[0]) * capacity);
+    v->m_data.u.array.values = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(v->m_data.u.array.values[0]) * capacity, CPE_DEFAULT_ALIGN);
 
     if (v->m_data.u.array.values == NULL) {
         CPE_ERROR(gen->m_em, "yajl_tree_gen: gen array value buf fail, capacity=%d!", capacity);
@@ -264,7 +265,7 @@ int cpe_yajl_tree_array_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, yajl_val i_va
 
     if ((uint32_t)o->m_data.u.array.len >= o->m_capacity) {
         uint32_t new_capacity = o->m_capacity < 8 ? 8 : o->m_capacity * 2;
-        yajl_val * new_values = mem_buffer_alloc(gen->m_buffer, sizeof(o->m_data.u.array.values[0]) * new_capacity);
+        yajl_val * new_values = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(o->m_data.u.array.values[0]) * new_capacity, CPE_DEFAULT_ALIGN);
 
         if (new_values == NULL) {
             CPE_ERROR(gen->m_em, "yajl_tree_gen: gen array value buf fail, capacity=%d!", new_capacity);
