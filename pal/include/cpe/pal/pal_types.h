@@ -4,7 +4,7 @@
 #include <time.h>
 #include <sys/types.h>
 
-#ifndef WIN32
+#ifndef _MSC_VER
 #include <stdint.h>
 #include <inttypes.h>
 #include <wchar.h>
@@ -19,9 +19,13 @@
 #  define CPE_END_DECL
 #endif
 
-#if _MSC_VER
+#if _MSC_VER || __MINGW32__
 typedef int socklen_t;
+
+#if _MSC_VER
 typedef int ssize_t;
+#endif
+
 typedef long suseconds_t;
 
 typedef __int64 off64_t;

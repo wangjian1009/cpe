@@ -14,7 +14,8 @@ set(argtable2_source
   ${argtable2_base}/src/getopt.c
   )
 
-if (NOT MSVC)
+if (OS_NAME STREQUAL "vc" OR OS_NAME STREQUAL "mingw")
+else()  
 set(argtable2_source
   ${argtable2_source}
   ${argtable2_base}/src/arg_rex.c

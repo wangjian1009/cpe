@@ -1,4 +1,4 @@
-#if defined _MSC_VER
+#if _MSC_VER || __MINGW32__
 #include <winsock2.h>
 #endif
 
@@ -179,7 +179,8 @@ time_t time_from_str_tz(const char * str_time) {
     tm.tm_min   = minute;
     tm.tm_sec   = second;
     tm.tm_isdst = -1;
-#if ! defined _MSC_VER
+#if _MSC_VER || __MINGW32__
+#else    
     tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
 #endif
 
@@ -191,7 +192,7 @@ const char * time_to_str_tz(time_t time, void * buf, size_t buf_size) {
     struct tm tm_buf;
     tm = localtime_r(&time, &tm_buf);
 
-#if _MSC_VER
+#if _MSC_VER || __MINGW32__
     TIME_ZONE_INFORMATION tz_buf;
     GetTimeZoneInformation(&tz_buf);
     int gmtoff = tz_buf.Bias;

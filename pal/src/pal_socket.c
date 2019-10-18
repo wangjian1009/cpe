@@ -36,7 +36,7 @@ const char* cpe_sock_errstr(int n)
 #endif
 
 int cpe_sock_set_none_block(int fd, int is_non_block) {
-#ifdef _MSC_VER
+#if _MSC_VER || __MINGW32__
     u_long flag;
 
     flag = is_non_block ? 1 : 0;
@@ -79,7 +79,7 @@ int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
 
 
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
-#ifdef _MSC_VER
+#if _MSC_VER || __MINGW32__
     BOOL flag;
 
     flag = is_reuseaddr ? TRUE : FALSE;
@@ -91,7 +91,7 @@ int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
 }
 
 int cpe_sock_set_reuseport(int fd, int is_reuseport) {
-#ifdef _MSC_VER
+#if _MSC_VER || __MINGW32__
     BOOL flag;
 
     flag = is_reuseport ? TRUE : FALSE;

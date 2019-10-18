@@ -8,10 +8,12 @@ extern "C" {
 
 struct timeval;
 
+#if _MSC_VER    
 struct timezone {
     __int32  tz_minuteswest; /* minutes W of Greenwich */
     int  tz_dsttime;     /* type of dst correction */
 };
+#endif
 
 int gettimeofday(struct timeval *tv/*in*/, struct timezone *tz/*in*/);
 struct tm * localtime_r(const time_t *clock, struct tm *result);

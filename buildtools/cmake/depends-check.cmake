@@ -63,6 +63,16 @@ elseif (OS_NAME STREQUAL vc)
     ${check_base}/lib/clock_gettime.c
     ${check_base}/lib/gettimeofday.c
     ${check_base}/lib/localtime_r.c)
+
+elseif (OS_NAME STREQUAL mingw)
+
+  set(check_definitions ${check_definitions}
+    timer_t=int
+    clockid_t=int
+    HAVE__STRDUP=1
+    HAVE_STDINT_H=1
+    HAVE_GETLINE=1)
+
 endif()
 
 add_library(check STATIC ${check_source})
