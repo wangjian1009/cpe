@@ -2,7 +2,7 @@
 #include "cpe/pal/pal_fcntl.h"
 #include "cpe/pal/pal_string.h"
 
-#ifdef _MSC_VER
+#if _MSC_VER || __MINGW32__
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -112,7 +112,7 @@ int cpe_sock_set_recv_timeout(int fd, int timeout_ms) {
 	timeout.tv_sec = (int)(timeout_ms / 1000);
 	timeout.tv_usec = timeout_ms - ((int)timeout.tv_sec * 1000);
 
-    return setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    return setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void*)&timeout, sizeof(timeout));
 }
 
 int cpe_sock_set_send_timeout(int fd, int timeout_ms) {
@@ -120,6 +120,6 @@ int cpe_sock_set_send_timeout(int fd, int timeout_ms) {
 	timeout.tv_sec = (long)(timeout_ms / 1000);
 	timeout.tv_usec = (timeout_ms - ((int)timeout.tv_sec * 1000));
 
-    return setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    return setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (void*)&timeout, sizeof(timeout));
 }
 

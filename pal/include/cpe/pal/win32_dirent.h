@@ -107,7 +107,7 @@
 #define S_IFSOCK  0                            /* socket */
 #endif
 
-#if defined(_WIN32)
+#if defined(MSVC)
 # define S_IRUSR  S_IREAD                      /* read, user */
 # define S_IWUSR  S_IWRITE                     /* write, user */
 # define S_IXUSR  0                            /* execute, user */

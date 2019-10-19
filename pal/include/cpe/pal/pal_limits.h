@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#if defined _WIN32 /*windows*/
+#if defined MSVC /*windows*/
 #include <stdint.h>
 #define PATH_MAX MAX_PATH
 #else /*ux*/

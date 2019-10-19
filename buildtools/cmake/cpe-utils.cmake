@@ -10,7 +10,7 @@ set(cpe_pal_source
   ${cpe_pal_base}/src/pal_stdlib.c
   )
 
-if (MSVC)
+if (OS_NAME STREQUAL "vc" OR OS_NAME STREQUAL "mingw")
 set(cpe_pal_source
   ${cpe_pal_source}
   ${cpe_pal_base}/src/msvc_time.c

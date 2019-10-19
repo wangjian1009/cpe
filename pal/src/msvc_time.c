@@ -1,4 +1,4 @@
-#ifdef _MSC_VER
+#if _MSC_VER || __MINGW32__
 #include <winsock2.h>
 #include <windows.h>
 #include "cpe/pal/msvc_time.h"
