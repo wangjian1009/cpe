@@ -261,6 +261,10 @@ yajl_gen_string(yajl_gen g, const unsigned char * str,
     return yajl_gen_status_ok;
 }
 
+yajl_gen_status yajl_gen_string2(yajl_gen g, const char * str) {
+    return yajl_gen_string(g, (const unsigned char *)str, strlen(str));
+}
+
 yajl_gen_status
 yajl_gen_null(yajl_gen g)
 {

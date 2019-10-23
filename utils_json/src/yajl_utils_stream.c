@@ -32,3 +32,6 @@ void cpe_yajl_stream_escape_str(write_stream_t ws, const char * msg) {
     cpe_yajl_stream_escape_str_range(ws, msg, msg + strlen(msg));
 }
 
+void cpe_yajl_gen_print_to_stream(void * ctx, const char * str, size_t len) {
+    stream_write((write_stream_t)ctx, str, len);
+}
