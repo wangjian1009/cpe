@@ -61,7 +61,7 @@ yajl_val cpe_yajl_tree_dup(cpe_yajl_tree_gen_t gen, yajl_val value) {
         return _to_r(v);
     }
     case yajl_t_object: {
-        yajl_val obj = cpe_yajl_tree_gen_object(gen, value->u.object.len);
+        yajl_val obj = cpe_yajl_tree_gen_object(gen, (uint32_t)value->u.object.len);
         if (obj == NULL) return NULL;
 
         uint32_t i;
@@ -75,7 +75,7 @@ yajl_val cpe_yajl_tree_dup(cpe_yajl_tree_gen_t gen, yajl_val value) {
         return obj;
     }
     case yajl_t_array: {
-        yajl_val array = cpe_yajl_tree_gen_array(gen, value->u.array.len);
+        yajl_val array = cpe_yajl_tree_gen_array(gen, (uint32_t)value->u.array.len);
         if (array == NULL) return NULL;
 
         uint32_t i;
@@ -137,7 +137,6 @@ int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char *
     }
     
     cpe_yajl_val_t o = _to_i(i_o);
-    cpe_yajl_val_t vaule = _to_i(i_value);
 
     if ((uint32_t)o->m_data.u.object.len >= o->m_capacity) {
         uint32_t new_capacity = o->m_capacity < 8 ? 8 : o->m_capacity * 2;
@@ -261,7 +260,6 @@ int cpe_yajl_tree_array_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, yajl_val i_va
     }
 
     cpe_yajl_val_t o = _to_i(i_o);
-    cpe_yajl_val_t vaule = _to_i(i_value);
 
     if ((uint32_t)o->m_data.u.array.len >= o->m_capacity) {
         uint32_t new_capacity = o->m_capacity < 8 ? 8 : o->m_capacity * 2;
