@@ -125,6 +125,7 @@
 		C9BCBFCB22BFBA13009ABD39 /* getgateway.c in Sources */ = {isa = PBXBuildFile; fileRef = C9BCBFC822BFBA13009ABD39 /* getgateway.c */; };
 		C9D0C50F22E1C38400286763 /* yajl_tree_dump.c in Sources */ = {isa = PBXBuildFile; fileRef = C9D0C50D22E1C38400286763 /* yajl_tree_dump.c */; };
 		C9D0C51022E1C38400286763 /* yajl_tree_gen.c in Sources */ = {isa = PBXBuildFile; fileRef = C9D0C50E22E1C38400286763 /* yajl_tree_gen.c */; };
+		C9E702402366970D00F5B2B3 /* yajl_utils_stream.c in Sources */ = {isa = PBXBuildFile; fileRef = C9E7023F2366970C00F5B2B3 /* yajl_utils_stream.c */; };
 		C9F3110D2108B53B006A7621 /* pcre2_xclass.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F310D02108B53A006A7621 /* pcre2_xclass.c */; };
 		C9F311112108B53B006A7621 /* pcre2_dfa_match.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F310D62108B53B006A7621 /* pcre2_dfa_match.c */; };
 		C9F311122108B53B006A7621 /* pcre2_string_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = C9F310D82108B53B006A7621 /* pcre2_string_utils.c */; };
@@ -509,6 +510,7 @@
 		C9D0C50B22E1C38400286763 /* yajl_tree_gen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yajl_tree_gen.h; sourceTree = "<group>"; };
 		C9D0C50D22E1C38400286763 /* yajl_tree_dump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yajl_tree_dump.c; sourceTree = "<group>"; };
 		C9D0C50E22E1C38400286763 /* yajl_tree_gen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yajl_tree_gen.c; sourceTree = "<group>"; };
+		C9E7023F2366970C00F5B2B3 /* yajl_utils_stream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yajl_utils_stream.c; sourceTree = "<group>"; };
 		C9F310C02108B4C2006A7621 /* libpcre.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libpcre.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9F310CC2108B53A006A7621 /* pcre2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pcre2.h; sourceTree = "<group>"; };
 		C9F310D02108B53A006A7621 /* pcre2_xclass.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pcre2_xclass.c; sourceTree = "<group>"; };
@@ -1166,6 +1168,7 @@
 		C9D0C50C22E1C38400286763 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				C9E7023F2366970C00F5B2B3 /* yajl_utils_stream.c */,
 				C9D0C50D22E1C38400286763 /* yajl_tree_dump.c */,
 				C9D0C50E22E1C38400286763 /* yajl_tree_gen.c */,
 			);
@@ -1553,6 +1556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9D0C51022E1C38400286763 /* yajl_tree_gen.c in Sources */,
+				C9E702402366970D00F5B2B3 /* yajl_utils_stream.c in Sources */,
 				C9D0C50F22E1C38400286763 /* yajl_tree_dump.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
