@@ -81,6 +81,9 @@ char * cpe_str_read_arg_range_mem_dup(mem_allocrator_t alloc, const char * i, co
 uint8_t cpe_str_is_in_list(const char * check, const char * list, char sep);
 void cpe_str_list_for_each(const char * list, char sep, void (*visit_fun)(void * ctx, const char * value), void * ctx);
 
+void cpe_str_char_replace_all(char * p, const char * from, char to);
+void cpe_str_char_replace_all_range(char * p, uint32_t sz, const char * from, char to);
+
 int cpe_str_cmp_opt(const char * l, const char * r);
 const char * cpe_str_opt(const char * v, const char * dft);
 

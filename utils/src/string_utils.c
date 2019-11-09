@@ -917,3 +917,20 @@ int cpe_str_cmp_opt(const char * l, const char * r) {
 const char * cpe_str_opt(const char * v, const char * dft) {
     return v ? v : dft;
 }
+
+void cpe_str_char_replace_all(char * p, const char * from, char to) {
+    for(; *p; p++) {
+        if (strchr(from, *p)) {
+            *p = to;
+        }
+    }
+}
+
+void cpe_str_char_replace_all_range(char * p, uint32_t sz, const char * from, char to) {
+    uint32_t i;
+    for(i = 0; i < sz; ++i) {
+        if (strchr(from, p[i])) {
+            p[i] = to;
+        }
+    }
+}
