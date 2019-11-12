@@ -136,7 +136,7 @@ time_t time_from_str(const char * str_time) {
     int r;
 
     r = sscanf(str_time, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second);
-    if (r != strlen(str_time)) return 0;
+    if (r != 6) return 0;
 
     tm.tm_year  = year-1900;
     tm.tm_mon   = month-1;
@@ -166,11 +166,11 @@ const char * time_to_str(time_t time, void * buf, size_t buf_size) {
 
 time_t time_from_str_tz(const char * str_time) {
     struct tm tm;
-    int year, month, day, hour, minute, second, gmtoff_min, gmtoff_sec;
+    int year, month, day, hour, minute, second, gmtoff_min_sec;
     int r;
 
-    r = sscanf(str_time, "%d-%d-%dT%d:%d:%d%d:%d", &year, &month, &day, &hour, &minute, &second, &gmtoff_min, &gmtoff_sec);
-    if (r != strlen(str_time)) return 0;
+    r = sscanf(str_time, "%d-%d-%dT%d:%d:%d%d", &year, &month, &day, &hour, &minute, &second, &gmtoff_min_sec);
+    if (r != 7) return 0;
 
     tm.tm_year  = year-1900;
     tm.tm_mon   = month-1;
@@ -181,7 +181,7 @@ time_t time_from_str_tz(const char * str_time) {
     tm.tm_isdst = -1;
 #if _MSC_VER || __MINGW32__
 #else    
-    tm.tm_gmtoff = (long)(gmtoff_min * 60 + gmtoff_sec);
+    tm.tm_gmtoff = (long)((gmtoff_min_sec / 100) * 60 + (gmtoff_min_sec - (gmtoff_min_sec / 100) * 100));
 #endif
 
     return mktime(&tm);
