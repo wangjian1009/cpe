@@ -2,6 +2,15 @@
 #include "cpe/pal/pal_fcntl.h"
 #include "cpe/pal/pal_string.h"
 
+#if CPE_OS_ANDROID
+#include <linux/tcp.h>
+#endif
+
+#if CPE_OS_MAC
+#include <netinet/tcp.h>
+#define SOL_TCP IPPROTO_TCP    
+#endif
+
 #if _MSC_VER || __MINGW32__
 
 #pragma comment(lib, "ws2_32.lib")
@@ -77,6 +86,17 @@ int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe) {
 #endif
 }
 
+int cpe_sock_set_no_delay(int fd, int is_no_delay) {
+#if _MSC_VER || __MINGW32__
+    BOOL flag;
+
+    flag = is_reuseaddr ? TRUE : FALSE;
+    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
+#else
+	int opt = is_no_delay ? 1 : 0;
+	return setsockopt(fd , SOL_TCP , TCP_NODELAY , &opt , sizeof(opt));
+#endif
+}
 
 int cpe_sock_set_reuseaddr(int fd, int is_reuseaddr) {
 #if _MSC_VER || __MINGW32__
