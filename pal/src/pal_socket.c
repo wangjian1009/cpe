@@ -6,9 +6,13 @@
 #include <linux/tcp.h>
 #endif
 
+#if CPE_OS_LINUX
+#include <netinet/tcp.h>
+#endif
+
 #if CPE_OS_MAC
 #include <netinet/tcp.h>
-#define SOL_TCP IPPROTO_TCP    
+#define SOL_TCP IPPROTO_TCP
 #endif
 
 #if _MSC_VER || __MINGW32__
