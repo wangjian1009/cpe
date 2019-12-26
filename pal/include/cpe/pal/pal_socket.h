@@ -79,7 +79,8 @@ int cpe_sock_set_no_sigpipe(int fd, int is_no_sigpipe);
 int cpe_sock_set_no_delay(int fd, int is_no_delay);
 int cpe_sock_set_recv_timeout(int fd, int timeout_ms);
 int cpe_sock_set_send_timeout(int fd, int timeout_ms);
-
+int cpe_sock_get_tcp_mss(int fd);
+    
 #ifdef MSG_NOSIGNAL
 #define CPE_SOCKET_DEFAULT_SEND_FLAGS MSG_NOSIGNAL
 #else

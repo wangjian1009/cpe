@@ -147,3 +147,23 @@ int cpe_sock_set_send_timeout(int fd, int timeout_ms) {
     return setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, (void*)&timeout, sizeof(timeout));
 }
 
+int cpe_sock_get_tcp_mss(int fd) {
+#define NETWORK_MTU 1500
+#define SS_TCP_MSS (NETWORK_MTU - 40)
+
+    int _tcp_mss = SS_TCP_MSS;
+
+    int mss = 0;
+    socklen_t len = sizeof(mss);
+
+#if defined(WIN32) || defined(_WIN32)
+    getsockopt(fd, IPPROTO_TCP, TCP_MAXSEG, (char *)&mss, &len);
+#else
+    getsockopt(fd, IPPROTO_TCP, TCP_MAXSEG, &mss, &len);
+#endif
+    if (50 < mss && mss <= NETWORK_MTU) {
+        _tcp_mss = (size_t) mss;
+    }
+    
+    return _tcp_mss;
+}
