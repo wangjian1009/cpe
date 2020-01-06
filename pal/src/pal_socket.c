@@ -10,7 +10,7 @@
 #include <netinet/tcp.h>
 #endif
 
-#if CPE_OS_MAC
+#if CPE_OS_MAC || CPE_OS_IOS
 #include <netinet/tcp.h>
 #define SOL_TCP IPPROTO_TCP
 #endif
