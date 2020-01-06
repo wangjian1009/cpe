@@ -2026,6 +2026,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"CPE_OS_IOS=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					../../pal/include,
 					../../utils/include,
@@ -2042,6 +2046,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"CPE_OS_IOS=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					../../pal/include,
 					../../utils/include,
