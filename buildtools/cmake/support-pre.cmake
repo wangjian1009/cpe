@@ -18,7 +18,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
 
 endif()
 
-if (CYGWIN)
+if (MINGW)
   set(OS_NAME mingw)
   add_definitions(-DCPE_OS_MINGW=1)
 elseif (WIN32)
