@@ -94,7 +94,7 @@ int cpe_sock_set_no_delay(int fd, int is_no_delay) {
 #if _MSC_VER || __MINGW32__
     BOOL flag;
 
-    flag = is_reuseaddr ? TRUE : FALSE;
+    flag = is_no_delay ? TRUE : FALSE;
     return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
 #else
 	int opt = is_no_delay ? 1 : 0;
@@ -155,7 +155,7 @@ int cpe_sock_get_tcp_mss(int fd) {
     socklen_t len = sizeof(mss);
     
 #if defined(WIN32) || defined(_WIN32)
-    int rv = getsockopt(fd, IPPROTO_TCP, TCP_MAXSEG, (char *)&mss, &len);
+    int rv = getsockopt(fd, IPPROTO_TCP, SO_MAX_SEG_SIZE, (char *)&mss, &len);
 #else
     int rv = getsockopt(fd, IPPROTO_TCP, TCP_MAXSEG, &mss, &len);
 #endif
