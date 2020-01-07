@@ -155,7 +155,7 @@ int cpe_sock_get_tcp_mss(int fd) {
     socklen_t len = sizeof(mss);
     
 #if defined(WIN32) || defined(_WIN32)
-    int rv = getsockopt(fd, IPPROTO_TCP, SO_MAX_SEG_SIZE, (char *)&mss, &len);
+    int rv = getsockopt(fd, IPPROTO_TCP, SO_MAX_MSG_SIZE, (char *)&mss, &len);
 #else
     int rv = getsockopt(fd, IPPROTO_TCP, TCP_MAXSEG, &mss, &len);
 #endif
