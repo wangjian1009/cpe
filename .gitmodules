@@ -3,4 +3,10 @@
 	url = https://github.com/libcheck/check.git
 [submodule "depends/zlog"]
 	path = depends/zlog
-	url = git@github.com:HardySimpson/zlog.git
+	url = git@github.com:wangjian1009/zlog.git
+[submodule "depends/syslog-win32"]
+	path = depends/syslog-win32
+	url = git@github.com:asankah/syslog-win32.git
+[submodule "depends/unixem"]
+	path = depends/unixem
+	url = git@github.com:wangjian1009/unixem.git
