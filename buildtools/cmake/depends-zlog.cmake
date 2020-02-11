@@ -10,6 +10,7 @@ if (OS_NAME STREQUAL "mingw")
     ${CMAKE_CURRENT_LIST_DIR}/../../depends/unixem/include
     )
   set(zlog_definitions ${zlog_definitions}
+    _POSIX_THREAD_SAFE_FUNCTIONS
     O_SYNC=0)
 endif()
 
