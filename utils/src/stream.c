@@ -210,3 +210,49 @@ struct write_stream g_write_stream_noop = {
 };
 
 write_stream_t write_stream_noop = &g_write_stream_noop;
+
+void stream_dump_data(write_stream_t ws, const void * i_ptr, size_t size, char nohex) {
+    unsigned char const * ptr = (unsigned char const *)i_ptr;
+    size_t i;
+    size_t c;
+
+    unsigned int width = 0x10;
+ 
+    if(nohex) {
+        /* without the hex output, we can fit more on screen */ 
+        width = 0x40;
+    }
+    
+    for(i = 0; i < size; i += width) {
+        if (i != 0) stream_printf(ws, "\n");
+
+        stream_printf(ws, "%4.4lx: ", (unsigned long)i);
+ 
+        if(!nohex) {
+            /* hex not disabled, show it */ 
+            for(c = 0; c < width; c++) {
+                if(i + c < size) {
+                    stream_printf(ws, "%02x ", ptr[i + c]);
+                }
+                else {
+                    stream_printf(ws, "   ");
+                }
+            }
+        }
+ 
+        for (c = 0; (c < width) && (i + c < size); c++) {
+            /* check for 0D0A; if found, skip past and start a new line of output */ 
+            if (nohex && (i + c + 1 < size) && ptr[i + c] == 0x0D && ptr[i + c + 1] == 0x0A) {
+                i += (c + 2 - width);
+                break;
+            }
+            stream_printf(ws, "%c", (ptr[i + c] >= 0x20) && (ptr[i + c]<0x80)?ptr[i + c]:'.');
+            /* check again for 0D0A, to avoid an extra \n if it's at width */ 
+            if (nohex && (i + c + 2 < size) && ptr[i + c + 1] == 0x0D && ptr[i + c + 2] == 0x0A) {
+                i += (c + 3 - width);
+                break;
+            }
+        }
+    }
+}
+ 

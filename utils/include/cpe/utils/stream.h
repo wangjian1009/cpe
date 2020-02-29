@@ -37,6 +37,8 @@ int stream_putc_count(struct write_stream * stream, char c, size_t n);
 #define CPE_WRITE_STREAM_INITIALIZER(_write, _flush) { (_write), (_flush) }
 #define CPE_READ_STREAM_INITIALIZER(_read) { (_read) }
 
+void stream_dump_data(write_stream_t ws, const void * buf, size_t size, char nohex);
+    
 extern write_stream_t write_stream_noop;
 
 #ifdef __cplusplus
