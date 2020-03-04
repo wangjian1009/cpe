@@ -23,7 +23,7 @@ OS_NAME:=cygwin
 endif
 endif
 
-ifeq ($(filter MSYS_%,$(ORIGN_OS_NAME)),$(ORIGN_OS_NAME))
+ifeq ($(filter MINGW%,$(ORIGN_OS_NAME)),$(ORIGN_OS_NAME))
 ifeq ($(shell uname -m),x86_64)
 OS_NAME:=mingw64
 else
