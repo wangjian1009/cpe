@@ -95,7 +95,7 @@ int cpe_sock_set_no_delay(int fd, int is_no_delay) {
     BOOL flag;
 
     flag = is_no_delay ? TRUE : FALSE;
-    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
+    return setsockopt(_get_osfhandle(fd),  SOL_SOCKET, TCP_NODELAY, (const char *)&flag, sizeof(flag));
 #else
 	int opt = is_no_delay ? 1 : 0;
 	return setsockopt(fd , SOL_TCP , TCP_NODELAY , &opt , sizeof(opt));
