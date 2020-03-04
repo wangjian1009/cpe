@@ -8,7 +8,7 @@ else
 OS_NAME:=linux32
 OS_ARCH:=386
 endif
-OS_RELEASE_NAME:=$(shell lsb_release -i -s)
+OS_RELEASE_NAME:=$(shell lsb_release -i -s | tr '[:upper:]' '[:lower:]')
 endif
 
 ifeq ($(ORIGN_OS_NAME),Darwin)
