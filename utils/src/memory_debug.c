@@ -34,7 +34,7 @@ static uint32_t debug_mem_alloc_info_hash(const struct debug_mem_alloc_info * co
     uint64_t value = (uint64_t)context->m_addr;
     return (uint32_t)(value & 0xFFFFFFFF);
 #else
-    return (uint32_t)context->m_addr;
+    return (uint32_t)(ptr_int_t)context->m_addr;
 #endif
 }
 
