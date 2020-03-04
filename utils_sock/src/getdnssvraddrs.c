@@ -75,7 +75,7 @@ int getdnssvraddrs(struct sockaddr_storage * dnssevraddrs, uint8_t * addr_count,
 #elif defined _WIN32
 #include <stdio.h>
 #include <windows.h>
-#include <Iphlpapi.h>
+#include <iphlpapi.h>
 
 #pragma comment(lib, "Iphlpapi.lib")
 
