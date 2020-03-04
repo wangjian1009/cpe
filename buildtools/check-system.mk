@@ -31,6 +31,14 @@ OS_NAME:=mingw
 endif
 endif
 
+ifeq ($(filter MSYS%,$(ORIGN_OS_NAME)),$(ORIGN_OS_NAME))
+ifeq ($(shell uname -m),x86_64)
+OS_NAME:=mingw64
+else
+OS_NAME:=mingw
+endif
+endif
+
 ifeq ($(OS_NAME),)
 $(error unknown orign os name $(ORIGN_OS_NAME))
 endif
