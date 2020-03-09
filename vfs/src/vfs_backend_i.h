@@ -24,6 +24,7 @@ struct vfs_backend {
     vfs_file_seek_fun_t m_file_seek;
     vfs_file_tell_fun_t m_file_tell;
     vfs_file_eof_fun_t m_file_eof;
+    vfs_file_error_fun_t m_file_error;
     vfs_file_size_fun_t m_file_size;
     vfs_file_size_by_path_fun_t m_file_size_by_path;
     vfs_file_inline_data_fun_t m_file_inline_data;

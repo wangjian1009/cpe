@@ -127,6 +127,12 @@ int vfs_file_seek(vfs_file_t f, ssize_t off, vfs_file_seek_op_t op) {
         : -1;
 }
 
+int vfs_file_error(vfs_file_t f) {
+    return f->m_backend->m_file_error
+        ? f->m_backend->m_file_error(f->m_backend->m_ctx, f)
+        : -1;
+}
+
 ssize_t vfs_file_tell(vfs_file_t f) {
     return f->m_backend->m_file_tell
         ? f->m_backend->m_file_tell(f->m_backend->m_ctx, f)

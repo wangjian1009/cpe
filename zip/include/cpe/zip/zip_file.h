@@ -3,13 +3,14 @@
 #include "cpe/utils/file.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/memory.h"
+#include "cpe/vfs/vfs_types.h"
 #include "zip_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-cpe_unzip_context_t cpe_unzip_context_create(const char * path, mem_allocrator_t alloc, error_monitor_t em);
+cpe_unzip_context_t cpe_unzip_context_create(vfs_mgr_t vfs, const char * path, mem_allocrator_t alloc, error_monitor_t em);
 void cpe_unzip_context_free(cpe_unzip_context_t unzc);
 
 typedef struct cpe_unzip_file_visitor {

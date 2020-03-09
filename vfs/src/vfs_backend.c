@@ -12,6 +12,7 @@ vfs_backend_create(
     uint32_t file_capacity, vfs_file_open_fun_t file_open, vfs_file_close_fun_t file_close,
     vfs_file_read_fun_t file_read, vfs_file_write_fun_t file_write, vfs_file_flush_fun_t file_flush,
     vfs_file_seek_fun_t file_seek, vfs_file_tell_fun_t file_tell, vfs_file_eof_fun_t file_eof_p,
+    vfs_file_error_fun_t file_error,
     vfs_file_size_fun_t file_size,
     vfs_file_size_by_path_fun_t file_size_by_path,
     vfs_file_inline_data_fun_t file_inline_data,
@@ -54,6 +55,7 @@ vfs_backend_create(
     backend->m_file_seek = file_seek;
     backend->m_file_tell = file_tell;
     backend->m_file_eof = file_eof_p;
+    backend->m_file_error = file_error;
     backend->m_file_size = file_size;
     backend->m_file_size_by_path = file_size_by_path;
     backend->m_file_inline_data = file_inline_data;

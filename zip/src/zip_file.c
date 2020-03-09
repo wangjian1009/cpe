@@ -12,7 +12,7 @@ static int cpe_unzip_file_open(cpe_unzip_file_t f, error_monitor_t em);
 static void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d);
 
 cpe_unzip_context_t
-cpe_unzip_context_create(const char * path, mem_allocrator_t alloc, error_monitor_t em) {
+cpe_unzip_context_create(vfs_mgr_t vfs, const char * path, mem_allocrator_t alloc, error_monitor_t em) {
     cpe_unzip_context_t r;
     int rv;
 
@@ -22,7 +22,7 @@ cpe_unzip_context_create(const char * path, mem_allocrator_t alloc, error_monito
         return NULL;
     }
 
-    r->m_zip_file = cpe_unzOpen64(path);
+    r->m_zip_file = cpe_unzOpen64(vfs, path);
     if (r == NULL) {
         CPE_ERROR(em, "cpe_unzip_context_create: open zip file %s fail!", path);
         mem_free(alloc, r);

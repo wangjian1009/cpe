@@ -14,6 +14,7 @@ typedef void (*vfs_file_close_fun_t)(void * ctx, vfs_file_t file);
 typedef ssize_t (*vfs_file_read_fun_t)(void * ctx, vfs_file_t file, void * buf, size_t size);
 typedef ssize_t (*vfs_file_write_fun_t)(void * ctx, vfs_file_t file, const void * buf, size_t size);
 typedef int (*vfs_file_seek_fun_t)(void * ctx, vfs_file_t file, ssize_t off, vfs_file_seek_op_t op);
+typedef int (*vfs_file_error_fun_t)(void * ctx, vfs_file_t file);
 typedef ssize_t (*vfs_file_tell_fun_t)(void * ctx, vfs_file_t file);
 typedef uint8_t (*vfs_file_eof_fun_t)(void * ctx, vfs_file_t file);
 typedef int (*vfs_file_flush_fun_t)(void * ctx, vfs_file_t file);
@@ -39,6 +40,7 @@ vfs_backend_t vfs_backend_create(
     uint32_t file_capacity, vfs_file_open_fun_t file_open, vfs_file_close_fun_t file_close,
     vfs_file_read_fun_t file_read, vfs_file_write_fun_t file_write, vfs_file_flush_fun_t file_flush,
     vfs_file_seek_fun_t file_seek, vfs_file_tell_fun_t file_tell, vfs_file_eof_fun_t file_eof_p,
+    vfs_file_error_fun_t file_error,
     vfs_file_size_fun_t file_size,
     vfs_file_size_by_path_fun_t file_size_by_path,
     vfs_file_inline_data_fun_t file_inline_data,

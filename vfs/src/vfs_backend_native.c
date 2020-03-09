@@ -128,6 +128,11 @@ static int vfs_native_file_flush(void * ctx, vfs_file_t file) {
     return (int)fflush(fp);
 }
 
+static int vfs_native_file_error(void * ctx, vfs_file_t file) {
+    FILE * fp = *(FILE **)vfs_file_data(file);
+    return ferror(fp);
+}
+
 static ssize_t vfs_native_file_size(void * ctx, vfs_file_t file) {
     vfs_mgr_t mgr = ctx;
 
@@ -270,6 +275,7 @@ int vfs_backend_native_create(vfs_mgr_t mgr) {
             sizeof(FILE*), vfs_native_file_open, vfs_native_file_close,
             vfs_native_file_read, vfs_native_file_write, vfs_native_file_flush,
             vfs_native_file_seek, vfs_native_file_tell, vfs_native_file_eof,
+            vfs_native_file_error,
             vfs_native_file_size,
             vfs_native_file_size_by_path,
             NULL,

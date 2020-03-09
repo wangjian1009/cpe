@@ -169,6 +169,10 @@ static uint8_t vfs_builder_file_eof(void * ctx, vfs_file_t file) {
     return fp->m_pos >= (ssize_t)mem_buffer_size(&fp->m_entry->m_file.m_data) ? 1 : 0;
 }
 
+static int vfs_builder_file_error(void * ctx, vfs_file_t file) {
+    return 0;
+}
+
 static int vfs_builder_file_flush(void * ctx, vfs_file_t file) {
     return 0;
 }
@@ -395,6 +399,7 @@ vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
             sizeof(struct vfs_builder_file), vfs_builder_file_open, vfs_builder_file_close,
             vfs_builder_file_read, vfs_builder_file_write, vfs_builder_file_flush,
             vfs_builder_file_seek, vfs_builder_file_tell, vfs_builder_file_eof,
+            vfs_builder_file_error,
             vfs_builder_file_size,
             vfs_builder_file_size_by_path,
             NULL,

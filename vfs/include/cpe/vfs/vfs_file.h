@@ -18,6 +18,7 @@ ssize_t vfs_file_read(vfs_file_t f, void * buf, size_t size);
 ssize_t vfs_file_write(vfs_file_t f, void const * buf, size_t size);
 int vfs_file_flush(vfs_file_t f);
 int vfs_file_seek(vfs_file_t f, ssize_t off, vfs_file_seek_op_t op);
+int vfs_file_error(vfs_file_t f);
 ssize_t vfs_file_tell(vfs_file_t f);
 uint8_t vfs_file_eof(vfs_file_t f);
 

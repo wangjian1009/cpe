@@ -51,9 +51,7 @@ extern "C" {
 #include "zlib.h"
 #endif
 
-#ifndef  _ZLIBIOAPI_H
-#include "ioapi.h"
-#endif
+#include "cpe/vfs/vfs_types.h"
 
 #ifdef HAVE_BZIP2
 #include "bzlib.h"
@@ -95,7 +93,7 @@ typedef struct tm_unz_s
    These data comes from the end of central dir */
 typedef struct unz_global_info64_s
 {
-    ZPOS64_T number_entry;         /* total number of entries in
+    ssize_t number_entry;         /* total number of entries in
                                      the central dir on this disk */
     uLong size_comment;         /* size of the global comment of the zipfile */
 } unz_global_info64;
@@ -116,8 +114,8 @@ typedef struct unz_file_info64_s
     uLong compression_method;   /* compression method              2 bytes */
     uLong dosDate;              /* last mod file date in Dos fmt   4 bytes */
     uLong crc;                  /* crc-32                          4 bytes */
-    ZPOS64_T compressed_size;   /* compressed size                 8 bytes */
-    ZPOS64_T uncompressed_size; /* uncompressed size               8 bytes */
+    ssize_t compressed_size;   /* compressed size                 8 bytes */
+    ssize_t uncompressed_size; /* uncompressed size               8 bytes */
     uLong size_filename;        /* filename length                 2 bytes */
     uLong size_file_extra;      /* extra field length              2 bytes */
     uLong size_file_comment;    /* file comment length             2 bytes */
@@ -163,8 +161,8 @@ extern int ZEXPORT cpe_unzStringFileNameCompare OF ((const char* fileName1,
 */
 
 
-extern unzFile ZEXPORT cpe_unzOpen OF((const char *path));
-extern unzFile ZEXPORT cpe_unzOpen64 OF((const void *path));
+extern unzFile ZEXPORT cpe_unzOpen(vfs_mgr_t vfs, const char *path);
+extern unzFile ZEXPORT cpe_unzOpen64(vfs_mgr_t vfs, const char * path);
 /*
   Open a Zip file. path contain the full pathname (by example,
      on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
@@ -178,21 +176,6 @@ extern unzFile ZEXPORT cpe_unzOpen64 OF((const void *path));
      Under Windows, if UNICODE is defined, using fill_fopen64_filefunc, the path
        is a pointer to a wide unicode string (LPCTSTR is LPCWSTR), so const char*
        does not describe the reality
-*/
-
-
-extern unzFile ZEXPORT cpe_unzOpen2 OF((const char *path,
-                                    zlib_filefunc_def* pzlib_filefunc_def));
-/*
-   Open a Zip file, like unzOpen, but provide a set of file low level API
-      for read/write the zip file (see ioapi.h)
-*/
-
-extern unzFile ZEXPORT cpe_unzOpen2_64 OF((const void *path,
-                                    zlib_filefunc64_def* pzlib_filefunc_def));
-/*
-   Open a Zip file, like unz64Open, but provide a set of file low level API
-      for read/write the zip file (see ioapi.h)
 */
 
 extern int ZEXPORT cpe_unzClose OF((unzFile file));
@@ -271,8 +254,8 @@ extern int ZEXPORT cpe_unzGoToFilePos(
 
 typedef struct unz64_file_pos_s
 {
-    ZPOS64_T pos_in_zip_directory;   /* offset in zip file directory */
-    ZPOS64_T num_of_file;            /* # of file */
+    ssize_t pos_in_zip_directory;   /* offset in zip file directory */
+    ssize_t num_of_file;            /* # of file */
 } unz64_file_pos;
 
 extern int ZEXPORT cpe_unzGetFilePos64(
@@ -318,7 +301,7 @@ extern int ZEXPORT cpe_unzGetCurrentFileInfo OF((unzFile file,
 
 /** Addition for GDAL : START */
 
-extern ZPOS64_T ZEXPORT cpe_unzGetCurrentFileZStreamPos64 OF((unzFile file));
+extern ssize_t ZEXPORT cpe_unzGetCurrentFileZStreamPos64 OF((unzFile file));
 
 /** Addition for GDAL : END */
 
@@ -392,7 +375,7 @@ extern int ZEXPORT cpe_unzReadCurrentFile OF((unzFile file,
 
 extern z_off_t ZEXPORT cpe_unztell OF((unzFile file));
 
-extern ZPOS64_T ZEXPORT cpe_unztell64 OF((unzFile file));
+extern ssize_t ZEXPORT cpe_unztell64 OF((unzFile file));
 /*
   Give the current position in uncompressed data
 */
@@ -421,11 +404,11 @@ extern int ZEXPORT cpe_unzGetLocalExtrafield OF((unzFile file,
 /***************************************************************************/
 
 /* Get the current file offset */
-extern ZPOS64_T ZEXPORT cpe_unzGetOffset64 (unzFile file);
+extern ssize_t ZEXPORT cpe_unzGetOffset64 (unzFile file);
 extern uLong ZEXPORT cpe_unzGetOffset (unzFile file);
 
 /* Set the current file offset */
-extern int ZEXPORT cpe_unzSetOffset64 (unzFile file, ZPOS64_T pos);
+extern int ZEXPORT cpe_unzSetOffset64 (unzFile file, ssize_t pos);
 extern int ZEXPORT cpe_unzSetOffset (unzFile file, uLong pos);
 
 
