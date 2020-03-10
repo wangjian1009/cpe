@@ -279,7 +279,7 @@ static uint8_t vfs_builder_dir_exist(void * ctx, void * env, const char * path) 
     return entry && entry->m_is_dir ? 1 : 0;
 }
 
-static int vfs_builder_dir_rm(void * ctx, void * env, const char * path) {
+static int vfs_builder_dir_rm(void * ctx, void * env, const char * path, uint8_t is_recursive) {
     vfs_builder_backend_t backend = ctx;
     vfs_builder_t builder = env;
     vfs_builder_entry_t entry;
