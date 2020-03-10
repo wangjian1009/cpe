@@ -255,14 +255,15 @@ static int vfs_native_dir_rm(void * ctx, void * env, const char * path) {
     return file_rm(vfs_backend_make_path(mgr, env, path), mgr->m_em);
 }
 
-static int vfs_native_dir_mk(void * ctx, void * env, const char * path) {
+static int vfs_native_dir_mk(void * ctx, void * env, const char * path, uint8_t is_recursive) {
     vfs_mgr_t mgr = ctx;
-    return dir_mk(vfs_backend_make_path(mgr, env, path), DIR_DEFAULT_MODE, mgr->m_em);
-}
 
-static int vfs_native_dir_mk_recursion(void * ctx, void * env, const char * path) {
-    vfs_mgr_t mgr = ctx;
-    return dir_mk_recursion(vfs_backend_make_path(mgr, env, path), DIR_DEFAULT_MODE, mgr->m_em, mgr->m_alloc);
+    if (is_recursive) {
+        return dir_mk_recursion(vfs_backend_make_path(mgr, env, path), DIR_DEFAULT_MODE, mgr->m_em, mgr->m_alloc);
+    }
+    else {
+        return dir_mk(vfs_backend_make_path(mgr, env, path), DIR_DEFAULT_MODE, mgr->m_em);
+    }
 }
 
 int vfs_backend_native_create(vfs_mgr_t mgr) {
@@ -286,8 +287,7 @@ int vfs_backend_native_create(vfs_mgr_t mgr) {
             sizeof(struct vfs_backend_native_dir_data), vfs_native_dir_open, vfs_native_dir_close, vfs_native_dir_read,
             vfs_native_dir_exist,
             vfs_native_dir_rm,
-            vfs_native_dir_mk,
-            vfs_native_dir_mk_recursion)
+            vfs_native_dir_mk)
         == NULL
         ? -1
         : 0;

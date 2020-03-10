@@ -38,7 +38,6 @@ struct vfs_backend {
     vfs_dir_exist_fun_t m_dir_exist;
     vfs_dir_rm_fun_t m_dir_rm;
     vfs_dir_mk_fun_t m_dir_mk;
-    vfs_dir_mk_fun_t m_dir_mk_recursion;
 };
 
 int vfs_backend_native_create(vfs_mgr_t mgr);

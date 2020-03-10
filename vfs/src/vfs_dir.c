@@ -89,7 +89,7 @@ int vfs_dir_mk(vfs_mgr_t mgr, const char * path) {
     backend = mount_point->m_backend;
     assert(backend);
 
-    return backend->m_dir_mk ? backend->m_dir_mk(backend->m_ctx, mount_point->m_backend_env, path) : -1;
+    return backend->m_dir_mk ? backend->m_dir_mk(backend->m_ctx, mount_point->m_backend_env, path, 0) : -1;
 }
 
 int vfs_dir_mk_recursion(vfs_mgr_t mgr, const char * path) {
@@ -102,5 +102,5 @@ int vfs_dir_mk_recursion(vfs_mgr_t mgr, const char * path) {
     backend = mount_point->m_backend;
     assert(backend);
 
-    return backend->m_dir_mk_recursion ? backend->m_dir_mk_recursion(backend->m_ctx, mount_point->m_backend_env, path) : -1;
+    return backend->m_dir_mk ? backend->m_dir_mk(backend->m_ctx, mount_point->m_backend_env, path, 1) : -1;
 }

@@ -24,8 +24,7 @@ vfs_backend_create(
     vfs_dir_read_fun_t dir_read,
     vfs_dir_exist_fun_t dir_exist,
     vfs_dir_rm_fun_t dir_rm,
-    vfs_dir_mk_fun_t dir_mk,
-    vfs_dir_mk_fun_t dir_mk_recursion)
+    vfs_dir_mk_fun_t dir_mk)
 {
     vfs_backend_t backend;
 
@@ -69,7 +68,6 @@ vfs_backend_create(
     backend->m_dir_exist = dir_exist;
     backend->m_dir_rm = dir_rm;
     backend->m_dir_mk = dir_mk;
-    backend->m_dir_mk_recursion = dir_mk_recursion;
 
     TAILQ_INSERT_TAIL(&mgr->m_backends, backend, m_next);
     

@@ -300,42 +300,7 @@ static int vfs_builder_dir_rm(void * ctx, void * env, const char * path) {
     return 0;
 }
 
-static int vfs_builder_dir_mk(void * ctx, void * env, const char * path) {
-    vfs_builder_t builder = env;
-    vfs_builder_entry_t parent;
-    const char * sep;
-    const char * name;
-
-    sep = strrchr(path, '/');
-    if (sep) {
-        parent = vfs_builder_entry_find_child_by_path(builder->m_root, path, sep);
-        if (parent == NULL) {
-            CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk: %s owner dir not exist", path);
-            return -1;
-        }
-
-        if (!parent->m_is_dir) {
-            CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk: %s owner is not dir", path);
-            return -1;
-        }
-                
-        name = sep + 1;
-    }
-    else {
-        parent = builder->m_root;
-        name = path;
-    }
-
-    assert(parent);
-    if (vfs_builder_entry_create(builder, parent, name, name + strlen(name), 1) == NULL) {
-        CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk: create entry fail");
-        return -1;
-    }
-
-    return 0;
-}
-
-static int vfs_builder_dir_mk_recursion(void * ctx, void * env, const char * path) {
+static int vfs_builder_dir_mk(void * ctx, void * env, const char * path, uint8_t is_recursive) {
     vfs_builder_t builder = env;
     vfs_builder_entry_t parent;
     vfs_builder_entry_t cur;
@@ -348,9 +313,15 @@ static int vfs_builder_dir_mk_recursion(void * ctx, void * env, const char * pat
         
         cur = vfs_builder_entry_find_child_by_name(parent, path, sep);
         if (cur == NULL) {
+            if (is_recursive) {
             cur = vfs_builder_entry_create(builder, parent, path, sep, 1);
             if (cur == NULL) {
-                CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk_recursion: create entry fail");
+                CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk: create entry fail");
+                return -1;
+            }
+            }
+            else {
+                CPE_ERROR(builder->m_mgr->m_em, "vfs_builder_dir_mk: %s owner dir not exist", path);
                 return -1;
             }
         }
@@ -410,8 +381,7 @@ vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
             sizeof(struct vfs_builder_dir), vfs_builder_dir_open, vfs_builder_dir_close, vfs_builder_dir_read,
             vfs_builder_dir_exist,
             vfs_builder_dir_rm,
-            vfs_builder_dir_mk,
-            vfs_builder_dir_mk_recursion);
+            vfs_builder_dir_mk);
     if (backend == NULL) {
         mem_free(mgr->m_alloc, builder_backend);
         return NULL;
