@@ -176,6 +176,7 @@ ssize_t cpe_unzip_file_load_to_buffer(mem_buffer_t buffer, cpe_unzip_file_t zf, 
     len = zf->m_file_info.uncompressed_size;
     start = mem_buffer_size(buffer);
     mem_buffer_set_size(buffer, start + len);
+
     buf = mem_buffer_make_continuous(buffer, 0);
 
     if (buf == NULL) {
@@ -212,6 +213,36 @@ ssize_t cpe_unzip_file_load_to_buf(char * buf, size_t size, cpe_unzip_file_t zf,
         cpe_unzCloseCurrentFile(zf->m_context->m_zip_file);
         return -1;
     }
+
+    cpe_unzCloseCurrentFile(zf->m_context->m_zip_file);
+    return read_size;
+}
+
+ssize_t cpe_unzip_file_load_to_stream(write_stream_t ws, cpe_unzip_file_t zf, error_monitor_t em) {
+    if (cpe_unzip_file_open(zf, em) != 0) {
+        CPE_ERROR(em, "cpe_unzip_file_load_to_stream: open zip file fail!");
+        return -1;
+    }
+
+    ssize_t read_size = 0;
+    
+    char read_block[1024];
+    ssize_t block_read_size;
+    do {
+        block_read_size = cpe_unzReadCurrentFile(zf->m_context->m_zip_file, read_block, sizeof(read_block));
+        if (block_read_size < 0) {
+            CPE_ERROR(em, "cpe_unzip_file_load_to_stream: read fail!");
+            cpe_unzCloseCurrentFile(zf->m_context->m_zip_file);
+            return -1;
+        }
+
+        if (stream_write(ws, read_block, block_read_size) != block_read_size) {
+            CPE_ERROR(em, "cpe_unzip_file_load_to_stream: write to stream fail, size=%d!", (int)block_read_size);
+            cpe_unzCloseCurrentFile(zf->m_context->m_zip_file);
+            return -1;
+        }
+        read_size += block_read_size;
+    } while (block_read_size > 0);
 
     cpe_unzCloseCurrentFile(zf->m_context->m_zip_file);
     return read_size;

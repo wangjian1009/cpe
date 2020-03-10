@@ -38,7 +38,7 @@ const char * cpe_unzip_dir_path(mem_buffer_t buffer, cpe_unzip_dir_t d);
 
 ssize_t cpe_unzip_file_load_to_buffer(mem_buffer_t buffer, cpe_unzip_file_t zf, error_monitor_t em);
 ssize_t cpe_unzip_file_load_to_buf(char * buf, size_t size, cpe_unzip_file_t zf, error_monitor_t em);
-
+ssize_t cpe_unzip_file_load_to_stream(write_stream_t ws, cpe_unzip_file_t zf, error_monitor_t em);
 
 #ifdef __cplusplus
 }
