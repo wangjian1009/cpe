@@ -739,7 +739,7 @@ extern int ZEXPORT cpe_unzGetGlobalInfo(unzFile file, unz_global_info * pglobal_
 /*
    Translate date/time from Dos format to tm_unz (readable more easilty)
 */
-void cpe_unz64local_DosDateToTmuDate(ssize_t ulDosDate, tm_unz * ptm) {
+void cpe_unz64local_DosDateToTmuDate(ssize_t ulDosDate, cpe_zip_tm * ptm) {
     ssize_t uDate;
     uDate = (ssize_t)(ulDosDate >> 16);
     ptm->tm_mday = (uInt)(uDate & 0x1f);
