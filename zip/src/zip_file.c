@@ -22,8 +22,8 @@ cpe_unzip_context_create(vfs_mgr_t vfs, const char * path, mem_allocrator_t allo
         return NULL;
     }
 
-    r->m_zip_file = cpe_unzOpen64(vfs, path);
-    if (r == NULL) {
+    r->m_zip_file = cpe_unzOpen64(em, vfs, path);
+    if (r->m_zip_file == NULL) {
         CPE_ERROR(em, "cpe_unzip_context_create: open zip file %s fail!", path);
         mem_free(alloc, r);
         return NULL;
@@ -95,7 +95,7 @@ const char * cpe_unzip_file_name(cpe_unzip_file_t zf) {
 }
 
 const char * cpe_unzip_file_path(mem_buffer_t buffer, cpe_unzip_file_t zf) {
-    if (zf->m_parent_dir) {
+    if (zf->m_parent_dir && zf->m_parent_dir != zf->m_context->m_root) {
         cpe_unzip_dir_build_path(buffer, zf->m_parent_dir);
         mem_buffer_strcat(buffer, "/");
     }
@@ -111,6 +111,7 @@ cpe_unzip_dir_t cpe_unzip_dir_find(cpe_unzip_context_t context, const char * pat
     cpe_unzip_dir_t cur_dir;
     cpe_unzip_dir_t f;
 
+    assert(path);
     assert(context);
     assert(context->m_root);
 
@@ -122,7 +123,8 @@ cpe_unzip_dir_t cpe_unzip_dir_find(cpe_unzip_context_t context, const char * pat
 
         TAILQ_FOREACH(c, &cur_dir->m_child_dirs, m_next_dir) {
             size_t len = end - start;
-            if (memcmp(c->m_name, start, len) == 0 && c->m_name[len] == 0) {
+            size_t name_len = strlen(c->m_name);
+            if (name_len == len && memcmp(c->m_name, start, len) == 0) {
                 break;
             }
         }
@@ -131,6 +133,11 @@ cpe_unzip_dir_t cpe_unzip_dir_find(cpe_unzip_context_t context, const char * pat
         
         cur_dir = c;
         start = end + 1;
+    }
+
+    assert(start);
+    if (start[0] == 0) {
+        return cur_dir;
     }
 
     TAILQ_FOREACH(f, &cur_dir->m_child_dirs, m_next_dir) {
@@ -145,7 +152,7 @@ const char * cpe_unzip_dir_name(cpe_unzip_dir_t d) {
 }
 
 static void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d) {
-    if (d->m_parent_dir != d->m_context->m_root) {
+    if (d->m_parent_dir && d->m_parent_dir != d->m_context->m_root) {
         cpe_unzip_dir_build_path(buffer, d->m_parent_dir);
         mem_buffer_strcat(buffer, "/");
     }

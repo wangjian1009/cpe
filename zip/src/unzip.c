@@ -75,6 +75,7 @@
 #include "unzip.h"
 #include "cpe/pal/pal_errno.h"
 #include "cpe/pal/pal_limits.h"
+#include "cpe/utils/string_utils.h"
 #include "cpe/vfs/vfs_file.h"
 
 /* compile with -Dlocal if your debugger can't find static symbols */
@@ -115,8 +116,7 @@ typedef struct unz_file_info64_internal_s {
 
 /* file_in_zip_read_info_s contain internal information about a file in zipfile,
     when reading and decompress it */
-typedef struct
-{
+typedef struct {
     char * read_buffer; /* internal buffer for compressed data */
     z_stream stream; /* zLib stream structure for inflate */
 
@@ -144,9 +144,9 @@ typedef struct
 
 /* unz64_s contain internal information about the zipfile
 */
-typedef struct
-{
+typedef struct {
     int is64bitOpenFunction;
+    error_monitor_t em;
     vfs_file_t filestream; /* io structore of the zipfile */
     unz_global_info64 gi; /* public global information */
     ssize_t byte_before_the_zipfile; /* byte before the zipfile, (>0 for sfx)*/
@@ -328,10 +328,8 @@ int strcmpcasenosensitive_internal(const char * fileName1, const char * fileName
         (like 1 on Unix, 2 on Windows)
 
 */
-extern int ZEXPORT cpe_unzStringFileNameCompare(const char * fileName1,
-    const char * fileName2,
-    int iCaseSensitivity)
-
+extern int ZEXPORT cpe_unzStringFileNameCompare(
+    const char * fileName1, const char * fileName2, int iCaseSensitivity)
 {
     if (iCaseSensitivity == 0)
         iCaseSensitivity = CASESENSITIVITYDEFAULTVALUE;
@@ -503,10 +501,7 @@ ssize_t cpe_unz64local_SearchCentralDir64(vfs_file_t filestream) {
      Else, the return value is a unzFile Handle, usable with other function
        of this unzip package.
 */
-unzFile cpe_unzOpenInternal(vfs_mgr_t vfs, const void * path, int is64bitOpenFunction) {
-    unz64_s us;
-    unz64_s * s;
-    ssize_t central_pos;
+unzFile cpe_unzOpenInternal(error_monitor_t em, vfs_mgr_t vfs, const void * path, int is64bitOpenFunction) {
     uLong uL;
 
     uLong number_disk; /* number of the current dist, used for
@@ -519,127 +514,160 @@ unzFile cpe_unzOpenInternal(vfs_mgr_t vfs, const void * path, int is64bitOpenFun
 
     int err = UNZ_OK;
 
-    if (unz_copyright[0] != ' ')
+    if (unz_copyright[0] != ' ') {
+        CPE_ERROR(em, "unzip: open file %s fail, validate copyright fail", path);
         return NULL;
+    }
 
+    unz64_s us;
     us.is64bitOpenFunction = is64bitOpenFunction;
-
+    us.em = em;
     us.filestream = vfs_file_open(vfs, path, "r+b");
-    if (us.filestream == NULL)
+    if (us.filestream == NULL) {
+        CPE_ERROR(em, "unzip: open file %s fail, error=%d (%s)", path, errno, strerror(errno));
         return NULL;
+    }
 
-    central_pos = cpe_unz64local_SearchCentralDir64(us.filestream);
+    ssize_t central_pos = cpe_unz64local_SearchCentralDir64(us.filestream);
     if (central_pos) {
         uLong uS;
         ssize_t uL64;
 
         us.isZip64 = 1;
 
-        if (vfs_file_seek(us.filestream,central_pos, vfs_file_seek_set) != 0)
+        if (vfs_file_seek(us.filestream, central_pos, vfs_file_seek_set) != 0) {
             err = UNZ_ERRNO;
+        }
 
         /* the signature, already checked */
-        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         /* size of zip64 end of central directory record */
-        if (cpe_unz64local_getLong64(us.filestream, &uL64) != UNZ_OK)
+        if (cpe_unz64local_getLong64(us.filestream, &uL64) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         /* version made by */
-        if (cpe_unz64local_getShort(us.filestream, &uS) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &uS) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* version needed to extract */
-        if (cpe_unz64local_getShort(us.filestream, &uS) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &uS) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         /* number of this disk */
-        if (cpe_unz64local_getLong(us.filestream, &number_disk) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &number_disk) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         /* number of the disk with the start of the central directory */
-        if (cpe_unz64local_getLong(us.filestream, &number_disk_with_CD) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &number_disk_with_CD) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* total number of entries in the central directory on this disk */
-        if (cpe_unz64local_getLong64(us.filestream, &us.gi.number_entry) != UNZ_OK)
+        if (cpe_unz64local_getLong64(us.filestream, &us.gi.number_entry) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* total number of entries in the central directory */
-        if (cpe_unz64local_getLong64(us.filestream, &number_entry_CD) != UNZ_OK)
+        if (cpe_unz64local_getLong64(us.filestream, &number_entry_CD) != UNZ_OK) {
             err = UNZ_ERRNO;
-
-        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0))
+        }
+        
+        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0)) {
             err = UNZ_BADZIPFILE;
+        }
 
         /* size of the central directory */
-        if (cpe_unz64local_getLong64(us.filestream, &us.size_central_dir) != UNZ_OK)
+        if (cpe_unz64local_getLong64(us.filestream, &us.size_central_dir) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* offset of start of central directory with respect to the
           starting disk number */
-        if (cpe_unz64local_getLong64(us.filestream, &us.offset_central_dir) != UNZ_OK)
+        if (cpe_unz64local_getLong64(us.filestream, &us.offset_central_dir) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         us.gi.size_comment = 0;
     } else {
         central_pos = cpe_unz64local_SearchCentralDir(us.filestream);
-        if (central_pos == 0)
+        if (central_pos == 0) {
             err = UNZ_ERRNO;
-
+        }
+        
         us.isZip64 = 0;
 
-        if (vfs_file_seek(us.filestream, central_pos, vfs_file_seek_set) != 0)
+        if (vfs_file_seek(us.filestream, central_pos, vfs_file_seek_set) != 0) {
             err = UNZ_ERRNO;
+        }
 
         /* the signature, already checked */
-        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* number of this disk */
-        if (cpe_unz64local_getShort(us.filestream, &number_disk) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &number_disk) != UNZ_OK) {
             err = UNZ_ERRNO;
-
+        }
+        
         /* number of the disk with the start of the central directory */
-        if (cpe_unz64local_getShort(us.filestream, &number_disk_with_CD) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &number_disk_with_CD) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
 
         /* total number of entries in the central dir on this disk */
-        if (cpe_unz64local_getShort(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
         us.gi.number_entry = uL;
 
         /* total number of entries in the central dir */
-        if (cpe_unz64local_getShort(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
         number_entry_CD = uL;
 
-        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0))
+        if ((number_entry_CD != us.gi.number_entry) || (number_disk_with_CD != 0) || (number_disk != 0)) {
             err = UNZ_BADZIPFILE;
-
+        }
+        
         /* size of the central directory */
-        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
         us.size_central_dir = uL;
 
         /* offset of start of central directory with respect to the
             starting disk number */
-        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK)
+        if (cpe_unz64local_getLong(us.filestream, &uL) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
         us.offset_central_dir = uL;
 
         /* zipfile comment length */
-        if (cpe_unz64local_getShort(us.filestream, &us.gi.size_comment) != UNZ_OK)
+        if (cpe_unz64local_getShort(us.filestream, &us.gi.size_comment) != UNZ_OK) {
             err = UNZ_ERRNO;
+        }
     }
 
     if ((central_pos < us.offset_central_dir + us.size_central_dir) && (err == UNZ_OK))
         err = UNZ_BADZIPFILE;
 
     if (err != UNZ_OK) {
+        if (err == UNZ_ERRNO) {
+            CPE_ERROR(em, "unzip: %s: read data error, err=%d (%s)", path, errno, strerror(errno));
+        }
+        else {
+            CPE_ERROR(em, "unzip: %s: lib error, err=%d", path, err);
+        }
         vfs_file_close(us.filestream);
-        us.filestream = NULL;
         return NULL;
     }
 
@@ -648,7 +676,7 @@ unzFile cpe_unzOpenInternal(vfs_mgr_t vfs, const void * path, int is64bitOpenFun
     us.pfile_in_zip_read = NULL;
     us.encrypted = 0;
 
-    s = (unz64_s *)ALLOC(sizeof(unz64_s));
+    unz64_s * s = (unz64_s *)ALLOC(sizeof(unz64_s));
     if (s != NULL) {
         *s = us;
         cpe_unzGoToFirstFile((unzFile)s);
@@ -656,12 +684,12 @@ unzFile cpe_unzOpenInternal(vfs_mgr_t vfs, const void * path, int is64bitOpenFun
     return (unzFile)s;
 }
 
-extern unzFile ZEXPORT cpe_unzOpen(vfs_mgr_t vfs, const char * path) {
-    return cpe_unzOpenInternal(vfs, path, 0);
+extern unzFile ZEXPORT cpe_unzOpen(error_monitor_t em, vfs_mgr_t vfs, const char * path) {
+    return cpe_unzOpenInternal(em, vfs, path, 0);
 }
 
-extern unzFile ZEXPORT cpe_unzOpen64(vfs_mgr_t vfs, const char * path) {
-    return cpe_unzOpenInternal(vfs, path, 1);
+extern unzFile ZEXPORT cpe_unzOpen64(error_monitor_t em, vfs_mgr_t vfs, const char * path) {
+    return cpe_unzOpenInternal(em, vfs, path, 1);
 }
 
 /*

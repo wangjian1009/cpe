@@ -27,7 +27,10 @@ cpe_unzip_context_search_i(
     TAILQ_FOREACH(child_file, &d->m_child_files, m_next_file) {
         if (nextOp != dir_visit_next_go) break;
 
-        if (mem_buffer_strcat(buffer, "/") != 0 || mem_buffer_strcat(buffer, child_file->m_name) != 0) break;
+        if (d != d->m_context->m_root) {
+            if (mem_buffer_strcat(buffer, "/") != 0) break;
+        }
+        if (mem_buffer_strcat(buffer, child_file->m_name) != 0) break;
 
         if (visitor->on_file) {
             nextOp = visitor->on_file(
@@ -52,7 +55,10 @@ cpe_unzip_context_search_i(
     TAILQ_FOREACH(child_dir, &d->m_child_dirs, m_next_dir) {
         if (nextOp != dir_visit_next_go) break;
 
-        if (mem_buffer_strcat(buffer, "/") != 0 || mem_buffer_strcat(buffer, child_dir->m_name) != 0) break;
+        if (d != d->m_context->m_root) {
+            if (mem_buffer_strcat(buffer, "/") != 0) break;
+        }
+        if (mem_buffer_strcat(buffer, child_dir->m_name) != 0) break;
 
         if (visitor->on_dir_enter) {
             nextOp = visitor->on_dir_enter(

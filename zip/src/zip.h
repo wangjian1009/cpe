@@ -95,8 +95,7 @@ typedef struct tm_zip_s {
     uInt tm_year; /* years - [1980..2044] */
 } tm_zip;
 
-typedef struct
-{
+typedef struct {
     tm_zip tmz_date; /* date in understandable format           */
     uLong dosDate; /* if dos_date == 0, tmu_date is used      */
     /*    uLong       flag;        */ /* general purpose bit flag        2 bytes */
@@ -136,7 +135,7 @@ extern zipFile ZEXPORT cpe_zipOpen2(vfs_mgr_t vfs, const char * pathname, int ap
 
 extern zipFile ZEXPORT cpe_zipOpen2_64(vfs_mgr_t vfs, const void * pathname, int append, zipcharpc * globalcomment);
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -145,9 +144,9 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip OF((zipFile file,
     uInt size_extrafield_global,
     const char * comment,
     int method,
-    int level));
+    int level);
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip64 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip64(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -157,7 +156,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip64 OF((zipFile file,
     const char * comment,
     int method,
     int level,
-    int zip64));
+    int zip64);
 
 /*
   Open a file in the ZIP for writing.
@@ -175,7 +174,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip64 OF((zipFile file,
 
 */
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip2 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip2(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -185,9 +184,9 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip2 OF((zipFile file,
     const char * comment,
     int method,
     int level,
-    int raw));
+    int raw);
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip2_64 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip2_64(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -198,12 +197,12 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip2_64 OF((zipFile file,
     int method,
     int level,
     int raw,
-    int zip64));
+    int zip64);
 /*
   Same than zipOpenNewFileInZip, except if raw=1, we write raw file
  */
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip3 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip3(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -218,9 +217,9 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip3 OF((zipFile file,
     int memLevel,
     int strategy,
     const char * password,
-    uLong crcForCrypting));
+    uLong crcForCrypting);
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip3_64 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip3_64(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -236,7 +235,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip3_64 OF((zipFile file,
     int strategy,
     const char * password,
     uLong crcForCrypting,
-    int zip64));
+    int zip64);
 
 /*
   Same than zipOpenNewFileInZip2, except
@@ -245,7 +244,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip3_64 OF((zipFile file,
     crcForCrypting : crc of file to compress (needed for crypting)
  */
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip4 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip4(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -262,9 +261,9 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip4 OF((zipFile file,
     const char * password,
     uLong crcForCrypting,
     uLong versionMadeBy,
-    uLong flagBase));
+    uLong flagBase);
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip4_64 OF((zipFile file,
+extern int ZEXPORT cpe_zipOpenNewFileInZip4_64(zipFile file,
     const char * filename,
     const zip_fileinfo * zipfi,
     const void * extrafield_local,
@@ -282,32 +281,32 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip4_64 OF((zipFile file,
     uLong crcForCrypting,
     uLong versionMadeBy,
     uLong flagBase,
-    int zip64));
+    int zip64);
 /*
   Same than zipOpenNewFileInZip4, except
     versionMadeBy : value for Version made by field
     flag : value for flag field (compression level info will be added)
  */
 
-extern int ZEXPORT cpe_zipWriteInFileInZip OF((zipFile file,
+extern int ZEXPORT cpe_zipWriteInFileInZip(zipFile file,
     const void * buf,
-    unsigned len));
+    unsigned len);
 /*
   Write data in the zipfile
 */
 
-extern int ZEXPORT cpe_zipCloseFileInZip OF((zipFile file));
+extern int ZEXPORT cpe_zipCloseFileInZip(zipFile file);
 /*
   Close the current file in the zipfile
 */
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw OF((zipFile file,
+extern int ZEXPORT cpe_zipCloseFileInZipRaw(zipFile file,
     uLong uncompressed_size,
-    uLong crc32));
+    uLong crc32);
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw64 OF((zipFile file,
+extern int ZEXPORT cpe_zipCloseFileInZipRaw64(zipFile file,
     ssize_t uncompressed_size,
-    uLong crc32));
+    uLong crc32);
 
 /*
   Close the current file in the zipfile, for file opened with
@@ -315,13 +314,12 @@ extern int ZEXPORT cpe_zipCloseFileInZipRaw64 OF((zipFile file,
   uncompressed_size and crc32 are value for the uncompressed size
 */
 
-extern int ZEXPORT cpe_zipClose OF((zipFile file,
-    const char * global_comment));
+extern int ZEXPORT cpe_zipClose(zipFile file, const char * global_comment);
 /*
   Close the zipfile
 */
 
-extern int ZEXPORT cpe_zipRemoveExtraInfoBlock OF((char * pData, int * dataLen, short sHeader));
+extern int ZEXPORT cpe_zipRemoveExtraInfoBlock(char * pData, int * dataLen, short sHeader);
 /*
   zipRemoveExtraInfoBlock -  Added by Mathias Svensson
 
