@@ -79,6 +79,32 @@ uint8_t vfs_dir_exist(vfs_mgr_t mgr, const char * path) {
     return backend->m_dir_exist ? backend->m_dir_exist(backend->m_ctx, mount_point->m_backend_env, path) : 0;
 }
 
+int vfs_dir_rm(vfs_mgr_t mgr, const char * path) {
+    vfs_mount_point_t mount_point;
+    vfs_backend_t backend;
+
+    mount_point = vfs_mount_point_find_by_path(mgr, &path);
+    if (mount_point == NULL) return -1;
+
+    backend = mount_point->m_backend;
+    assert(backend);
+
+    return backend->m_dir_rm ? backend->m_dir_rm(backend->m_ctx, mount_point->m_backend_env, path, 0) : -1;
+}
+
+int vfs_dir_rm_recursion(vfs_mgr_t mgr, const char * path) {
+    vfs_mount_point_t mount_point;
+    vfs_backend_t backend;
+
+    mount_point = vfs_mount_point_find_by_path(mgr, &path);
+    if (mount_point == NULL) return -1;
+
+    backend = mount_point->m_backend;
+    assert(backend);
+
+    return backend->m_dir_rm ? backend->m_dir_rm(backend->m_ctx, mount_point->m_backend_env, path, 1) : -1;
+}
+
 int vfs_dir_mk(vfs_mgr_t mgr, const char * path) {
     vfs_mount_point_t mount_point;
     vfs_backend_t backend;

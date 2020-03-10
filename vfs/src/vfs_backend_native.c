@@ -250,9 +250,14 @@ static uint8_t vfs_native_dir_exist(void * ctx, void * env, const char * path) {
     return (uint8_t)dir_exist(vfs_backend_make_path(mgr, env, path), mgr->m_em);
 }
 
-static int vfs_native_dir_rm(void * ctx, void * env, const char * path) {
+static int vfs_native_dir_rm(void * ctx, void * env, const char * path, uint8_t is_recursive) {
     vfs_mgr_t mgr = ctx;
-    return file_rm(vfs_backend_make_path(mgr, env, path), mgr->m_em);
+    if (is_recursive) {
+        return dir_rm_recursion(vfs_backend_make_path(mgr, env, path), mgr->m_em, mgr->m_alloc);
+    }
+    else {
+        return dir_rm(vfs_backend_make_path(mgr, env, path), mgr->m_em);
+    }
 }
 
 static int vfs_native_dir_mk(void * ctx, void * env, const char * path, uint8_t is_recursive) {

@@ -11,6 +11,10 @@ vfs_dir_t vfs_dir_open(vfs_mgr_t mgr, const char * path);
 void vfs_dir_close(vfs_dir_t d);
 
 uint8_t vfs_dir_exist(vfs_mgr_t mgr, const char * path);
+
+int vfs_dir_rm(vfs_mgr_t mgr, const char * path);
+int vfs_dir_rm_recursion(vfs_mgr_t mgr, const char * path);
+
 int vfs_dir_mk(vfs_mgr_t mgr, const char * path);
 int vfs_dir_mk_recursion(vfs_mgr_t mgr, const char * path);
 

@@ -29,7 +29,7 @@ typedef int (*vfs_dir_open_fun_t)(void * ctx, void * env, vfs_dir_t dir, const c
 typedef void (*vfs_dir_close_fun_t)(void * ctx, vfs_dir_t dir);
 typedef void (*vfs_dir_read_fun_t)(void * ctx, vfs_dir_t dir, vfs_entry_info_it_t it);
 typedef uint8_t (*vfs_dir_exist_fun_t)(void * ctx, void * env, const char * path);
-typedef int (*vfs_dir_rm_fun_t)(void * ctx, void * env, const char * path);
+typedef int (*vfs_dir_rm_fun_t)(void * ctx, void * env, const char * path, uint8_t is_recursive);
 typedef int (*vfs_dir_mk_fun_t)(void * ctx, void * env, const char * path, uint8_t is_recursive);    
     
 vfs_backend_t vfs_backend_create(
