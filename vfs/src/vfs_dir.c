@@ -130,3 +130,35 @@ int vfs_dir_mk_recursion(vfs_mgr_t mgr, const char * path) {
 
     return backend->m_dir_mk ? backend->m_dir_mk(backend->m_ctx, mount_point->m_backend_env, path, 1) : -1;
 }
+
+int vfs_dir_mv(vfs_mgr_t mgr, const char * to, const char * from) {
+    const char * from_path = from;
+    vfs_mount_point_t from_mount_point = vfs_mount_point_find_by_path(mgr, &from_path);
+    if (from_mount_point == NULL) {
+        CPE_ERROR(mgr->m_em, "vfs_dir_mv: mount point of path %s not exist!", from_path);
+        return -1;
+    }
+
+    const char * to_path = to;
+    vfs_mount_point_t to_mount_point = vfs_mount_point_find_by_path(mgr, &to_path);
+    if (to_mount_point == NULL) {
+        CPE_ERROR(mgr->m_em, "vfs_dir_mv: mount point of path %s not exist!", to_path);
+        return -1;
+    }
+    
+    if (from_mount_point->m_backend != to_mount_point->m_backend) {
+        CPE_ERROR(
+            mgr->m_em, "vfs_dir_mv: can`t move file from backend %s to backend %s!",
+            from_mount_point->m_backend->m_name, to_mount_point->m_backend->m_name);
+        return -1;
+    }
+
+    vfs_backend_t backend = from_mount_point->m_backend;
+    if (backend->m_file_mv) {
+        return from_mount_point->m_backend->m_file_mv(
+            backend->m_ctx, from_mount_point->m_backend_env, from_path, to_mount_point->m_backend_env, to_path);
+    } else {
+        CPE_ERROR(mgr->m_em, "vfs_file_mv: backend %s not support mv!", from_mount_point->m_backend->m_name);
+        return -1;
+    }
+}

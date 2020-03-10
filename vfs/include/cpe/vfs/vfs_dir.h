@@ -18,6 +18,8 @@ int vfs_dir_rm_recursion(vfs_mgr_t mgr, const char * path);
 int vfs_dir_mk(vfs_mgr_t mgr, const char * path);
 int vfs_dir_mk_recursion(vfs_mgr_t mgr, const char * path);
 
+int vfs_dir_mv(vfs_mgr_t mgr, const char * to, const char * from);
+
 void * vfs_dir_data(vfs_dir_t d);
 
 void vfs_dir_entries(vfs_dir_t d, vfs_entry_info_it_t it);
