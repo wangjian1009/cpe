@@ -399,9 +399,11 @@ static int cpe_unzip_context_build(cpe_unzip_context_t context, error_monitor_t 
             start = end + 1;
         }
 
-        if (cpe_unzip_file_create(cur_dir, start, &file_info, em) == NULL) {
-            CPE_ERROR(em, "cpe_unzip_context_build: create file error, error=%d", err);
-            return -1;
+        if (start[0] != 0) {
+            if (cpe_unzip_file_create(cur_dir, start, &file_info, em) == NULL) {
+                CPE_ERROR(em, "cpe_unzip_context_build: create file error, error=%d", err);
+                return -1;
+            }
         }
 
         if ((i + 1) < context->m_global_info.number_entry) {
