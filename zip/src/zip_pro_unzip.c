@@ -66,11 +66,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifndef NOUNCRYPT
-#define NOUNCRYPT
-#endif
-
 #include "zlib.h"
 #include "zip_pro_unzip.h"
 #include "cpe/pal/pal_errno.h"
@@ -167,15 +162,11 @@ typedef struct {
 
     int isZip64;
 
-#ifndef NOUNCRYPT
     unsigned long keys[3]; /* keys defining the pseudo-random sequence */
-    unsigned long * pcrc_32_tab;
-#endif
+    const z_crc_t * pcrc_32_tab;
 } unz64_s;
 
-#ifndef NOUNCRYPT
-#include "crypt.h"
-#endif
+#include "zip_pro_crypt.h"
 
 /* ===========================================================================
      Read a byte from a gz_stream; update next_in and avail_in. Return EOF
@@ -1374,26 +1365,25 @@ int cpe_unzOpenCurrentFile3(unzFile file, int * method,
     s->pfile_in_zip_read = pfile_in_zip_read_info;
     s->encrypted = 0;
 
-#ifndef NOUNCRYPT
     if (password != NULL) {
         int i;
         s->pcrc_32_tab = get_crc_table();
-        init_keys(password, s->keys, s->pcrc_32_tab);
-        if (vfs_file_seek(s->z_filefunc, s->filestream,
+        cpe_zip_crypto_init_keys(password, s->keys, s->pcrc_32_tab);
+        if (vfs_file_seek(s->filestream,
                 s->pfile_in_zip_read->pos_in_zipfile + s->pfile_in_zip_read->byte_before_the_zipfile,
                 SEEK_SET)
             != 0)
             return UNZ_INTERNALERROR;
-        if (ZREAD64(s->z_filefunc, s->filestream, source, 12) < 12)
+        if (vfs_file_read(s->filestream, source, 12) < 12)
             return UNZ_INTERNALERROR;
 
-        for (i = 0; i < 12; i++)
+        for (i = 0; i < 12; i++) {
             zdecode(s->keys, s->pcrc_32_tab, source[i]);
-
+        }
+        
         s->pfile_in_zip_read->pos_in_zipfile += 12;
         s->encrypted = 1;
     }
-#endif
 
     return UNZ_OK;
 }
