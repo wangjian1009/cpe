@@ -16,7 +16,7 @@
         (like 1 on Unix, 2 on Windows)
 
 */
-extern int ZEXPORT cpe_zip_fname_cmp(
+extern int cpe_zip_fname_cmp(
     const char * fileName1, const char * fileName2, int iCaseSensitivity)
 {
     if (iCaseSensitivity == 0)

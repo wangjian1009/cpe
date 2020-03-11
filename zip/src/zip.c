@@ -274,7 +274,7 @@ void cpe_zip64local_putValue_inmemory(void * dest, ssize_t x, int nbByte) {
 
 /****************************************************************************/
 
-uLong cpe_zip64local_TmzDateToDosDate(const tm_zip * ptm) {
+uLong cpe_zip64local_TmzDateToDosDate(const cpe_zip_tm * ptm) {
     uLong year = (uLong)ptm->tm_year;
     if (year >= 1980)
         year -= 1980;
@@ -741,7 +741,7 @@ int LoadCentralDirectoryRecord(zip64_internal * pziinit) {
 #endif /* !NO_ADDFILEINEXISTINGZIP*/
 
 /************************************************************/
-extern zipFile ZEXPORT cpe_zipOpen3(vfs_mgr_t vfs, const void * pathname, int append, zipcharpc * globalcomment) {
+zipFile cpe_zipOpen3(vfs_mgr_t vfs, const void * pathname, int append, zipcharpc * globalcomment) {
     zip64_internal ziinit;
     zip64_internal * zi;
     int err = ZIP_OK;
@@ -793,19 +793,19 @@ extern zipFile ZEXPORT cpe_zipOpen3(vfs_mgr_t vfs, const void * pathname, int ap
     }
 }
 
-extern zipFile ZEXPORT cpe_zipOpen2(vfs_mgr_t vfs, const char * pathname, int append, zipcharpc * globalcomment) {
+zipFile cpe_zipOpen2(vfs_mgr_t vfs, const char * pathname, int append, zipcharpc * globalcomment) {
     return cpe_zipOpen3(vfs, pathname, append, globalcomment);
 }
 
-extern zipFile ZEXPORT cpe_zipOpen2_64(vfs_mgr_t vfs, const void * pathname, int append, zipcharpc * globalcomment) {
+zipFile cpe_zipOpen2_64(vfs_mgr_t vfs, const void * pathname, int append, zipcharpc * globalcomment) {
     return cpe_zipOpen3(vfs, pathname, append, globalcomment);
 }
 
-extern zipFile ZEXPORT cpe_zipOpen(vfs_mgr_t vfs, const char * pathname, int append) {
+zipFile cpe_zipOpen(vfs_mgr_t vfs, const char * pathname, int append) {
     return cpe_zipOpen3(vfs, (const void *)pathname, append, NULL);
 }
 
-extern zipFile ZEXPORT cpe_zipOpen64(vfs_mgr_t vfs, const void * pathname, int append) {
+zipFile cpe_zipOpen64(vfs_mgr_t vfs, const void * pathname, int append) {
     return cpe_zipOpen3(vfs, pathname, append, NULL);
 }
 
@@ -897,7 +897,7 @@ int Write_LocalFileHeader(zip64_internal * zi, const char * filename, uInt size_
  It is not done here because then we need to realloc a new buffer since parameters are 'const' and I want to minimize
  unnecessary allocations.
  */
-extern int ZEXPORT cpe_zipOpenNewFileInZip4_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip4_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw,
@@ -1097,7 +1097,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip4_64(zipFile file, const char * filena
     return err;
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip4(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip4(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw,
@@ -1112,7 +1112,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip4(zipFile file, const char * filename,
         password, crcForCrypting, versionMadeBy, flagBase, 0);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip3(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip3(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw,
@@ -1126,7 +1126,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip3(zipFile file, const char * filename,
         password, crcForCrypting, VERSIONMADEBY, 0, 0);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip3_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip3_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw,
@@ -1140,7 +1140,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip3_64(zipFile file, const char * filena
         password, crcForCrypting, VERSIONMADEBY, 0, zip64);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip2(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip2(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw) {
@@ -1152,7 +1152,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip2(zipFile file, const char * filename,
         NULL, 0, VERSIONMADEBY, 0, 0);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip2_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip2_64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int raw, int zip64) {
@@ -1164,7 +1164,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip2_64(zipFile file, const char * filena
         NULL, 0, VERSIONMADEBY, 0, zip64);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip64(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level, int zip64) {
@@ -1176,7 +1176,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip64(zipFile file, const char * filename
         NULL, 0, VERSIONMADEBY, 0, zip64);
 }
 
-extern int ZEXPORT cpe_zipOpenNewFileInZip(zipFile file, const char * filename, const zip_fileinfo * zipfi,
+int cpe_zipOpenNewFileInZip(zipFile file, const char * filename, const zip_fileinfo * zipfi,
     const void * extrafield_local, uInt size_extrafield_local,
     const void * extrafield_global, uInt size_extrafield_global,
     const char * comment, int method, int level) {
@@ -1222,7 +1222,7 @@ int cpe_zip64FlushWriteBuffer(zip64_internal * zi) {
     return err;
 }
 
-extern int ZEXPORT cpe_zipWriteInFileInZip(zipFile file, const void * buf, unsigned int len) {
+int cpe_zipWriteInFileInZip(zipFile file, const void * buf, unsigned int len) {
     zip64_internal * zi;
     int err = ZIP_OK;
 
@@ -1314,11 +1314,11 @@ extern int ZEXPORT cpe_zipWriteInFileInZip(zipFile file, const void * buf, unsig
     return err;
 }
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw(zipFile file, uLong uncompressed_size, uLong crc32) {
+int cpe_zipCloseFileInZipRaw(zipFile file, uLong uncompressed_size, uLong crc32) {
     return cpe_zipCloseFileInZipRaw64(file, uncompressed_size, crc32);
 }
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw64(zipFile file, ssize_t uncompressed_size, uLong crc32) {
+int cpe_zipCloseFileInZipRaw64(zipFile file, ssize_t uncompressed_size, uLong crc32) {
     zip64_internal * zi;
     ssize_t compressed_size;
     uLong invalidValue = 0xffffffff;
@@ -1528,7 +1528,7 @@ extern int ZEXPORT cpe_zipCloseFileInZipRaw64(zipFile file, ssize_t uncompressed
     return err;
 }
 
-extern int ZEXPORT cpe_zipCloseFileInZip(zipFile file) {
+int cpe_zipCloseFileInZip(zipFile file) {
     return cpe_zipCloseFileInZipRaw(file, 0, 0);
 }
 
@@ -1652,7 +1652,7 @@ int Write_GlobalComment(zip64_internal * zi, const char * global_comment) {
     return err;
 }
 
-extern int ZEXPORT cpe_zipClose(zipFile file, const char * global_comment) {
+int cpe_zipClose(zipFile file, const char * global_comment) {
     zip64_internal * zi;
     int err = 0;
     uLong size_centraldir = 0;
@@ -1716,7 +1716,7 @@ extern int ZEXPORT cpe_zipClose(zipFile file, const char * global_comment) {
     return err;
 }
 
-extern int ZEXPORT cpe_zipRemoveExtraInfoBlock(char * pData, int * dataLen, short sHeader) {
+int cpe_zipRemoveExtraInfoBlock(char * pData, int * dataLen, short sHeader) {
     char * p = pData;
     int size = 0;
     char * pNewHeader;
