@@ -41,6 +41,14 @@ ssize_t cpe_unzip_file_load_to_buffer(mem_buffer_t buffer, cpe_unzip_file_t zf, 
 ssize_t cpe_unzip_file_load_to_buf(char * buf, size_t size, cpe_unzip_file_t zf, error_monitor_t em);
 ssize_t cpe_unzip_file_load_to_stream(write_stream_t ws, cpe_unzip_file_t zf, error_monitor_t em);
 
+int cpe_unzip_dir_extract_to(
+    vfs_mgr_t vfs, const char * path, cpe_unzip_dir_t from,
+    uint8_t debug, error_monitor_t em, mem_allocrator_t talloc);
+
+int cpe_unzip_extract_to(
+    vfs_mgr_t vfs, const char * path, const char * from,
+    uint8_t debug, error_monitor_t em, mem_allocrator_t talloc);
+    
 #ifdef __cplusplus
 }
 #endif

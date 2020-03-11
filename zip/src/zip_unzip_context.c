@@ -15,7 +15,6 @@ static cpe_unzip_dir_t cpe_unzip_dir_find_or_create(cpe_unzip_dir_t parent, cons
     return cpe_unzip_dir_create(parent->m_context, parent, name, em);
 }
 
-
 cpe_unzip_context_t
 cpe_unzip_context_create(vfs_mgr_t vfs, const char * path, mem_allocrator_t alloc, error_monitor_t em) {
     cpe_unzip_context_t r;
@@ -93,7 +92,7 @@ int cpe_unzip_context_build(cpe_unzip_context_t context, error_monitor_t em) {
 
         cur_dir = context->m_root;
         start = filename_inzip;
-        while((end = strchr(start, '/'))) {
+        while ((end = strchr(start, '/'))) {
             *end = 0;
             cur_dir = cpe_unzip_dir_find_or_create(cur_dir, start, em);
             if (cur_dir == NULL) {
@@ -113,7 +112,7 @@ int cpe_unzip_context_build(cpe_unzip_context_t context, error_monitor_t em) {
         if ((i + 1) < context->m_global_info.number_entry) {
             err = cpe_unzGoToNextFile(context->m_zip_file);
             if (err != UNZ_OK) {
-                CPE_ERROR(em, "cpe_unzip_context_build: unzGoToNextFile error, error=%d",err);
+                CPE_ERROR(em, "cpe_unzip_context_build: unzGoToNextFile error, error=%d", err);
                 return -1;
             }
         }

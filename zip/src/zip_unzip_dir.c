@@ -28,18 +28,18 @@ cpe_unzip_dir_create(cpe_unzip_context_t context, cpe_unzip_dir_t parent, const 
 }
 
 void cpe_unzip_dir_free(cpe_unzip_dir_t d) {
-    while(!TAILQ_EMPTY(&d->m_child_files)) {
+    while (!TAILQ_EMPTY(&d->m_child_files)) {
         cpe_unzip_file_free(TAILQ_FIRST(&d->m_child_files));
     }
 
-    while(!TAILQ_EMPTY(&d->m_child_dirs)) {
+    while (!TAILQ_EMPTY(&d->m_child_dirs)) {
         cpe_unzip_dir_free(TAILQ_FIRST(&d->m_child_dirs));
     }
 
     if (d->m_parent_dir) {
         TAILQ_REMOVE(&d->m_parent_dir->m_child_dirs, d, m_next_dir);
     }
-    
+
     mem_free(d->m_context->m_alloc, d);
 }
 
@@ -75,7 +75,7 @@ cpe_unzip_dir_find(cpe_unzip_context_t context, const char * path, error_monitor
     cur_dir = context->m_root;
 
     start = path;
-    while((end = strchr(start, '/'))) {
+    while ((end = strchr(start, '/'))) {
         cpe_unzip_dir_t c;
 
         TAILQ_FOREACH(c, &cur_dir->m_child_dirs, m_next_dir) {
@@ -87,7 +87,7 @@ cpe_unzip_dir_find(cpe_unzip_context_t context, const char * path, error_monitor
         }
 
         if (c == TAILQ_END(&cur_dir->m_child_dirs)) return NULL;
-        
+
         cur_dir = c;
         start = end + 1;
     }

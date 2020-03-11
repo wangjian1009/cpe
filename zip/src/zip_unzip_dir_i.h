@@ -1,6 +1,6 @@
 #ifndef CPE_ZIP_UNZIP_DIR_I_H_INCLEDED
 #define CPE_ZIP_UNZIP_DIR_I_H_INCLEDED
-#include "cpe/zip/zip_unzip_file.h"
+#include "cpe/zip/zip_unzip.h"
 #include "zip_unzip_context_i.h"
 
 struct cpe_unzip_dir {
