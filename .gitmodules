@@ -6,7 +6,7 @@
 	url = git@github.com:wangjian1009/zlog.git
 [submodule "depends/syslog-win32"]
 	path = depends/syslog-win32
-	url = git@github.com:asankah/syslog-win32.git
+	url = git@github.com:wangjian1009/syslog-win32.git
 [submodule "depends/unixem"]
 	path = depends/unixem
 	url = git@github.com:wangjian1009/unixem.git
