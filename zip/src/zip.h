@@ -217,9 +217,7 @@ extern int ZEXPORT cpe_zipOpenNewFileInZip4_64(zipFile file,
     flag : value for flag field (compression level info will be added)
  */
 
-extern int ZEXPORT cpe_zipWriteInFileInZip(zipFile file,
-    const void * buf,
-    unsigned len);
+extern int ZEXPORT cpe_zipWriteInFileInZip(zipFile file, const void * buf, unsigned len);
 /*
   Write data in the zipfile
 */
@@ -229,13 +227,9 @@ extern int ZEXPORT cpe_zipCloseFileInZip(zipFile file);
   Close the current file in the zipfile
 */
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw(zipFile file,
-    uLong uncompressed_size,
-    uLong crc32);
+extern int ZEXPORT cpe_zipCloseFileInZipRaw(zipFile file, uLong uncompressed_size, uLong crc32);
 
-extern int ZEXPORT cpe_zipCloseFileInZipRaw64(zipFile file,
-    ssize_t uncompressed_size,
-    uLong crc32);
+extern int ZEXPORT cpe_zipCloseFileInZipRaw64(zipFile file, ssize_t uncompressed_size, uLong crc32);
 
 /*
   Close the current file in the zipfile, for file opened with

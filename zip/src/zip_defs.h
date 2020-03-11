@@ -25,4 +25,14 @@ typedef struct cpe_zip_tm_s {
     uInt tm_year;           /* years - [1980..2044] */
 } cpe_zip_tm;
 
+extern int cpe_zip_fname_cmp(const char* fileName1, const char* fileName2, int iCaseSensitivity);
+/*
+   Compare two filename (fileName1,fileName2).
+   If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
+   If iCaseSenisivity = 2, comparision is not case sensitivity (like strcmpi
+                                or strcasecmp)
+   If iCaseSenisivity = 0, case sensitivity is defaut of your operating system
+    (like 1 on Unix, 2 on Windows)
+*/
+
 #endif

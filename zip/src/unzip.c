@@ -289,57 +289,6 @@ int cpe_unz64local_getLong64(vfs_file_t filestream, ssize_t * pX) {
     return err;
 }
 
-/* My own strcmpi / strcasecmp */
-int strcmpcasenosensitive_internal(const char * fileName1, const char * fileName2) {
-    for (;;) {
-        char c1 = *(fileName1++);
-        char c2 = *(fileName2++);
-        if ((c1 >= 'a') && (c1 <= 'z'))
-            c1 -= 0x20;
-        if ((c2 >= 'a') && (c2 <= 'z'))
-            c2 -= 0x20;
-        if (c1 == '\0')
-            return ((c2 == '\0') ? 0 : -1);
-        if (c2 == '\0')
-            return 1;
-        if (c1 < c2)
-            return -1;
-        if (c1 > c2)
-            return 1;
-    }
-}
-
-#ifdef CASESENSITIVITYDEFAULT_NO
-#define CASESENSITIVITYDEFAULTVALUE 2
-#else
-#define CASESENSITIVITYDEFAULTVALUE 1
-#endif
-
-#ifndef STRCMPCASENOSENTIVEFUNCTION
-#define STRCMPCASENOSENTIVEFUNCTION strcmpcasenosensitive_internal
-#endif
-
-/*
-   Compare two filename (fileName1,fileName2).
-   If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
-   If iCaseSenisivity = 2, comparision is not case sensitivity (like strcmpi
-                                                                or strcasecmp)
-   If iCaseSenisivity = 0, case sensitivity is defaut of your operating system
-        (like 1 on Unix, 2 on Windows)
-
-*/
-extern int ZEXPORT cpe_unzStringFileNameCompare(
-    const char * fileName1, const char * fileName2, int iCaseSensitivity)
-{
-    if (iCaseSensitivity == 0)
-        iCaseSensitivity = CASESENSITIVITYDEFAULTVALUE;
-
-    if (iCaseSensitivity == 1)
-        return strcmp(fileName1, fileName2);
-
-    return STRCMPCASENOSENTIVEFUNCTION(fileName1, fileName2);
-}
-
 #ifndef BUFREADCOMMENT
 #define BUFREADCOMMENT (0x400)
 #endif
@@ -1103,9 +1052,7 @@ extern int ZEXPORT cpe_unzLocateFile(unzFile file, const char * szFileName, int 
             szCurrentFileName, sizeof(szCurrentFileName) - 1,
             NULL, 0, NULL, 0);
         if (err == UNZ_OK) {
-            if (cpe_unzStringFileNameCompare(szCurrentFileName,
-                    szFileName, iCaseSensitivity)
-                == 0)
+            if (cpe_zip_fname_cmp(szCurrentFileName, szFileName, iCaseSensitivity) == 0)
                 return UNZ_OK;
             err = cpe_unzGoToNextFile(file);
         }

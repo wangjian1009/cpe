@@ -1,11 +1,6 @@
 set(cpe_zip_base ${CMAKE_CURRENT_LIST_DIR}/../../zip)
 
-set(cpe_zip_source
-  ${cpe_zip_base}/src/unzip.c
-  ${cpe_zip_base}/src/zip.c
-  ${cpe_zip_base}/src/zip_file.c
-  ${cpe_zip_base}/src/zip_dir.c
-  )
+file(GLOB cpe_zip_source ${cpe_zip_base}/src/*.c)
 
 add_library(cpe_zip STATIC ${cpe_zip_source})
 
