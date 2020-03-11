@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "cpe/pal/pal_strings.h"
-#include "cpe/zip/zip_file.h"
-#include "zip_internal_types.h"
+#include "zip_unzip_dir_i.h"
+#include "zip_unzip_file_i.h"
 
 static
 enum dir_visit_next_op

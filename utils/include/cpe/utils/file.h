@@ -86,6 +86,9 @@ void dir_search(
 extern int DIR_DEFAULT_MODE;
 extern int FILE_DEFAULT_MODE;
 
+void file_attribute_print(write_stream_t stream, uint16_t fa);
+const char * file_attribute_dump(mem_buffer_t buffer, uint16_t fa);
+
 #ifdef __cplusplus
 }
 #endif

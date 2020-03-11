@@ -1,5 +1,5 @@
-#ifndef CPE_ZIP_FILE_H_INCLEDED
-#define CPE_ZIP_FILE_H_INCLEDED
+#ifndef CPE_ZIP_UNZIP_FILE_H_INCLEDED
+#define CPE_ZIP_UNZIP_FILE_H_INCLEDED
 #include "cpe/utils/file.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/memory.h"
@@ -31,6 +31,7 @@ void cpe_unzip_dir_search(
 cpe_unzip_file_t cpe_unzip_file_find(cpe_unzip_context_t context, const char * path, error_monitor_t em);
 const char * cpe_unzip_file_name(cpe_unzip_file_t zf);
 const char * cpe_unzip_file_path(mem_buffer_t buffer, cpe_unzip_file_t zf);
+uint32_t cpe_unzip_file_fa(cpe_unzip_file_t zf);
 
 cpe_unzip_dir_t cpe_unzip_dir_find(cpe_unzip_context_t context, const char * path, error_monitor_t em);
 const char * cpe_unzip_dir_name(cpe_unzip_dir_t d);

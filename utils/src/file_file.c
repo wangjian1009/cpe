@@ -513,3 +513,28 @@ int file_copy(const char * output, const char * input, mode_t mode, error_monito
     
     return (int)totalSize;
 }
+
+void file_attribute_print(write_stream_t ws, uint16_t fa) {
+    stream_putc(ws, fa & S_IRUSR ? 'R' : '-');
+    stream_putc(ws, fa & S_IWUSR ? 'W' : '-');
+    stream_putc(ws, fa & S_IXUSR ? 'X' : '-');
+
+    stream_putc(ws, fa & S_IRGRP ? 'R' : '-');
+    stream_putc(ws, fa & S_IWGRP ? 'W' : '-');
+    stream_putc(ws, fa & S_IXGRP ? 'X' : '-');
+
+    stream_putc(ws, fa & S_IROTH ? 'R' : '-');
+    stream_putc(ws, fa & S_IWOTH ? 'W' : '-');
+    stream_putc(ws, fa & S_IXOTH ? 'X' : '-');
+}
+
+const char * file_attribute_dump(mem_buffer_t buffer, uint16_t fa) {
+    mem_buffer_clear_data(buffer);
+
+    struct write_stream_buffer stream = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
+    file_attribute_print((write_stream_t)&stream, fa);
+
+    stream_putc((write_stream_t)&stream, 0);
+    
+    return mem_buffer_make_continuous(buffer, 0);
+}

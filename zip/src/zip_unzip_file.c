@@ -2,8 +2,8 @@
 #include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_strings.h"
 #include "cpe/utils/string_utils.h"
-#include "cpe/zip/zip_file.h"
-#include "zip_internal_types.h"
+#include "zip_unzip_file_i.h"
+#include "zip_unzip_dir_i.h"
 
 static void cpe_unzip_dir_free(cpe_unzip_dir_t d);
 static void cpe_unzip_file_free(cpe_unzip_file_t f);
@@ -92,6 +92,10 @@ cpe_unzip_file_t cpe_unzip_file_find(cpe_unzip_context_t context, const char * f
 
 const char * cpe_unzip_file_name(cpe_unzip_file_t zf) {
     return zf->m_name;
+}
+
+uint32_t cpe_unzip_file_fa(cpe_unzip_file_t zf) {
+    return zf->m_file_info.external_fa;
 }
 
 const char * cpe_unzip_file_path(mem_buffer_t buffer, cpe_unzip_file_t zf) {
