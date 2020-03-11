@@ -12,4 +12,11 @@ struct cpe_unzip_dir {
     char m_name[64];
 };
 
+cpe_unzip_dir_t
+cpe_unzip_dir_create(cpe_unzip_context_t context, cpe_unzip_dir_t parent, const char * name, error_monitor_t em);
+
+void cpe_unzip_dir_free(cpe_unzip_dir_t d);
+
+void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d);
+
 #endif

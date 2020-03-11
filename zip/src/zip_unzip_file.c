@@ -5,57 +5,37 @@
 #include "zip_unzip_file_i.h"
 #include "zip_unzip_dir_i.h"
 
-static void cpe_unzip_dir_free(cpe_unzip_dir_t d);
-static void cpe_unzip_file_free(cpe_unzip_file_t f);
-static int cpe_unzip_context_build(cpe_unzip_context_t context, error_monitor_t em);
-static int cpe_unzip_file_open(cpe_unzip_file_t f, error_monitor_t em);
-static void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d);
+cpe_unzip_file_t
+cpe_unzip_file_create(cpe_unzip_dir_t parent, const char * name, unz_file_info64 * file_info, error_monitor_t em) {
+    cpe_unzip_file_t r;
 
-cpe_unzip_context_t
-cpe_unzip_context_create(vfs_mgr_t vfs, const char * path, mem_allocrator_t alloc, error_monitor_t em) {
-    cpe_unzip_context_t r;
-    int rv;
-
-    r = (cpe_unzip_context_t)mem_alloc(alloc, sizeof(struct cpe_unzip_context));
+    r = mem_alloc(parent->m_context->m_alloc, sizeof(struct cpe_unzip_file));
     if (r == NULL) {
-        CPE_ERROR(em, "cpe_unzip_context_create: malloc fail!");
+        CPE_ERROR(em, "cpe_unzip_file_create: malloc fail");
         return NULL;
     }
 
-    r->m_zip_file = cpe_unzOpen64(em, vfs, path);
-    if (r->m_zip_file == NULL) {
-        CPE_ERROR(em, "cpe_unzip_context_create: open zip file %s fail!", path);
-        mem_free(alloc, r);
-        return NULL;
-    }
+    r->m_context = parent->m_context;
+    r->m_parent_dir = parent;
+    cpe_str_dup(r->m_name, sizeof(r->m_name), name);
+    memcpy(&r->m_file_info, file_info, sizeof(r->m_file_info));
 
-    rv = cpe_unzGetGlobalInfo64(r->m_zip_file, &r->m_global_info);
-    if (rv != UNZ_OK) {
-        CPE_ERROR(em, "cpe_unzip_context_create: zip file %s: get global info fail!", path);
-        cpe_unzClose(r->m_zip_file);
-        mem_free(alloc, r);
-        return NULL;
-    }
-
-    r->m_alloc = alloc;
-    r->m_root = NULL;
-
-    if (cpe_unzip_context_build(r, em) != 0) {
-        CPE_ERROR(em, "cpe_unzip_context_create: zip file %s: build zip file info fail!", path);
-        cpe_unzip_context_free(r);
-        return NULL;
-    }
+    TAILQ_INSERT_TAIL(&parent->m_child_files, r, m_next_file);
 
     return r;
 }
 
-void cpe_unzip_context_free(cpe_unzip_context_t unzc) {
-    if (unzc->m_root) cpe_unzip_dir_free(unzc->m_root);
-    cpe_unzClose(unzc->m_zip_file);
-    mem_free(unzc->m_alloc, unzc);
+void cpe_unzip_file_free(cpe_unzip_file_t f) {
+    assert(f);
+    assert(f->m_parent_dir);
+
+    TAILQ_REMOVE(&f->m_parent_dir->m_child_files, f, m_next_file);
+
+    mem_free(f->m_context->m_alloc, f);
 }
 
-cpe_unzip_file_t cpe_unzip_file_find(cpe_unzip_context_t context, const char * file, error_monitor_t em) {
+cpe_unzip_file_t
+cpe_unzip_file_find(cpe_unzip_context_t context, const char * file, error_monitor_t em) {
     const char * start;
     const char * end;
     cpe_unzip_dir_t cur_dir;
@@ -106,66 +86,6 @@ const char * cpe_unzip_file_path(mem_buffer_t buffer, cpe_unzip_file_t zf) {
 
     mem_buffer_strcat(buffer, zf->m_name);
 
-    return (const char *)mem_buffer_make_continuous(buffer, 0);
-}
-
-cpe_unzip_dir_t cpe_unzip_dir_find(cpe_unzip_context_t context, const char * path, error_monitor_t em) {
-    const char * start;
-    const char * end;
-    cpe_unzip_dir_t cur_dir;
-    cpe_unzip_dir_t f;
-
-    assert(path);
-    assert(context);
-    assert(context->m_root);
-
-    cur_dir = context->m_root;
-
-    start = path;
-    while((end = strchr(start, '/'))) {
-        cpe_unzip_dir_t c;
-
-        TAILQ_FOREACH(c, &cur_dir->m_child_dirs, m_next_dir) {
-            size_t len = end - start;
-            size_t name_len = strlen(c->m_name);
-            if (name_len == len && memcmp(c->m_name, start, len) == 0) {
-                break;
-            }
-        }
-
-        if (c == TAILQ_END(&cur_dir->m_child_dirs)) return NULL;
-        
-        cur_dir = c;
-        start = end + 1;
-    }
-
-    assert(start);
-    if (start[0] == 0) {
-        return cur_dir;
-    }
-
-    TAILQ_FOREACH(f, &cur_dir->m_child_dirs, m_next_dir) {
-        if (strcmp(f->m_name, start) == 0) return f;
-    }
-
-    return NULL;
-}
-
-const char * cpe_unzip_dir_name(cpe_unzip_dir_t d) {
-    return d->m_name;
-}
-
-static void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d) {
-    if (d->m_parent_dir && d->m_parent_dir != d->m_context->m_root) {
-        cpe_unzip_dir_build_path(buffer, d->m_parent_dir);
-        mem_buffer_strcat(buffer, "/");
-    }
-
-    mem_buffer_strcat(buffer, d->m_name);
-}
-
-const char * cpe_unzip_dir_path(mem_buffer_t buffer, cpe_unzip_dir_t d) {
-    cpe_unzip_dir_build_path(buffer, d);
     return (const char *)mem_buffer_make_continuous(buffer, 0);
 }
 
@@ -252,7 +172,7 @@ ssize_t cpe_unzip_file_load_to_stream(write_stream_t ws, cpe_unzip_file_t zf, er
     return read_size;
 }
 
-static int cpe_unzip_file_open(cpe_unzip_file_t zf, error_monitor_t em) {
+int cpe_unzip_file_open(cpe_unzip_file_t zf, error_monitor_t em) {
     struct mem_buffer name_buffer;
     const char * path;
     int rv;
@@ -281,144 +201,6 @@ static int cpe_unzip_file_open(cpe_unzip_file_t zf, error_monitor_t em) {
     }
 
     mem_buffer_clear(&name_buffer);
-    return 0;
-}
-
-static void cpe_unzip_file_free(cpe_unzip_file_t f) {
-    assert(f);
-    assert(f->m_parent_dir);
-
-    TAILQ_REMOVE(&f->m_parent_dir->m_child_files, f, m_next_file);
-
-    mem_free(f->m_context->m_alloc, f);
-}
-
-static void cpe_unzip_dir_free(cpe_unzip_dir_t d) {
-    while(!TAILQ_EMPTY(&d->m_child_files)) {
-        cpe_unzip_file_free(TAILQ_FIRST(&d->m_child_files));
-    }
-
-    while(!TAILQ_EMPTY(&d->m_child_dirs)) {
-        cpe_unzip_dir_free(TAILQ_FIRST(&d->m_child_dirs));
-    }
-
-    if (d->m_parent_dir) {
-        TAILQ_REMOVE(&d->m_parent_dir->m_child_dirs, d, m_next_dir);
-    }
-    
-    mem_free(d->m_context->m_alloc, d);
-}
-
-static cpe_unzip_file_t cpe_unzip_file_create(cpe_unzip_dir_t parent, const char * name, unz_file_info64 * file_info, error_monitor_t em) {
-    cpe_unzip_file_t r;
-
-    r = mem_alloc(parent->m_context->m_alloc, sizeof(struct cpe_unzip_file));
-    if (r == NULL) {
-        CPE_ERROR(em, "cpe_unzip_file_create: malloc fail");
-        return NULL;
-    }
-
-    r->m_context = parent->m_context;
-    r->m_parent_dir = parent;
-    cpe_str_dup(r->m_name, sizeof(r->m_name), name);
-    memcpy(&r->m_file_info, file_info, sizeof(r->m_file_info));
-
-    TAILQ_INSERT_TAIL(&parent->m_child_files, r, m_next_file);
-
-    return r;
-}
-
-static cpe_unzip_dir_t cpe_unzip_dir_create(cpe_unzip_context_t context, cpe_unzip_dir_t parent, const char * name, error_monitor_t em) {
-    cpe_unzip_dir_t r;
-
-    r = mem_alloc(context->m_alloc, sizeof(struct cpe_unzip_dir));
-    if (r == NULL) {
-        CPE_ERROR(em, "cpe_unzip_dir_create: malloc fail");
-        return NULL;
-    }
-
-    r->m_context = context;
-    r->m_parent_dir = parent;
-    TAILQ_INIT(&r->m_child_dirs);
-    TAILQ_INIT(&r->m_child_files);
-    cpe_str_dup(r->m_name, sizeof(r->m_name), name);
-
-    if (parent) {
-        TAILQ_INSERT_TAIL(&parent->m_child_dirs, r, m_next_dir);
-    }
-
-    return r;
-}
-
-static cpe_unzip_dir_t cpe_unzip_dir_find_or_create(cpe_unzip_dir_t parent, const char * name, error_monitor_t em) {
-    cpe_unzip_dir_t r;
-
-    TAILQ_FOREACH(r, &parent->m_child_dirs, m_next_dir) {
-        if (strcmp(r->m_name, name) == 0) return r;
-    }
-
-    return cpe_unzip_dir_create(parent->m_context, parent, name, em);
-}
-
-static int cpe_unzip_context_build(cpe_unzip_context_t context, error_monitor_t em) {
-    uLong i;
-    int err;
-
-    if (context->m_root != NULL) return 0;
-
-    context->m_root = cpe_unzip_dir_create(context, NULL, "", em);
-    if (context->m_root == NULL) {
-        CPE_ERROR(em, "cpe_unzip_context_build: create root dir fail");
-        return -1;
-    }
-
-    err = cpe_unzGoToFirstFile(context->m_zip_file);
-    if (err != UNZ_OK) {
-        CPE_ERROR(em, "cpe_unzip_context_build: unzGoToFirstFile error, error=%d", err);
-        return -1;
-    }
-
-    for (i = 0; i < context->m_global_info.number_entry; i++) {
-        char filename_inzip[256];
-        unz_file_info64 file_info;
-        cpe_unzip_dir_t cur_dir;
-        char * start;
-        char * end;
-
-        err = cpe_unzGetCurrentFileInfo64(context->m_zip_file, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
-        if (err != UNZ_OK) {
-            CPE_ERROR(em, "cpe_unzip_context_build: unzGetCurrentFileInfo error, error=%d", err);
-            return -1;
-        }
-
-        cur_dir = context->m_root;
-        start = filename_inzip;
-        while((end = strchr(start, '/'))) {
-            *end = 0;
-            cur_dir = cpe_unzip_dir_find_or_create(cur_dir, start, em);
-            if (cur_dir == NULL) {
-                CPE_ERROR(em, "cpe_unzip_context_build: create dir fail");
-                return -1;
-            }
-            start = end + 1;
-        }
-
-        if (start[0] != 0) {
-            if (cpe_unzip_file_create(cur_dir, start, &file_info, em) == NULL) {
-                CPE_ERROR(em, "cpe_unzip_context_build: create file error, error=%d", err);
-                return -1;
-            }
-        }
-
-        if ((i + 1) < context->m_global_info.number_entry) {
-            err = cpe_unzGoToNextFile(context->m_zip_file);
-            if (err != UNZ_OK) {
-                CPE_ERROR(em, "cpe_unzip_context_build: unzGoToNextFile error, error=%d",err);
-                return -1;
-            }
-        }
-    }
-
     return 0;
 }
 

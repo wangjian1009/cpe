@@ -11,4 +11,10 @@ struct cpe_unzip_file {
     unz_file_info64 m_file_info;
 };
 
+cpe_unzip_file_t cpe_unzip_file_create(
+    cpe_unzip_dir_t parent, const char * name, unz_file_info64 * file_info, error_monitor_t em);
+void cpe_unzip_file_free(cpe_unzip_file_t f);
+
+int cpe_unzip_file_open(cpe_unzip_file_t zf, error_monitor_t em);
+
 #endif

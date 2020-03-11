@@ -1,121 +1,105 @@
 #include <assert.h>
 #include "cpe/pal/pal_strings.h"
+#include "cpe/utils/string_utils.h"
 #include "zip_unzip_dir_i.h"
 #include "zip_unzip_file_i.h"
 
-static
-enum dir_visit_next_op
-cpe_unzip_context_search_i(
-    cpe_unzip_file_visitor_t visitor, void * ctx,
-    cpe_unzip_dir_t d, int maxLevel,
-    error_monitor_t em,
-    mem_buffer_t buffer)
-{
-    cpe_unzip_dir_t child_dir;
-    cpe_unzip_file_t child_file;
-    char * path;
-    size_t bufSize;
-    enum dir_visit_next_op nextOp;
+cpe_unzip_dir_t
+cpe_unzip_dir_create(cpe_unzip_context_t context, cpe_unzip_dir_t parent, const char * name, error_monitor_t em) {
+    cpe_unzip_dir_t r;
 
-    if (maxLevel == 0) return dir_visit_next_go;
-
-    path = (char *)mem_buffer_make_continuous(buffer, 0);
-    bufSize = mem_buffer_size(buffer);
-
-    nextOp = dir_visit_next_go;
-
-    TAILQ_FOREACH(child_file, &d->m_child_files, m_next_file) {
-        if (nextOp != dir_visit_next_go) break;
-
-        if (d != d->m_context->m_root) {
-            if (mem_buffer_strcat(buffer, "/") != 0) break;
-        }
-        if (mem_buffer_strcat(buffer, child_file->m_name) != 0) break;
-
-        if (visitor->on_file) {
-            nextOp = visitor->on_file(
-                (const char *)mem_buffer_make_continuous(buffer, 0),
-                child_file,
-                ctx);
-
-            if (nextOp == dir_visit_next_exit) break;
-        }
-
-        /*restore curent path*/
-        mem_buffer_set_size(buffer, bufSize);
-        path = (char *)mem_buffer_make_continuous(buffer, 0);
-        if (path == NULL) {
-            CPE_ERROR(em, "no memory for asset search path");
-            nextOp = dir_visit_next_exit;
-            break;
-        }
-        path[bufSize - 1] = 0;
+    r = mem_alloc(context->m_alloc, sizeof(struct cpe_unzip_dir));
+    if (r == NULL) {
+        CPE_ERROR(em, "cpe_unzip_dir_create: malloc fail");
+        return NULL;
     }
 
-    TAILQ_FOREACH(child_dir, &d->m_child_dirs, m_next_dir) {
-        if (nextOp != dir_visit_next_go) break;
+    r->m_context = context;
+    r->m_parent_dir = parent;
+    TAILQ_INIT(&r->m_child_dirs);
+    TAILQ_INIT(&r->m_child_files);
+    cpe_str_dup(r->m_name, sizeof(r->m_name), name);
 
-        if (d != d->m_context->m_root) {
-            if (mem_buffer_strcat(buffer, "/") != 0) break;
-        }
-        if (mem_buffer_strcat(buffer, child_dir->m_name) != 0) break;
-
-        if (visitor->on_dir_enter) {
-            nextOp = visitor->on_dir_enter(
-                (const char *)mem_buffer_make_continuous(buffer, 0),
-                child_dir,
-                ctx);
-
-            if (nextOp == dir_visit_next_exit) break;
-        }
-        else {
-            nextOp = dir_visit_next_go;
-        }
-
-        if (nextOp == dir_visit_next_go) {
-            nextOp = cpe_unzip_context_search_i(
-                visitor, ctx,
-                child_dir, maxLevel > 0 ? maxLevel - 1 : maxLevel,
-                em, buffer);
-
-            if (nextOp == dir_visit_next_exit) break;
-        }
-
-        if (visitor->on_dir_leave) {
-            nextOp = visitor->on_dir_leave(
-                (const char *)mem_buffer_make_continuous(buffer, 0),
-                child_dir,
-                ctx);
-
-            if (nextOp == dir_visit_next_exit) break;
-        }
-
-        mem_buffer_set_size(buffer, bufSize);
-        path = (char *)mem_buffer_make_continuous(buffer, 0);
-        if (path == NULL) {
-            CPE_ERROR(em, "no memory for asset search path");
-            nextOp = dir_visit_next_exit;
-            break;
-        }
-        path[bufSize - 1] = 0;
+    if (parent) {
+        TAILQ_INSERT_TAIL(&parent->m_child_dirs, r, m_next_dir);
     }
 
-    return nextOp == dir_visit_next_exit ?  dir_visit_next_exit : dir_visit_next_go;
+    return r;
 }
 
-void cpe_unzip_dir_search(
-    cpe_unzip_file_visitor_t visitor, void * ctx,
-    cpe_unzip_dir_t d, int maxLevel,
-    error_monitor_t em, mem_allocrator_t talloc)
-{
-    struct mem_buffer buffer;
+void cpe_unzip_dir_free(cpe_unzip_dir_t d) {
+    while(!TAILQ_EMPTY(&d->m_child_files)) {
+        cpe_unzip_file_free(TAILQ_FIRST(&d->m_child_files));
+    }
 
-    mem_buffer_init(&buffer, talloc);
+    while(!TAILQ_EMPTY(&d->m_child_dirs)) {
+        cpe_unzip_dir_free(TAILQ_FIRST(&d->m_child_dirs));
+    }
 
-    cpe_unzip_dir_path(&buffer, d);
-
-    cpe_unzip_context_search_i(visitor, ctx, d, maxLevel, em, &buffer);
-
-    mem_buffer_clear(&buffer);
+    if (d->m_parent_dir) {
+        TAILQ_REMOVE(&d->m_parent_dir->m_child_dirs, d, m_next_dir);
+    }
+    
+    mem_free(d->m_context->m_alloc, d);
 }
 
+void cpe_unzip_dir_build_path(mem_buffer_t buffer, cpe_unzip_dir_t d) {
+    if (d->m_parent_dir && d->m_parent_dir != d->m_context->m_root) {
+        cpe_unzip_dir_build_path(buffer, d->m_parent_dir);
+        mem_buffer_strcat(buffer, "/");
+    }
+
+    mem_buffer_strcat(buffer, d->m_name);
+}
+
+const char * cpe_unzip_dir_name(cpe_unzip_dir_t d) {
+    return d->m_name;
+}
+
+const char * cpe_unzip_dir_path(mem_buffer_t buffer, cpe_unzip_dir_t d) {
+    cpe_unzip_dir_build_path(buffer, d);
+    return (const char *)mem_buffer_make_continuous(buffer, 0);
+}
+
+cpe_unzip_dir_t
+cpe_unzip_dir_find(cpe_unzip_context_t context, const char * path, error_monitor_t em) {
+    const char * start;
+    const char * end;
+    cpe_unzip_dir_t cur_dir;
+    cpe_unzip_dir_t f;
+
+    assert(path);
+    assert(context);
+    assert(context->m_root);
+
+    cur_dir = context->m_root;
+
+    start = path;
+    while((end = strchr(start, '/'))) {
+        cpe_unzip_dir_t c;
+
+        TAILQ_FOREACH(c, &cur_dir->m_child_dirs, m_next_dir) {
+            size_t len = end - start;
+            size_t name_len = strlen(c->m_name);
+            if (name_len == len && memcmp(c->m_name, start, len) == 0) {
+                break;
+            }
+        }
+
+        if (c == TAILQ_END(&cur_dir->m_child_dirs)) return NULL;
+        
+        cur_dir = c;
+        start = end + 1;
+    }
+
+    assert(start);
+    if (start[0] == 0) {
+        return cur_dir;
+    }
+
+    TAILQ_FOREACH(f, &cur_dir->m_child_dirs, m_next_dir) {
+        if (strcmp(f->m_name, start) == 0) return f;
+    }
+
+    return NULL;
+}
