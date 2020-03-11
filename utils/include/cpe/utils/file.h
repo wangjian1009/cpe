@@ -28,6 +28,7 @@ int file_mv(const char * to, const char * form, error_monitor_t em);
 int file_exist(const char * file, error_monitor_t em);
 ssize_t file_size(const char * file, error_monitor_t em);
 int file_copy(const char * output, const char * input, mode_t mode, error_monitor_t em);
+int file_set_fa(const char * file, uint16_t fa, error_monitor_t em);
 
 /*file stream operations*/
 FILE * file_stream_open(const char *path, const char *mode, error_monitor_t em);

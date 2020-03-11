@@ -303,6 +303,10 @@ ssize_t file_size(const char * path, error_monitor_t em) {
     return (ssize_t)buffer.st_size;
 }
 
+int file_set_fa(const char * file, uint16_t fa, error_monitor_t em) {
+    return chmod(file, (mode_t)fa);
+}
+
 ssize_t file_stream_size(FILE * fp, error_monitor_t em) {
     struct stat buffer;
     int status;

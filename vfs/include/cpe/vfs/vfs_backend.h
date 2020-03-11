@@ -24,6 +24,7 @@ typedef void const * (*vfs_file_inline_data_fun_t)(void * ctx, vfs_file_t file);
 typedef uint8_t (*vfs_file_exist_fun_t)(void * ctx, void * env, const char * path);
 typedef int (*vfs_file_rm_fun_t)(void * ctx, void * env, const char * path);    
 typedef int (*vfs_file_mv_fun_t)(void * ctx, void * from_env, const char * from_path, void * to_env, const char * to_path);    
+typedef int (*vfs_file_set_attributes_fun_t)(void * ctx, void * env, const char * path, uint16_t fa);    
 
 typedef int (*vfs_dir_open_fun_t)(void * ctx, void * env, vfs_dir_t dir, const char * path);
 typedef void (*vfs_dir_close_fun_t)(void * ctx, vfs_dir_t dir);
@@ -47,6 +48,7 @@ vfs_backend_t vfs_backend_create(
     vfs_file_exist_fun_t file_exist,
     vfs_file_rm_fun_t file_rm,
     vfs_file_mv_fun_t file_mv,
+    vfs_file_set_attributes_fun_t file_set_attributes,
     /*dir*/
     uint32_t dir_capacity, vfs_dir_open_fun_t dir_open, vfs_dir_close_fun_t dir_close,
     vfs_dir_read_fun_t dir_read,

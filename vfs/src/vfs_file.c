@@ -78,6 +78,19 @@ int vfs_file_rm(vfs_mgr_t mgr, const char * path) {
     return backend->m_file_rm ? backend->m_file_rm(backend->m_ctx, mount_point->m_backend_env, path) : -1;
 }
 
+int vfs_file_set_attributes(vfs_mgr_t mgr, const char * path, uint16_t fa) {
+    vfs_mount_point_t mount_point;
+    vfs_backend_t backend;
+
+    mount_point = vfs_mount_point_find_by_path(mgr, &path);
+    if (mount_point == NULL) return -1;
+    
+    backend = mount_point->m_backend;
+    assert(backend);
+
+    return backend->m_file_set_fa ? backend->m_file_set_fa(backend->m_ctx, mount_point->m_backend_env, path, fa) : -1;
+}
+
 void * vfs_file_data(vfs_file_t f) {
     return f + 1;
 }

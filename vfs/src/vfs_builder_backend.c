@@ -377,6 +377,7 @@ vfs_backend_t vfs_builder_create_backend(vfs_mgr_t mgr) {
             vfs_builder_file_exist,
             vfs_builder_file_rm,
             NULL,
+            NULL,
             /*dir*/
             sizeof(struct vfs_builder_dir), vfs_builder_dir_open, vfs_builder_dir_close, vfs_builder_dir_read,
             vfs_builder_dir_exist,

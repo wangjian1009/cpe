@@ -12,6 +12,7 @@ void vfs_file_close(vfs_file_t f);
 
 uint8_t vfs_file_exist(vfs_mgr_t mgr, const char * path);
 int vfs_file_rm(vfs_mgr_t mgr, const char * path);
+int vfs_file_set_attributes(vfs_mgr_t mgr, const char * path, uint16_t fa);
     
 void * vfs_file_data(vfs_file_t f);
 ssize_t vfs_file_read(vfs_file_t f, void * buf, size_t size);

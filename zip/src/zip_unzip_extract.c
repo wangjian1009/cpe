@@ -56,7 +56,16 @@ cpe_unzip_extract_on_file(const char * full, cpe_unzip_file_t f, void * i_ctx) {
         ctx->m_have_error = 1;
         return dir_visit_next_exit;
     }
+    uint16_t file_fa = cpe_unzip_file_fa(f) >> 16;
 
+    if (vfs_file_set_attributes(ctx->m_vfs, output_path, file_fa) != 0) {
+        CPE_ERROR(
+            ctx->m_em, "zip: extract: set file %s attrigutes fail, errno=%d (%s)",
+            output_path, errno, strerror(errno));
+        ctx->m_have_error = 1;
+        return dir_visit_next_exit;
+    }
+    
     struct vfs_write_stream ws = VFS_WRITE_STREAM_INITIALIZER(of);
     
     ssize_t sz = cpe_unzip_file_load_to_stream((write_stream_t)&ws, f, ctx->m_em);

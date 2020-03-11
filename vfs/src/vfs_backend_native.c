@@ -162,6 +162,11 @@ static int vfs_native_file_rm(void * ctx, void * env, const char * path) {
     return file_rm(vfs_backend_make_path(mgr, env, path), mgr->m_em);
 }
 
+static int vfs_native_file_set_fa(void * ctx, void * env, const char * path, uint16_t fa) {
+    vfs_mgr_t mgr = ctx;
+    return file_set_fa(vfs_backend_make_path(mgr, env, path), fa, mgr->m_em);
+}
+
 static int vfs_native_file_mv(void * ctx, void * from_env, const char * from_path, void * to_env, const char * to_path) {
     vfs_mgr_t mgr = ctx;
     
@@ -298,6 +303,7 @@ int vfs_backend_native_create(vfs_mgr_t mgr) {
             vfs_native_file_exist,
             vfs_native_file_rm,
             vfs_native_file_mv,
+            vfs_native_file_set_fa,
             /*dir*/
             sizeof(struct vfs_backend_native_dir_data), vfs_native_dir_open, vfs_native_dir_close, vfs_native_dir_read,
             vfs_native_dir_exist,
