@@ -1,5 +1,5 @@
-#ifndef CPE_ZIP_DEFS_H_INCLEDED
-#define CPE_ZIP_DEFS_H_INCLEDED
+#ifndef CPE_ZIP_PRO_DEFS_H_INCLEDED
+#define CPE_ZIP_PRO_DEFS_H_INCLEDED
 #include "zlib.h"
 
 #ifdef HAVE_BZIP2

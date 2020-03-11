@@ -26,7 +26,7 @@
 #include <string.h>
 #include <time.h>
 #include "zlib.h"
-#include "zip.h"
+#include "zip_pro_zip.h"
 #include "cpe/pal/pal_errno.h"
 #include "cpe/vfs/vfs_file.h"
 
@@ -151,7 +151,7 @@ typedef struct {
 
 #ifndef NOCRYPT
 #define INCLUDECRYPTINGCODE_IFCRYPTALLOWED
-#include "crypt.h"
+#include "zip_pro_crypt.h"
 #endif
 
 linkedlist_datablock_internal * allocate_new_datablock() {

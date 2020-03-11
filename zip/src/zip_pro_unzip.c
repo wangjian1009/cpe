@@ -72,7 +72,7 @@
 #endif
 
 #include "zlib.h"
-#include "unzip.h"
+#include "zip_pro_unzip.h"
 #include "cpe/pal/pal_errno.h"
 #include "cpe/pal/pal_limits.h"
 #include "cpe/utils/string_utils.h"

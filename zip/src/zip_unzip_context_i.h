@@ -3,7 +3,7 @@
 #include "cpe/pal/pal_queue.h"
 #include "cpe/utils/memory.h"
 #include "cpe/zip/zip_types.h"
-#include "unzip.h"
+#include "zip_pro_unzip.h"
 
 #ifdef __cplusplus
 extern "C" {

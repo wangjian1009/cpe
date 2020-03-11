@@ -1,5 +1,5 @@
 #include "cpe/pal/pal_strings.h"
-#include "zip_defs.h"
+#include "zip_pro_defs.h"
 
 #ifdef CASESENSITIVITYDEFAULT_NO
 #define CASESENSITIVITYDEFAULTVALUE 2

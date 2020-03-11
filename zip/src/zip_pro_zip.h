@@ -1,7 +1,7 @@
-#ifndef CPE_ZIP_H_INCLEDED
-#define CPE_ZIP_H_INCLEDED
+#ifndef CPE_ZIP_PRO_ZIP_H_INCLEDED
+#define CPE_ZIP_PRO_ZIP_H_INCLEDED
 #include "cpe/vfs/vfs_types.h"
-#include "zip_defs.h"
+#include "zip_pro_defs.h"
 
 typedef voidp zipFile;
 
