@@ -180,7 +180,10 @@ typedef struct DIR
 
 /* Forward declarations */
 DIR *opendir(const char *dirname);
+
 struct dirent *readdir(DIR *dirp);
+int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
+
 int closedir(DIR *dirp);
 void rewinddir(DIR* dirp);
 
