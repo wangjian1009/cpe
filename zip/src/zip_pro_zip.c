@@ -1,26 +1,3 @@
-/* zip.c -- IO on .zip files using zlib
-   Version 1.1, February 14h, 2010
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Modifications for Zip64 support
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
-
-         For more info read MiniZip_info.txt
-
-         Changes
-   Oct-2009 - Mathias Svensson - Remove old C style function prototypes
-   Oct-2009 - Mathias Svensson - Added Zip64 Support when creating new file archives
-   Oct-2009 - Mathias Svensson - Did some code cleanup and refactoring to get better overview of some functions.
-   Oct-2009 - Mathias Svensson - Added zipRemoveExtraInfoBlock to strip extra field data from its ZIP64 data
-                                 It is used when recreting zip archive with RAW when deleting items from a zip.
-                                 ZIP64 data is automaticly added to items that needs it, and existing ZIP64 data need to be removed.
-   Oct-2009 - Mathias Svensson - Added support for BZIP2 as compression mode (bzip2 lib is required)
-   Jan-2010 - back to unzip and minizip 1.0 name scheme, with compatibility layer
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,6 +6,7 @@
 #include "zip_pro_zip.h"
 #include "cpe/pal/pal_errno.h"
 #include "cpe/vfs/vfs_file.h"
+#include "zip_pro_crypt.h"
 
 /* compile with -Dlocal if your debugger can't find static symbols */
 
@@ -64,13 +42,6 @@
 // NOT sure that this work on ALL platform
 #define MAKEULONG64(a, b) ((ssize_t)(((unsigned long)(a)) | ((ssize_t)((unsigned long)(b))) << 32))
 
-#ifndef DEF_MEM_LEVEL
-#if MAX_MEM_LEVEL >= 8
-#define DEF_MEM_LEVEL 8
-#else
-#define DEF_MEM_LEVEL MAX_MEM_LEVEL
-#endif
-#endif
 //static const char zip_copyright[] =" zip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
 
 #define SIZEDATA_INDATABLOCK (4096 - (4 * 4))
@@ -146,9 +117,6 @@ typedef struct {
 #endif
 
 } zip64_internal;
-
-#define INCLUDECRYPTINGCODE_IFCRYPTALLOWED
-#include "zip_pro_crypt.h"
 
 linkedlist_datablock_internal * allocate_new_datablock() {
     linkedlist_datablock_internal * ldi;
