@@ -77,6 +77,7 @@ cpe_unzip_extract_on_file(const char * full, cpe_unzip_file_t f, void * i_ctx) {
         ctx->m_have_error = 1;
         return dir_visit_next_exit;
     }
+    vfs_file_close(of);
 
     if (ctx->m_debug) {
         char fa_buf[64];
