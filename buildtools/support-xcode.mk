@@ -15,15 +15,15 @@ $1: build-$1
 
 build-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) build \
-		| xcpretty --no-color
+		| xcpretty
 
 install-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) install \
-		| xcpretty --no-color
+		| xcpretty
 
 clean-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 clean \
-		| xcpretty --no-color
+		| xcpretty
 
 endef
 
