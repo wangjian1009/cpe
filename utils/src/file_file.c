@@ -254,8 +254,14 @@ int file_stream_read_line(mem_buffer_t buffer, char * * r_data, size_t * data_le
             CPE_ERROR(em, "file_stream_read_line: make continue, buffer size is %d", (int)mem_buffer_size(buffer));
             return -1;
         }
-        
-        ssize_t loaded_sz = file_stream_load_to_buf(data + buf_sz, mem_buffer_size(buffer) - buf_sz, fp, em);
+
+        ssize_t loaded_sz = fread(data + buf_sz, 1, mem_buffer_size(buffer) - buf_sz, fp);
+        if (loaded_sz < 0) {
+            CPE_ERROR(
+                em, "file_stream_read_line: read data fail, error=%d (%s)",
+                errno, strerror(errno));      
+            return -1;
+        }
         if (loaded_sz < 0) return -1;
 
         if (loaded_sz == 0) {
