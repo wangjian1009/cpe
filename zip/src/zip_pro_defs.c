@@ -1,3 +1,4 @@
+#include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_strings.h"
 #include "zip_pro_defs.h"
 

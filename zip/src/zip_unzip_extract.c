@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "cpe/pal/pal_errno.h"
+#include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_strings.h"
 #include "cpe/utils/stream_mem.h"
 #include "cpe/vfs/vfs_file.h"

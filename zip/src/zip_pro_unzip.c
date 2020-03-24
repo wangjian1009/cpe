@@ -455,7 +455,7 @@ unzFile cpe_unzOpenInternal(error_monitor_t em, vfs_mgr_t vfs, const void * path
     int err = UNZ_OK;
 
     if (unz_copyright[0] != ' ') {
-        CPE_ERROR(em, "unzip: open file %s fail, validate copyright fail", path);
+        CPE_ERROR(em, "unzip: open file %s fail, validate copyright fail", (const char *)path);
         return NULL;
     }
 
@@ -464,7 +464,7 @@ unzFile cpe_unzOpenInternal(error_monitor_t em, vfs_mgr_t vfs, const void * path
     us.em = em;
     us.filestream = vfs_file_open(vfs, path, "r+b");
     if (us.filestream == NULL) {
-        CPE_ERROR(em, "unzip: open file %s fail, error=%d (%s)", path, errno, strerror(errno));
+        CPE_ERROR(em, "unzip: open file %s fail, error=%d (%s)", (const char *)path, errno, strerror(errno));
         return NULL;
     }
 
@@ -602,10 +602,10 @@ unzFile cpe_unzOpenInternal(error_monitor_t em, vfs_mgr_t vfs, const void * path
 
     if (err != UNZ_OK) {
         if (err == UNZ_ERRNO) {
-            CPE_ERROR(em, "unzip: %s: read data error, err=%d (%s)", path, errno, strerror(errno));
+            CPE_ERROR(em, "unzip: %s: read data error, err=%d (%s)", (const char *)path, errno, strerror(errno));
         }
         else {
-            CPE_ERROR(em, "unzip: %s: lib error, err=%d", path, err);
+            CPE_ERROR(em, "unzip: %s: lib error, err=%d", (const char *)path, err);
         }
         vfs_file_close(us.filestream);
         return NULL;
