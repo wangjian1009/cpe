@@ -15,15 +15,15 @@ $1: build-$1
 
 build-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) build \
-		| xcpretty
+		| xcpretty --no-utf
 
 install-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 -configuration $(XCODE_CONF) install \
-		| xcpretty
+		| xcpretty --no-utf
 
 clean-$1:
 	xcodebuild -workspace $(XCODE_WORKSPACE) -scheme $1 clean \
-		| xcpretty
+		| xcpretty --no-utf
 
 endef
 
