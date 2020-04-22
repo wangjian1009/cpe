@@ -325,7 +325,7 @@ int cpe_md5_parse(cpe_md5_value_t value, const char * str) {
         str += 2;
     }
 
-    if (str[i] != 0) return -1;
+    if (str[0] != 0) return -1;
 
     return 0;
 }
