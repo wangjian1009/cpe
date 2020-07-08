@@ -87,6 +87,8 @@ void cpe_str_char_replace_all_range(char * p, uint32_t sz, const char * from, ch
 int cpe_str_cmp_opt(const char * l, const char * r);
 const char * cpe_str_opt(const char * v, const char * dft);
 
+uint8_t cpe_str_validate_utf8(const char * s, uint32_t len);
+    
 #define CPE_STR_BUF_INIT(__b, __size) { __size, 0, __b, 0 }
 
 #ifdef __cplusplus

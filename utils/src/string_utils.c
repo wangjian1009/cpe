@@ -934,3 +934,45 @@ void cpe_str_char_replace_all_range(char * p, uint32_t sz, const char * from, ch
         }
     }
 }
+
+uint8_t cpe_str_validate_utf8(const char * i_s, uint32_t len) {
+#define ADV_PTR s++; if (!(len--)) return 0;
+    const uint8_t * s = (void*)i_s;
+
+    if (!len) return 1;
+    if (!s) return 0;
+    
+    while (len--) {
+        /* single byte */
+        if (*s <= 0x7f) {
+            /* noop */
+        }
+        /* two byte */ 
+        else if ((*s >> 5) == 0x6) {
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+        }
+        /* three byte */
+        else if ((*s >> 4) == 0x0e) {
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+        }
+        /* four byte */        
+        else if ((*s >> 3) == 0x1e) {
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+            ADV_PTR;
+            if (!((*s >> 6) == 0x2)) return 0;
+        } else {
+            return 0;
+        }
+        
+        s++;
+    }
+    
+    return 1;
+}
