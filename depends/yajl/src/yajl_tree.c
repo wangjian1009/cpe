@@ -500,6 +500,7 @@ yajl_val yajl_tree_get_2(yajl_val n, const char * path, yajl_type type)
     }
 
     if (n) {
+        if (n->type != yajl_t_object) return NULL;
         c = n->u.object.len;
         for (i = 0; i < c; i++) {
             if (strcmp(n->u.object.keys[i], path) == 0) {
