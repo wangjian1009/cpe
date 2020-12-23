@@ -88,6 +88,15 @@ void cpe_bin_2_hex(char * o, uint8_t const * p, size_t len) {
     }
 }
 
+void cpe_hex_print_bin_2_hex(write_stream_t ws, uint8_t const * p, size_t len) {
+    while (len > 0) {
+        stream_putc(ws, s_hex_num2char[(*p) >> 4]);
+        stream_putc(ws, s_hex_num2char[(*p) & 0xF]);
+        p++;
+        len--;
+    }
+}
+
 void cpe_uint32_2_hex(char * o, uint32_t v) {
     o[0] = s_hex_num2char[(v >> 28) & 0xF];
     o[1] = s_hex_num2char[(v >> 24) & 0xF];
