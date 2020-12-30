@@ -1,7 +1,4 @@
-#include <setjmp.h>
-#include "cpe/pal/pal_types.h"
-#include "cpe/pal/pal_stdarg.h"
-#include "cmocka.h"
+#include "cmocka_all.h"
 #include "test_memory.h"
 
 void * test_mem_alloc(size_t size, mem_allocrator_t allocrator, const char* file, const int line) {
