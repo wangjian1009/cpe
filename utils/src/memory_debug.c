@@ -42,7 +42,7 @@ static int debug_mem_alloc_info_cmp(const struct debug_mem_alloc_info * l, const
     return l->m_addr == r->m_addr;
 }
 
-static void * do_debug_allocrator_alloc(size_t size, struct mem_allocrator * allocrator) {
+static void * do_debug_allocrator_alloc(size_t size, struct mem_allocrator * allocrator, const char* file, const int line) {
     struct debug_mem_alloc_info * alloc_info;
     struct debug_mem_allocrator * dalloc;
     void * r;
@@ -81,13 +81,13 @@ static void * do_debug_allocrator_alloc(size_t size, struct mem_allocrator * all
     return r;
 }
 
-static void * do_debug_allocrator_calloc(size_t size, struct mem_allocrator * allocrator) {
-    void * r = do_debug_allocrator_alloc(size, allocrator);
+static void * do_debug_allocrator_calloc(size_t size, struct mem_allocrator * allocrator, const char* file, const int line) {
+    void * r = do_debug_allocrator_alloc(size, allocrator, file, line);
     if (r) bzero(r, size);
     return r;
 }
 
-static void do_debug_allocrator_free(void * p, struct mem_allocrator * allocrator) {
+static void do_debug_allocrator_free(void * p, struct mem_allocrator * allocrator, const char* file, const int line) {
     struct debug_mem_alloc_info key;
     struct debug_mem_alloc_info * alloc_info;
     struct debug_mem_allocrator * dalloc = (struct debug_mem_allocrator *)allocrator;
