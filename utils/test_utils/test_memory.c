@@ -14,14 +14,13 @@ void test_mem_free(void * p, mem_allocrator_t allocrator, const char* file, cons
 }
 
 mem_allocrator_t test_allocrator() {
-    /* static struct mem_allocrator s_ins = { */
-    /*     test_mem_alloc, */
-    /*     test_mem_calloc, */
-    /*     test_mem_free, */
-    /*     NULL, */
-    /* }; */
+    static struct mem_allocrator s_ins = {
+        test_mem_alloc,
+        test_mem_calloc,
+        test_mem_free,
+        NULL,
+    };
 
-    /* return &s_ins; */
-    return NULL;
+    return &s_ins;
 }
 
