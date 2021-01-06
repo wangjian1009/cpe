@@ -24,6 +24,10 @@ if (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
 
 endif()
 
+if (BUILD_TESTS)
+  add_definitions(-DCPE_UNIT_TEST=1)
+endif()
+
 if (MINGW)
   set(OS_NAME mingw)
   add_definitions(-DCPE_OS_MINGW=1)
