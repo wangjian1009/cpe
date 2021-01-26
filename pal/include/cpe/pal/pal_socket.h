@@ -67,6 +67,7 @@ extern const char *cpe_sock_errstr(int n);
 #define cpe_sendto sendto
 
 #define cpe_sock_close close
+#define cpe_sock_shutdown shutdown    
 #define cpe_sock_errno() errno
 #define cpe_sock_errstr(n) strerror(n)
 
