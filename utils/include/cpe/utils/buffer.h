@@ -79,6 +79,8 @@ char * mem_buffer_strdup_range(mem_buffer_t buffer, const char * s, const char *
 int mem_buffer_strcat(mem_buffer_t buffer, const char * s);
 int mem_buffer_printf(mem_buffer_t buffer, const char * fmt, ...);
 
+const char * mem_buffer_dump_data(mem_buffer_t buffer, const void * buf, size_t size, char nohex);
+
 #ifdef __cplusplus
 }
 #endif

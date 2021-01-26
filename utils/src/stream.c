@@ -256,3 +256,13 @@ void stream_dump_data(write_stream_t ws, const void * i_ptr, size_t size, char n
     }
 }
  
+const char *
+mem_buffer_dump_data(mem_buffer_t buffer, const void * buf, size_t size, char nohex) {
+    mem_buffer_clear_data(buffer);
+
+    struct write_stream_buffer ws = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
+    stream_dump_data((write_stream_t)&ws, buf, size, nohex);
+    stream_putc((write_stream_t)&ws, 0);
+
+    return mem_buffer_make_continuous(buffer, 0);
+}
