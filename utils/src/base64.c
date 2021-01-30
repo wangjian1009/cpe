@@ -66,6 +66,16 @@ size_t cpe_base64_encode(write_stream_t output, read_stream_t input) {
     return wlen;  
 }  
 
+size_t cpe_base64_encode_from_buf(write_stream_t output, void const * data, size_t data_len) {
+    struct read_stream_mem is = CPE_READ_STREAM_MEM_INITIALIZER(data, data_len);
+    return cpe_base64_encode(output, (read_stream_t)&is);
+}
+
+size_t cpe_base64_decode_from_buf(write_stream_t output, void const * data, size_t data_len) {
+    struct read_stream_mem is = CPE_READ_STREAM_MEM_INITIALIZER(data, data_len);
+    return cpe_base64_decode(output, (read_stream_t)&is);
+}
+
 char cpe_base64_char_to_index(char c) {
     if((c >= 'A') && (c <= 'Z')) return c - 'A';
     if((c >= 'a') && (c <= 'z')) return c - 'a' + 26;
