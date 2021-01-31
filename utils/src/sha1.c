@@ -137,6 +137,10 @@ int cpe_sha1_update(cpe_sha1_ctx_t ctx, const void * i_input, size_t ilen) {
     return 0;
 }
 
+int cpe_sha1_update_str(cpe_sha1_ctx_t ctx, const char * data) {
+    return cpe_sha1_update(ctx, data, strlen(data));
+}
+
 static const uint8_t sha1_padding[64] = {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -332,3 +336,5 @@ static int cpe_internal_sha1_process(cpe_sha1_ctx_t ctx, const uint8_t data[64])
 
     return( 0 );
 }
+
+struct cpe_sha1_value CPE_SHA1_INVALID = { 0 };

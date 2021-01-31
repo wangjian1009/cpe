@@ -24,11 +24,14 @@ void cpe_sha1_copy(cpe_sha1_ctx_t dst, cpe_sha1_ctx_t src);
 
 int cpe_sha1_starts(cpe_sha1_ctx_t ctx);
 int cpe_sha1_update(cpe_sha1_ctx_t ctx, const void * input, size_t len);
+int cpe_sha1_update_str(cpe_sha1_ctx_t ctx, const char * data);
 int cpe_sha1_finish(cpe_sha1_ctx_t ctx, cpe_sha1_value_t output);
     
 int cpe_sha1_encode_rs(cpe_sha1_value_t output, read_stream_t input);
 int cpe_sha1_encode_str(cpe_sha1_value_t output, const char * input);
 int cpe_sha1_encode_buf(cpe_sha1_value_t output, const void * input, size_t input_len);
+
+extern struct cpe_sha1_value CPE_SHA1_INVALID;
 
 #ifdef __cplusplus
 }
