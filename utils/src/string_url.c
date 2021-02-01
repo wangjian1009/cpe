@@ -6,20 +6,15 @@
 
 static unsigned char hexchars[] = "0123456789ABCDEF";
 
-ssize_t cpe_url_encode(write_stream_t output, read_stream_t input) {
+size_t cpe_url_encode(write_stream_t output, read_stream_t input) {
     uint8_t input_buf[128];
     int input_buf_len;
-    int input_read_len;
 
     size_t output_total_len = 0;
-    for(input_buf_len = 0, input_read_len = stream_read(input, input_buf, sizeof(input_buf));
-        input_buf_len + input_read_len > 0;
-        input_read_len = stream_read(input, input_buf + input_buf_len, sizeof(input_buf) - input_buf_len))
+    for(input_buf_len = stream_read(input, input_buf, sizeof(input_buf));
+        input_buf_len > 0;
+        input_buf_len = stream_read(input, input_buf, sizeof(input_buf)))
     {
-        int have_next = input_read_len > 0 ? 1 : 0;
-
-        input_buf_len += input_read_len;
-
         uint8_t output_buf[CPE_ARRAY_SIZE(input_buf) * 3];
         uint32_t output_pos = 0;
 
@@ -42,8 +37,7 @@ ssize_t cpe_url_encode(write_stream_t output, read_stream_t input) {
             }
         }
 
-        int rv = stream_write(output, output_buf, output_pos);
-        if (rv < output_pos) return -1;
+        stream_write(output, output_buf, output_pos);
         
         output_total_len += output_pos;
     }
@@ -51,7 +45,20 @@ ssize_t cpe_url_encode(write_stream_t output, read_stream_t input) {
     return output_total_len;
 }
 
-/* ssize_t cpe_url_decode(char * result, size_t result_capacity, const char * input, size_t input_size, error_monitor_t em) { */
+size_t cpe_url_decode(write_stream_t output, read_stream_t input) {
+    char input_buf[128];
+    int input_buf_len;
+    int input_read_len;
+    char lpCode[4];
+
+    size_t output_total_len = 0;
+    for(input_buf_len = 0, input_read_len = stream_read(input, input_buf, sizeof(input_buf));
+        input_buf_len + input_read_len > 0;
+        input_read_len = stream_read(input, input_buf + input_buf_len, sizeof(input_buf) - input_buf_len))
+    {
+        
+    }
+    
 /*     ssize_t j = 0; */
 
 /*     while(input_size > 0) { */
@@ -98,7 +105,18 @@ ssize_t cpe_url_encode(write_stream_t output, read_stream_t input) {
 /*     result[j] = '\0'; */
     
 /*     return j; */
-/* } */
+    return output_total_len;
+}
+
+ssize_t cpe_url_encode_from_buf(write_stream_t output, const char * input, size_t input_size) {
+    struct read_stream_mem is = CPE_READ_STREAM_MEM_INITIALIZER(input, input_size);
+    return cpe_url_encode(output, (read_stream_t)&is);
+}
+
+ssize_t cpe_url_decode_from_buf(write_stream_t output, const char * input, size_t input_size) {
+    struct read_stream_mem is = CPE_READ_STREAM_MEM_INITIALIZER(input, input_size);
+    return cpe_url_decode(output, (read_stream_t)&is);
+}
 
 size_t cpe_url_decode_inline(char * str, size_t len) {
     char *dest = str;

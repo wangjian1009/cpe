@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "cpe/pal/pal_stdlib.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/memory.h"
 #include "cpe/utils/string_utils.h"
@@ -178,6 +179,38 @@ const char * cpe_url_query_param_value_at(cpe_url_t url, uint16_t pos) {
     }
 }
 
+struct cpe_url_param * cpe_url_query_param_confirm_next(cpe_url_t url) {
+    if (url->m_query_param_count < CPE_ARRAY_SIZE(url->m_query_param)) {
+        return &url->m_query_param[url->m_query_param_count];
+    }
+
+    uint16_t addition_pos = url->m_query_param_count - CPE_ARRAY_SIZE(url->m_query_param);
+
+    if (addition_pos >= url->m_query_param_addition_capacity) {
+        uint16_t new_capacity = url->m_query_param_addition_capacity < 8 ? 8 : url->m_query_param_addition_capacity * 2;
+
+        struct cpe_url_param * new_addition = mem_alloc(url->m_alloc, sizeof(struct cpe_url_param) * new_capacity);
+        if (new_addition == NULL) return NULL;
+
+        if (url->m_query_param_addition_capacity > 0) {
+            assert(url->m_query_param_addition);
+            memcpy(
+                new_addition, url->m_query_param_addition,
+                sizeof(struct cpe_url_param) * url->m_query_param_addition_capacity);
+        }
+
+        if (url->m_query_param_addition) {
+            mem_free(url->m_alloc, url->m_query_param_addition);
+        }
+
+        url->m_query_param_addition_capacity = new_capacity;
+        url->m_query_param_addition = new_addition;
+    }
+
+    assert(addition_pos < url->m_query_param_addition_capacity);
+    return &url->m_query_param_addition[addition_pos];
+}
+
 void cpe_url_print(write_stream_t ws, cpe_url_t url) {
     stream_printf(ws, "%s://", cpe_str_opt(url->m_protocol, ""));
 
@@ -194,7 +227,7 @@ void cpe_url_print(write_stream_t ws, cpe_url_t url) {
     }
 
     if (url->m_path) {
-        cpe_url_encode_from_buf(ws, url->m_path, strlen(url->m_path), NULL);
+        stream_printf(ws, "%s", url->m_path);
     }
 
     if (url->m_query_param_count) {
@@ -205,9 +238,11 @@ void cpe_url_print(write_stream_t ws, cpe_url_t url) {
             const char * name = cpe_url_query_param_name_at(url, i);
             const char * value = cpe_url_query_param_value_at(url, i);
 
-            cpe_url_encode_from_buf(ws, name, strlen(name), NULL);
+            if (i > 0) stream_printf(ws, "&");
+            
+            cpe_url_encode_from_buf(ws, name, strlen(name));
             stream_printf(ws, "=");
-            cpe_url_encode_from_buf(ws, value, strlen(value), NULL);
+            cpe_url_encode_from_buf(ws, value, strlen(value));
         }
     }
 }
@@ -226,8 +261,109 @@ const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url) {
 cpe_url_t cpe_url_parse(mem_allocrator_t alloc, error_monitor_t em, const char * str_url) {
     cpe_url_t url = cpe_url_create(alloc);
     if (url == NULL) {
+        CPE_ERROR(em, "parse url: %s: alloc fail!", str_url);
+        return NULL;
     }
 
+    const char * left_url = str_url;
+    const char * url_end = left_url + strlen(left_url);
+
+    const char * sep = strstr(left_url, "://");
+    if (sep == NULL) {
+        CPE_ERROR(em, "parse url: %s: no protocol sep!", str_url);
+        goto PARSE_ERROR;
+    }
+
+    url->m_protocol = cpe_str_mem_dup_range(alloc, left_url, sep);
+    if (url->m_protocol == NULL) {
+        CPE_ERROR(em, "parse url: %s: dup protocol %.*s fail!", str_url, (int)(sep - left_url), left_url);
+        goto PARSE_ERROR;
+    }
+    left_url = sep + 3;
+
+    const char * host_port_last = strchr(left_url, '/');
+    if (host_port_last == NULL) host_port_last = strchr(left_url, '?');
+    if (host_port_last == NULL) host_port_last = url_end;
+
+    sep = cpe_str_char_range(left_url, host_port_last, ':');
+    if (sep) {
+        if (left_url != sep) {
+            url->m_host = cpe_str_mem_dup_range(alloc, left_url, sep);
+            if (url->m_host == NULL) {
+                CPE_ERROR(em, "parse url: %s: dup host %.*s fail!", str_url, (int)(sep - left_url), left_url);
+                goto PARSE_ERROR;
+            }
+        }
+
+        const char * port_begin = sep + 1;
+        uint16_t port_len = host_port_last - port_begin;
+        char port_buf[32];
+        if (port_len + 1 > CPE_ARRAY_SIZE(port_buf)) {
+            CPE_ERROR(em, "parse url: %s: port %.*s too long!", str_url, (int)(port_len), port_begin);
+            goto PARSE_ERROR;
+        }
+        memcpy(port_buf, port_begin, port_len);
+        port_buf[port_len] = 0;
+        url->m_port = atoi(port_buf);
+    } else {
+        url->m_host = cpe_str_mem_dup_range(alloc, left_url, host_port_last);
+        if (url->m_host == NULL) {
+            CPE_ERROR(em, "parse url: %s: dup host %.*s fail!", str_url, (int)(host_port_last - left_url), left_url);
+            goto PARSE_ERROR;
+        }
+    }
+    left_url = host_port_last;
+
+    const char * path_end = strchr(left_url, '?');
+    if (path_end == NULL) path_end = url_end;
+
+    if (left_url < path_end) {
+        url->m_path = cpe_str_mem_dup_range(alloc, left_url, path_end);
+        if (url->m_path == NULL) {
+            CPE_ERROR(em, "parse url: %s: dup path %.*s fail!", str_url, (int)(path_end - left_url), left_url);
+            goto PARSE_ERROR;
+        }
+    }
+    left_url = *path_end ? path_end + 1 : path_end;
+
+    const char * arg_begin = left_url;
+    while (arg_begin < url_end) {
+        const char * arg_end = strchr(arg_begin, '&');
+        if (arg_end == NULL) arg_end = url_end;
+
+        sep = cpe_str_char_range(arg_begin, arg_end, '=');
+        if (sep == NULL) {
+            CPE_ERROR(em, "parse url: %s: arg %.*s no sep!", str_url, (int)(arg_end - arg_begin), arg_begin);
+            goto PARSE_ERROR;
+        }
+
+        struct cpe_url_param * param = cpe_url_query_param_confirm_next(url);
+        if (param == NULL) {
+            CPE_ERROR(em, "parse url: %s: append param fail!", str_url);
+            goto PARSE_ERROR;
+        }
+
+        param->m_name = cpe_str_mem_dup_range(alloc, arg_begin, sep);
+        if (param->m_name == NULL) {
+            CPE_ERROR(em, "parse url: %s: append param: dup arg name %.*s fail!", str_url, (int)(sep - arg_begin), arg_begin);
+            goto PARSE_ERROR;
+        }
+
+        param->m_value = cpe_str_mem_dup_range(alloc, sep + 1, arg_end);
+        if (param->m_value == NULL) {
+            CPE_ERROR(em, "parse url: %s: append param: dup arg value %.*s fail!", str_url, (int)(sep + 1 - arg_end), sep + 1);
+            mem_free(url->m_alloc, param->m_name);
+            goto PARSE_ERROR;
+        }
+        
+        url->m_query_param_count++;
+        arg_begin = arg_end[0] ? arg_end + 1 : arg_end;
+    }
+    
     return url;
+
+PARSE_ERROR:
+    cpe_url_free(url);
+    return NULL;
 }
 

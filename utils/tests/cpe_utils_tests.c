@@ -4,7 +4,7 @@
 int main(void) {
     int rv = 0;
 
-    /*basic*/
+    if (cpe_string_url_basic_tests() != 0) rv = -1;
     if (cpe_url_basic_tests() != 0) rv = -1;
 
     return rv;
