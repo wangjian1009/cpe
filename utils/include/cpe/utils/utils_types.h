@@ -22,6 +22,8 @@ typedef struct cpe_graph_weight_path_node * cpe_graph_weight_path_node_t;
     
 typedef struct cpe_priority_queue * cpe_priority_queue_t;
 
+typedef struct cpe_url * cpe_url_t;
+    
 typedef struct mem_buffer * mem_buffer_t;
 typedef struct mem_buffer_pos * mem_buffer_pos_t;
 typedef struct mem_buffer_trunk * mem_buffer_trunk_t;
