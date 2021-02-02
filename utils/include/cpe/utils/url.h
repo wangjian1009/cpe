@@ -3,6 +3,7 @@
 #include "utils_types.h"
 
 cpe_url_t cpe_url_create(mem_allocrator_t alloc);
+cpe_url_t cpe_url_clone(mem_allocrator_t alloc, cpe_url_t from);
 void cpe_url_free(cpe_url_t url);
 
 const char * cpe_url_protocol(cpe_url_t url);
@@ -20,7 +21,11 @@ int cpe_url_set_path(cpe_url_t url, const char * path);
 uint16_t cpe_url_query_param_count(cpe_url_t url);
 const char * cpe_url_query_param_name_at(cpe_url_t url, uint16_t pos);
 const char * cpe_url_query_param_value_at(cpe_url_t url, uint16_t pos);
+const char * cpe_url_query_param_value_find(cpe_url_t url, const char * name);
 int cpe_url_query_param_add(cpe_url_t url, const char * name, const char * value);
+
+int cpe_url_cmp(cpe_url_t l, cpe_url_t r);
+int cpe_url_cmp_opt(cpe_url_t l, cpe_url_t r);
 
 void cpe_url_print(write_stream_t ws, cpe_url_t url);
 const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url);

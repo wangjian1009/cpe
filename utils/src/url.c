@@ -83,6 +83,41 @@ void cpe_url_free(cpe_url_t url) {
     mem_free(alloc, url);
 }
 
+cpe_url_t cpe_url_clone(mem_allocrator_t alloc, cpe_url_t from) {
+    cpe_url_t url = cpe_url_create(alloc);
+    if (url == NULL) return NULL;
+
+    if (from->m_protocol) {
+        url->m_protocol = cpe_str_mem_dup(url->m_alloc, from->m_protocol);
+        if (url->m_protocol == NULL) goto COPY_ERROR;
+    }
+
+    if (from->m_host) {
+        url->m_host = cpe_str_mem_dup(url->m_alloc, from->m_host);
+        if (url->m_host == NULL) goto COPY_ERROR;
+    }
+
+    url->m_port = from->m_port;
+
+    if (from->m_path) {
+        url->m_path = cpe_str_mem_dup(url->m_alloc, from->m_path);
+        if (url->m_path == NULL) goto COPY_ERROR;
+    }
+
+    uint16_t i;
+    for(i = 0; i < from->m_query_param_count; ++i) {
+        const char * name = cpe_url_query_param_name_at(from, i);
+        const char * value = cpe_url_query_param_value_at(from, i);
+        if (cpe_url_query_param_add(url, name, value) != 0) goto COPY_ERROR;
+    }
+    
+    return url;
+
+COPY_ERROR:
+    cpe_url_free(url);
+    return NULL;
+}
+
 const char * cpe_url_protocol(cpe_url_t url) {
     return url->m_protocol;
 }
@@ -179,6 +214,16 @@ const char * cpe_url_query_param_value_at(cpe_url_t url, uint16_t pos) {
     }
 }
 
+const char * cpe_url_query_param_value_find(cpe_url_t url, const char * name) {
+    uint16_t i;
+    for(i = 0; i < url->m_query_param_count; ++i) {
+        const char * arg_name = cpe_url_query_param_name_at(url, i);
+        if (cpe_str_cmp_opt(arg_name, name) == 0) return cpe_url_query_param_value_at(url, i);
+    }
+    
+    return NULL;
+}
+
 struct cpe_url_param * cpe_url_query_param_confirm_next(cpe_url_t url) {
     if (url->m_query_param_count < CPE_ARRAY_SIZE(url->m_query_param)) {
         return &url->m_query_param[url->m_query_param_count];
@@ -209,6 +254,68 @@ struct cpe_url_param * cpe_url_query_param_confirm_next(cpe_url_t url) {
 
     assert(addition_pos < url->m_query_param_addition_capacity);
     return &url->m_query_param_addition[addition_pos];
+}
+
+int cpe_url_query_param_add(cpe_url_t url, const char * name, const char * value) {
+    struct cpe_url_param * param = cpe_url_query_param_confirm_next(url);
+    if (param == NULL) return -1;
+
+    param->m_name = cpe_str_mem_dup(url->m_alloc, name);
+    if (param->m_name == NULL) return -1;
+
+    param->m_value = cpe_str_mem_dup(url->m_alloc, value);
+    if (param->m_value == NULL) {
+        mem_free(url->m_alloc, param->m_name);
+        return -1;
+    }
+
+    url->m_query_param_count++;
+    return 0;
+}
+
+int cpe_url_cmp(cpe_url_t l, cpe_url_t r) {
+    int rv;
+    
+    if (l->m_port != r->m_port) {
+        return (int)l->m_port - (int)r->m_port;
+    }
+
+    if ((rv = cpe_str_cmp_opt(l->m_protocol, r->m_protocol)) != 0) return rv;
+    if ((rv = cpe_str_cmp_opt(l->m_host, r->m_host)) != 0) return rv;
+    if ((rv = cpe_str_cmp_opt(l->m_path, r->m_path)) != 0) return rv;
+
+    if (l->m_query_param_count != r->m_query_param_count) {
+        return (int)l->m_query_param_count - (int)r->m_query_param_count;
+    }
+
+    uint16_t i;
+    for(i = 0; i < l->m_query_param_count; ++i) {
+        const char * arg_name = cpe_url_query_param_name_at(l, i);
+        const char * l_value = cpe_url_query_param_value_at(l, i);
+        const char * r_value = cpe_url_query_param_value_find(r, arg_name);
+        if ((rv = cpe_str_cmp_opt(l_value, r_value)) != 0) return rv;
+    }
+    
+    return 0;
+}
+
+int cpe_url_cmp_opt(cpe_url_t l, cpe_url_t r) {
+    if (l == NULL) {
+        if (r == NULL) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
+    else {
+        if (r == NULL) {
+            return 1;
+        }
+        else {
+            return cpe_url_cmp(l, r);
+        }
+    }
 }
 
 void cpe_url_print(write_stream_t ws, cpe_url_t url) {
