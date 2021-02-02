@@ -304,7 +304,13 @@ cpe_url_t cpe_url_parse(mem_allocrator_t alloc, error_monitor_t em, const char *
         }
         memcpy(port_buf, port_begin, port_len);
         port_buf[port_len] = 0;
-        url->m_port = atoi(port_buf);
+
+        char * port_end_p;
+        url->m_port = strtol(port_buf, &port_end_p, 10);
+        if (*port_end_p != 0) {
+            CPE_ERROR(em, "parse url: %s: port %.*s format error!", str_url, (int)(port_len), port_begin);
+            goto PARSE_ERROR;
+        }
     } else {
         url->m_host = cpe_str_mem_dup_range(alloc, left_url, host_port_last);
         if (url->m_host == NULL) {
