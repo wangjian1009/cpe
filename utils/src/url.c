@@ -347,9 +347,7 @@ void cpe_url_print(write_stream_t ws, cpe_url_t url) {
 
             if (i > 0) stream_printf(ws, "&");
             
-            cpe_url_encode_from_buf(ws, name, strlen(name));
-            stream_printf(ws, "=");
-            cpe_url_encode_from_buf(ws, value, strlen(value));
+            stream_printf(ws, "%s=%s", name, value);
         }
     }
 }
