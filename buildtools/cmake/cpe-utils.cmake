@@ -24,6 +24,11 @@ add_library(cpe_pal STATIC ${cpe_pal_source})
 set_property(TARGET cpe_pal PROPERTY INCLUDE_DIRECTORIES
   ${cpe_pal_base}/include
   )
+
+if (OS_NAME STREQUAL "mingw")
+  target_link_libraries(cpe_pal INTERFACE unixem)
+endif()
+
 # }}}
 # {{{ cpe_utils
 set(cpe_utils_base ${CMAKE_CURRENT_LIST_DIR}/../../utils)
@@ -33,9 +38,14 @@ file(GLOB cpe_utils_source ${cpe_utils_base}/src/*.c)
 add_library(cpe_utils STATIC ${cpe_utils_source})
 
 set_property(TARGET cpe_utils PROPERTY INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
+    ${cpe_pal_base}/include
     ${cpe_utils_base}/include
-  )
+    )
+
+add_dependencies(cpe_utils cpe_pal)
+
+target_link_libraries(cpe_utils INTERFACE cpe_pal)
+  
 # }}}
 # {{{ cpe_utils_sock
 set(cpe_utils_sock_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_sock)
@@ -45,10 +55,17 @@ file(GLOB cpe_utils_sock_source ${cpe_utils_sock_base}/src/*.c)
 add_library(cpe_utils_sock STATIC ${cpe_utils_sock_source})
 
 set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
+    ${cpe_pal_base}/include
+    ${cpe_utils_base}/include
     ${cpe_utils_sock_base}/include
-  )
+    )
+
+if (OS_NAME STREQUAL "mingw")
+  target_link_libraries(cpe_utils_sock INTERFACE ws2_32)
+endif()
+
+target_link_libraries(cpe_utils_sock INTERFACE cpe_utils)
+
 # }}}
 # {{{ cpe_utils_json
 set(cpe_utils_json_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_json)
@@ -58,11 +75,14 @@ file(GLOB cpe_utils_json_source ${cpe_utils_json_base}/src/*.c)
 add_library(cpe_utils_json STATIC ${cpe_utils_json_source})
 
 set_property(TARGET cpe_utils_json PROPERTY INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../depends/yajl/include
+    ${cpe_pal_base}/include
+    ${cpe_utils_base}/include
+    ${yajl_base}/include
     ${cpe_utils_json_base}/include
-  )
+    )
+
+target_link_libraries(cpe_utils_json INTERFACE yajl cpe_utils)
+  
 # }}}
 # {{{ cpe_utils_yaml
 set(cpe_utils_yaml_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_yaml)
@@ -72,9 +92,12 @@ file(GLOB cpe_utils_yaml_source ${cpe_utils_yaml_base}/src/*.c)
 add_library(cpe_utils_yaml STATIC ${cpe_utils_yaml_source})
 
 set_property(TARGET cpe_utils_yaml PROPERTY INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_LIST_DIR}/../../pal/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../utils/include
-    ${CMAKE_CURRENT_LIST_DIR}/../../depends/yaml/include
+    ${cpe_pal_base}/include
+    ${cpe_utils_base}/include
+    ${yajl_base}/include
     ${cpe_utils_yaml_base}/include
   )
+
+target_link_libraries(cpe_utils_yaml INTERFACE yajl cpe_utils)
+
 # }}}
