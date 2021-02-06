@@ -40,7 +40,11 @@ extern "C" {
 #define cpe_send(_fd, _buf, _len, _flags) (send(_get_osfhandle(_fd), _buf, _len, _flags))
 #define cpe_sendto(_fd, _buf, _len, _flags, _to, _tolen) (sendto(_get_osfhandle(_fd), _buf, _len, _flags, _to, _tolen))
 #define cpe_sock_close _close
+#define cpe_sock_shutdown(_fd, _how) shutdown(_get_osfhandle(_fd), (_how))
 
+#define SHUT_RD SD_RECEIVE
+#define SHUT_WR SD_SEND
+    
 #define cpe_sock_errno() WSAGetLastError()
 extern const char *cpe_sock_errstr(int n);
 

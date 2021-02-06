@@ -1,3 +1,4 @@
+#include "cpe/pal/pal_stdio.h"
 #include "cmocka_all.h"
 #include "test_error.h"
 #include "test_memory.h"
