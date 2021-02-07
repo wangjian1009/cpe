@@ -29,3 +29,7 @@ add_library(zlog STATIC ${zlog_source})
 set_property(TARGET zlog PROPERTY COMPILE_DEFINITIONS ${zlog_definitions})
 set_property(TARGET zlog PROPERTY INCLUDE_DIRECTORIES ${zlog_include_directories})
 set_property(TARGET zlog PROPERTY COMPILE_OPTIONS ${zlog_compile_options})
+
+if (OS_NAME STREQUAL "mingw")
+  target_link_libraries(zlog INTERFACE syslog)
+endif()

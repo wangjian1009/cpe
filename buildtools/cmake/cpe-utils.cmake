@@ -60,11 +60,13 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
     ${cpe_utils_sock_base}/include
     )
 
+set(cpe_utils_interface_libraries cpe_utils)
+  
 if (OS_NAME STREQUAL "mingw")
-  target_link_libraries(cpe_utils_sock INTERFACE ws2_32)
+  set(cpe_utils_interface_libraries ${cpe_utils_interface_libraries} ws2_32)
 endif()
 
-target_link_libraries(cpe_utils_sock INTERFACE cpe_utils)
+target_link_libraries(cpe_utils_sock INTERFACE ${cpe_utils_interface_libraries})
 
 # }}}
 # {{{ cpe_utils_json
@@ -83,21 +85,4 @@ set_property(TARGET cpe_utils_json PROPERTY INCLUDE_DIRECTORIES
 
 target_link_libraries(cpe_utils_json INTERFACE yajl cpe_utils)
   
-# }}}
-# {{{ cpe_utils_yaml
-set(cpe_utils_yaml_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_yaml)
-
-file(GLOB cpe_utils_yaml_source ${cpe_utils_yaml_base}/src/*.c)
-
-add_library(cpe_utils_yaml STATIC ${cpe_utils_yaml_source})
-
-set_property(TARGET cpe_utils_yaml PROPERTY INCLUDE_DIRECTORIES
-    ${cpe_pal_base}/include
-    ${cpe_utils_base}/include
-    ${yajl_base}/include
-    ${cpe_utils_yaml_base}/include
-  )
-
-target_link_libraries(cpe_utils_yaml INTERFACE yajl cpe_utils)
-
 # }}}
