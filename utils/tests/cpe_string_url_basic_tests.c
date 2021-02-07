@@ -6,7 +6,7 @@
 #include "cpe_utils_testenv.h"
 
 static void cpe_string_url_encode_basic(void **state) {
-    char output[128];
+    char output[128] = { 0 };
     
     const char * input = "开服最强战机自选大礼包";
 
@@ -15,7 +15,7 @@ static void cpe_string_url_encode_basic(void **state) {
     assert_int_equal(
         99,
         cpe_url_encode_from_buf((write_stream_t)&ws, input, strlen(input)));
-    
+
     assert_string_equal(
         "%E5%BC%80%E6%9C%8D%E6%9C%80%E5%BC%BA%E6%88%98%E6%9C%BA%E8%87%AA%E9%80%89%E5%A4%A7%E7%A4%BC%E5%8C%85",
         output);
