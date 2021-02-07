@@ -26,7 +26,7 @@ set_property(TARGET cpe_pal PROPERTY INCLUDE_DIRECTORIES
   )
 
 if (OS_NAME STREQUAL "mingw")
-  target_link_libraries(cpe_pal INTERFACE unixem)
+  target_link_libraries(cpe_pal INTERFACE unixem ws2_32)
 endif()
 
 # }}}
@@ -61,10 +61,6 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
     )
 
 set(cpe_utils_interface_libraries cpe_utils)
-  
-if (OS_NAME STREQUAL "mingw")
-  set(cpe_utils_interface_libraries ${cpe_utils_interface_libraries} ws2_32)
-endif()
 
 target_link_libraries(cpe_utils_sock INTERFACE ${cpe_utils_interface_libraries})
 

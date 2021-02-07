@@ -1,4 +1,3 @@
-# {{{ cpe_utils_yaml
 set(cpe_utils_yaml_base ${CMAKE_CURRENT_LIST_DIR}/../../utils_yaml)
 
 file(GLOB cpe_utils_yaml_source ${cpe_utils_yaml_base}/src/*.c)
@@ -13,5 +12,3 @@ set_property(TARGET cpe_utils_yaml PROPERTY INCLUDE_DIRECTORIES
   )
 
 target_link_libraries(cpe_utils_yaml INTERFACE yaml cpe_utils)
-
-# }}}
