@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <sys/ioctl.h>
 #include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_strings.h"
@@ -598,3 +599,16 @@ int sock_protect_vpn(int fd, error_monitor_t em) {
 }
 
 #endif
+
+int sock_get_read_size(int fd, error_monitor_t em) {
+    int bytes; 
+    int rv = ioctl(fd, FIONREAD, &bytes);
+
+    if (rv < 0) {
+        CPE_ERROR(em, "sock_get_read_size: ioctl fail, errno=%d (%s)!", errno, strerror(errno));
+        return -1;
+    }
+    else {
+        return bytes;
+    }
+}

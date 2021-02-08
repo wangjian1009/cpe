@@ -43,6 +43,8 @@ int sock_get_local_addr_by_remote(
 
 int sock_protect_vpn(int fd, error_monitor_t em);
 
+int sock_get_read_size(int fd, error_monitor_t em);
+        
 #ifdef __cplusplus
 }
 #endif
