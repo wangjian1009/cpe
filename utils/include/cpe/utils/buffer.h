@@ -39,6 +39,7 @@ void * mem_trunk_data(struct mem_buffer_trunk * trunk);
 size_t mem_trunk_capacity(struct mem_buffer_trunk * trunk);
 size_t mem_trunk_size(struct mem_buffer_trunk * trunk);
 size_t mem_trunk_append(mem_buffer_t buffer, struct mem_buffer_trunk * trunk, const void * buf, size_t size);
+size_t mem_trunk_remove(mem_buffer_t buffer, struct mem_buffer_trunk * trunk, size_t size);
 void mem_trunk_set_size(mem_buffer_t buffer, struct mem_buffer_trunk * trunk, size_t size);
 
 /* buffer basic operations */
@@ -67,7 +68,8 @@ size_t mem_pos_read(mem_buffer_pos_t l, void * data, size_t n);
 /* buffer read write operations */
 ssize_t mem_buffer_append(mem_buffer_t buffer, const void * buf, size_t size);
 ssize_t mem_buffer_append_char(mem_buffer_t buffer, char);
-ssize_t mem_buffer_read(void * buf, size_t size, mem_buffer_t buffer);
+size_t mem_buffer_read(void * buf, size_t size, mem_buffer_t buffer);
+size_t mem_buffer_remove(mem_buffer_t buffer, size_t size);
 void * mem_buffer_make_continuous(mem_buffer_t buffer, size_t reserve);
 void * mem_buffer_make_exactly(mem_buffer_t buffer);
 void * mem_buffer_alloc_with_align(mem_buffer_t buffer, size_t size, uint8_t align);

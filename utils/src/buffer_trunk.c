@@ -28,6 +28,23 @@ size_t mem_trunk_append(struct mem_buffer * buffer, struct mem_buffer_trunk * tr
     return writeSize;
 }
 
+size_t mem_trunk_remove(mem_buffer_t buffer, struct mem_buffer_trunk * trunk, size_t size) {
+    size_t removeSize = size;
+    
+    if (removeSize >= trunk->m_size) {
+        removeSize = trunk->m_size;
+        mem_trunk_free(buffer, trunk);
+    }
+    else {
+        size_t leftSize = trunk->m_size - removeSize;
+        char * buf = mem_trunk_data(trunk);
+        memmove(buf, buf + removeSize, leftSize);
+        mem_trunk_set_size(buffer, trunk, leftSize);
+    }
+
+    return removeSize;
+}
+
 void mem_trunk_set_size(struct mem_buffer * buffer, struct mem_buffer_trunk * trunk, size_t size) {
     assert(size <= trunk->m_capacity);
 

@@ -71,11 +71,12 @@ mem_buffer_trunk_next(struct mem_buffer_trunk * trunk) {
         : NULL;
 }
 
-ssize_t mem_buffer_read(void * buf, size_t size, struct mem_buffer * buffer) {
+size_t mem_buffer_read(void * buf, size_t size, struct mem_buffer * buffer) {
     size_t readedSize = 0;
     struct mem_buffer_trunk * trunk;
 
-    if (!buf || size <= 0 || !buffer) return -1;
+    assert(buffer);
+    assert(buf);
 
     trunk = TAILQ_FIRST(&buffer->m_trunks);
 
@@ -92,6 +93,18 @@ ssize_t mem_buffer_read(void * buf, size_t size, struct mem_buffer * buffer) {
     }
 
     return (ssize_t)readedSize;
+}
+
+size_t mem_buffer_remove(struct mem_buffer * buffer, size_t size) {
+    size_t removeSize = 0;
+
+    while(removeSize < size && !TAILQ_EMPTY(&buffer->m_trunks)) {
+        struct mem_buffer_trunk * trunk = TAILQ_FIRST(&buffer->m_trunks);
+        size_t trunkRemoveSize = mem_trunk_remove(buffer, trunk, size - removeSize);
+        removeSize += trunkRemoveSize;
+    }
+
+    return (ssize_t)removeSize;
 }
 
 ssize_t mem_buffer_append(struct mem_buffer * buffer, const void * buf, size_t size) {
