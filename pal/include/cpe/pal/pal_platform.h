@@ -6,11 +6,31 @@
 #    include <ConditionalMacros.h>
 #endif
 
-//TODO
-#if 0
-#define CPE_BIG_ENDIAN
+#ifndef CPE_BIG_ENDIAN
+    #ifdef _BIG_ENDIAN_
+        #if _BIG_ENDIAN_
+            #define CPE_BIG_ENDIAN 1
+        #endif
+    #endif
+    #ifndef CPE_BIG_ENDIAN
+        #if defined(__hppa__) || \
+            defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
+            (defined(__MIPS__) && defined(__MIPSEB__)) || \
+            defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
+            defined(__sparc__) || defined(__powerpc__) || \
+            defined(__mc68000__) || defined(__s390x__) || defined(__s390__)
+            #define CPE_BIG_ENDIAN 1
+        #endif
+    #endif
+    #ifndef CPE_BIG_ENDIAN
+        #define CPE_BIG_ENDIAN  0
+    #endif
+#endif
+
+#if CPE_BIG_ENDIAN
+#define CPE_LITTLE_ENDIAN 0
 #else
-#define CPE_LITTLE_ENDIAN
+#define CPE_LITTLE_ENDIAN 1
 #endif
 
 #ifndef __WORDSIZE
@@ -104,7 +124,7 @@
         b = inout[0]; inout[0] = inout[1]; inout[1] = b;  \
     } while(0)
 
-#ifdef CPE_LITTLE_ENDIAN
+#if CPE_LITTLE_ENDIAN
 /*网络字节序处理 */
 #define CPE_COPY_HTON64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
 #define CPE_COPY_NTOH64(outp, inp) CPE_COPY_ENDIAN64(outp, inp)
