@@ -56,6 +56,8 @@ typedef struct cpe_hash_table_standalone * cpe_hash_table_standalone_t;
 typedef struct cpe_hash_table_standalone_entry * cpe_hash_table_standalone_entry_t;
 typedef struct cpe_hash_table_standalone_iterator * cpe_hash_table_standalone_iterator_t;
 
+typedef struct cpe_yajl_tree_gen * cpe_yajl_tree_gen_t;
+
 #ifdef __cplusplus
 }
 #endif
