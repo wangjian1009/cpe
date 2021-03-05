@@ -16,6 +16,12 @@ if (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
     message(STATUS "optional:-fprofile-arcs -ftest-coverage")
   endif ()
 
+  if (GPROF)
+    add_compile_options(-pg)
+    add_link_options("-pg")
+    message(STATUS "optional:-pg")
+  endif()
+  
   add_compile_options(-fno-omit-frame-pointer)
   message(STATUS "optional:-fno-omit-frame-pointer")
 
