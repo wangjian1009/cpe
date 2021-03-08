@@ -62,6 +62,10 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
 
 set(cpe_utils_interface_libraries cpe_utils)
 
+if (OS_NAME MATCHES "mac")
+  set(cpe_utils_interface_libraries ${cpe_utils_interface_libraries} resolv)
+endif()
+
 target_link_libraries(cpe_utils_sock INTERFACE ${cpe_utils_interface_libraries})
 
 # }}}
