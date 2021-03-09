@@ -976,3 +976,17 @@ uint8_t cpe_str_validate_utf8(const char * i_s, uint32_t len) {
     
     return 1;
 }
+
+uint8_t cpe_str_validate_ascii(const char * i_s, uint32_t len) {
+    const int8_t * s = (void*)i_s;
+
+    if (len == 0) return 1;
+    if (s == NULL) return 0;
+
+    uint32_t i;
+    for(i = 0; i < len; ++i) {
+        if (s[i] < 0) return 0;
+    }
+    
+    return 1;
+}
