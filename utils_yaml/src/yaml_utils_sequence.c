@@ -24,7 +24,7 @@ void yaml_node_sequence_childs(yaml_document_t * document, yaml_node_t * node_se
     data->m_next = NULL;
     data->m_end = NULL;
 
-    if (node_sequence->type == YAML_SEQUENCE_NODE) {
+    if (node_sequence != NULL && node_sequence->type == YAML_SEQUENCE_NODE) {
         data->m_next = node_sequence->data.sequence. items.start;
         data->m_end = node_sequence->data.sequence.items.top;
     }

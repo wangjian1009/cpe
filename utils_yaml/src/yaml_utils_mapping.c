@@ -49,3 +49,22 @@ void yaml_node_mapping_childs(yaml_document_t * document, yaml_node_t * node_map
     
     it->next = yaml_node_mapping_childs_next;
 }
+
+yaml_node_t * yaml_node_mapping_find_child(
+    yaml_document_t * document, yaml_node_t * node_mapping, const char * name)
+{
+    if (node_mapping == NULL) return NULL;
+    if (node_mapping->type != YAML_MAPPING_NODE) return NULL;
+
+    struct yaml_node_mapping_item_it item_it;
+    yaml_node_mapping_childs(document, node_mapping, &item_it);
+
+    yaml_node_mapping_item_t item;
+    while((item = yaml_node_mapping_item_it_next(&item_it))) {
+        if (strcmp(yaml_node_mapping_item_name(item), name) == 0) {
+            return yaml_node_mapping_item_value(item);
+        }
+    }
+    
+    return NULL;
+}
