@@ -29,7 +29,6 @@ const char * yaml_node_value(yaml_node_t * n);
 const char * yaml_node_mapping_item_name(yaml_node_mapping_item_t item);
 yaml_node_t * yaml_node_mapping_item_value(yaml_node_mapping_item_t item);
 void yaml_node_mapping_childs(yaml_document_t * document, yaml_node_t * node_mapping, yaml_node_mapping_item_it_t it);
-yaml_node_t * yaml_node_mapping_find_child(yaml_document_t * document, yaml_node_t * node_mapping, const char * name);
     
 void yaml_node_sequence_childs(yaml_document_t * document, yaml_node_t * node_sequence, yaml_node_it_t it);
     
