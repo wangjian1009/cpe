@@ -3,8 +3,7 @@
 typedef unsigned chartype;
 
 /* 此函数实现在phaystack指定长度phaystack_len内搜索串pneedle，成功返回起始位置，否则返回NULL */
-char * cpe_strnstr (const char *phaystack, const char *pneedle, const int phaystack_len)
-{
+char * cpe_strnstr(const char *phaystack, const char *pneedle, const int phaystack_len) {
     const unsigned char *haystack, *needle;
     chartype b;
     const unsigned char *rneedle;
@@ -97,4 +96,13 @@ foundneedle:
     return (char *) haystack;
 ret0:
     return 0;
+}
+
+char * cpe_strnchr(const char *phaystack, char c, const int phaystack_len) {
+    int i;
+    for(i = 0; i < phaystack_len; i++) {
+        if (phaystack[i] == c) return (char*)(phaystack + i);
+    }
+
+    return NULL;
 }

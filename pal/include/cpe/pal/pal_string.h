@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 char * cpe_strnstr(const char *phaystack, const char *pneedle, const int phaystack_len);
+char * cpe_strnchr(const char *phaystack, char c, const int phaystack_len);
 
 #ifdef __cplusplus
 }
