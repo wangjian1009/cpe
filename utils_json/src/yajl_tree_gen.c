@@ -125,19 +125,9 @@ int cpe_yajl_tree_object_add_opt(cpe_yajl_tree_gen_t gen, yajl_val o, const char
     return cpe_yajl_tree_object_add(gen, o, key, value);
 }
 
-int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char * key, yajl_val i_value) {
-    assert(i_o);
-    assert(i_o->type == yajl_t_object);
-    assert(key);
-
-    if (i_value == NULL) {
-        CPE_ERROR(gen->m_em, "yajl_tree_gen: %s append empty value!", key);
-        cpe_str_dup(gen->m_error_msg, sizeof(gen->m_error_msg), "object append empty object");
-        return -1;
-    }
+static int cpe_yajl_tree_object_confirm_capacity(cpe_yajl_tree_gen_t gen, cpe_yajl_val_t o) {
+    assert(o);
     
-    cpe_yajl_val_t o = _to_i(i_o);
-
     if ((uint32_t)o->m_data.u.object.len >= o->m_capacity) {
         uint32_t new_capacity = o->m_capacity < 8 ? 8 : o->m_capacity * 2;
         const char ** new_keys = mem_buffer_alloc_with_align(gen->m_buffer, sizeof(o->m_data.u.object.keys[0]) * new_capacity, CPE_DEFAULT_ALIGN);
@@ -157,7 +147,66 @@ int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char *
         o->m_data.u.object.values = new_values;
     }
 
+    return 0;
+}
+
+static yajl_val cpe_yajl_tree_object_check_add_object(cpe_yajl_tree_gen_t gen, cpe_yajl_val_t o, const char * key) {
+    uint32_t i;
+
+    for(i = 0; i < o->m_data.u.object.len; ++i) {
+        if (strcmp(o->m_data.u.object.keys[i], key) == 0) {
+            yajl_val child = o->m_data.u.object.values[i];
+            if (child->type != yajl_t_object) {
+                CPE_ERROR(gen->m_em, "yajl_tree_gen: child node %s is not object!", key);
+                return NULL;
+            }
+            else {
+                return child;
+            }
+        }
+    }
+
+    if (cpe_yajl_tree_object_confirm_capacity(gen, o) != 0) return NULL;
+    
+    yajl_val v = cpe_yajl_tree_gen_object(gen, 0);
+    if (v == NULL) return NULL;
+
     o->m_data.u.object.keys[o->m_data.u.object.len] = cpe_yajl_tree_gen_dup_str(gen, key);
+    if (o->m_data.u.object.keys[o->m_data.u.object.len] == NULL) return NULL;
+
+    o->m_data.u.object.values[o->m_data.u.object.len] = v;
+    o->m_data.u.object.len++;
+
+    return v;
+}
+    
+int cpe_yajl_tree_object_add(cpe_yajl_tree_gen_t gen, yajl_val i_o, const char * path, yajl_val i_value) {
+    assert(i_o);
+    assert(i_o->type == yajl_t_object);
+    assert(path);
+
+    if (i_value == NULL) {
+        CPE_ERROR(gen->m_em, "yajl_tree_gen: %s append empty value!", path);
+        cpe_str_dup(gen->m_error_msg, sizeof(gen->m_error_msg), "object append empty object");
+        return -1;
+    }
+    
+    cpe_yajl_val_t o = _to_i(i_o);
+    const char * sep;
+    const char * left_path = path;
+    while((sep = strchr(left_path, '/'))) {
+        char path_part[256];
+        cpe_str_dup_range(path_part, sizeof(path_part), left_path, sep);
+        left_path = sep + 1;
+
+        yajl_val child = cpe_yajl_tree_object_check_add_object(gen, o, path_part);
+        if (child == NULL) return -1;
+        o = _to_i(child);
+    }
+
+    if (cpe_yajl_tree_object_confirm_capacity(gen, o) != 0) return -1;
+    
+    o->m_data.u.object.keys[o->m_data.u.object.len] = cpe_yajl_tree_gen_dup_str(gen, left_path);
     if (o->m_data.u.object.keys[o->m_data.u.object.len] == NULL) return -1;
 
     o->m_data.u.object.values[o->m_data.u.object.len] = i_value;
