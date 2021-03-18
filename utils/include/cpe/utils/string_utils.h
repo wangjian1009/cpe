@@ -45,6 +45,7 @@ uint8_t cpe_str_start_with(const char * full_str, const char * prefix);
     
 uint64_t cpe_str_parse_byte_size_with_dft(const char * astring, uint64_t dft);
 int cpe_str_parse_byte_size(uint64_t * result, const char * astring);
+const char * cpe_str_size_summary(char * buf, size_t buf_capacity, uint64_t value);
 
 uint64_t cpe_str_parse_timespan_ms_with_dft(const char * astring, uint64_t dft);
 int cpe_str_parse_timespan_ms(uint64_t * result, const char * astring);

@@ -355,6 +355,22 @@ int cpe_str_parse_byte_size(uint64_t * result, const char * astring) {
     return 0;
 }
 
+const char * cpe_str_size_summary(char * buf, size_t buf_capacity, uint64_t value) {
+    if (value > 1024 * 1024 * 1024) {
+        snprintf(buf, sizeof(buf), FMT_UINT64_T "GB", (uint64_t)(((double)value) / (1024 * 1024 * 1024)));
+    }
+    else if (value > 1024 * 1024) {
+        snprintf(buf, sizeof(buf), FMT_UINT64_T "MB", (uint64_t)(((double)value) / (1024 * 1024)));
+    }
+    else if (value > 1024) {
+        snprintf(buf, sizeof(buf), FMT_UINT64_T "KB", (uint64_t)(((double)value) / 1024));
+    }
+    else {
+        snprintf(buf, sizeof(buf), FMT_UINT64_T "B", value);
+    }
+    return buf;
+}
+
 uint64_t cpe_str_parse_timespan_ms_with_dft(const char * astring, uint64_t dft) {
     uint64_t r;
     if (cpe_str_parse_timespan_ms(&r, astring) != 0) return dft;

@@ -23,6 +23,8 @@ void cpe_md5_ctx_init(cpe_md5_ctx_t ctx);
 void cpe_md5_ctx_update(cpe_md5_ctx_t ctx, void const * inBuf, size_t inLen);
 void cpe_md5_ctx_final(cpe_md5_ctx_t ctx);
 
+#define cpe_md5_ctx_update_sizeof(__ctx, __v) cpe_md5_ctx_update((__ctx), &(__v), sizeof(__v))
+    
 int cpe_md5_cmp(cpe_md5_value_t l, cpe_md5_value_t r);
 uint32_t cpe_hash_md5(cpe_md5_value_t value);
 
