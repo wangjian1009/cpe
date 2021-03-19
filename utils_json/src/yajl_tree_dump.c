@@ -2,47 +2,7 @@
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/stream_buffer.h"
 #include "yajl_tree_dump.h"
-
-static void yajl_tree_print_i(yajl_gen gen, yajl_val data) {
-    switch(data->type) {
-    case yajl_t_string:
-        yajl_gen_string2(gen, yajl_get_string(data));
-        break;
-    case yajl_t_number:
-        yajl_gen_number(gen, data->u.number.r, strlen(data->u.number.r));
-        break;
-    case yajl_t_object: {
-        uint32_t i;
-        yajl_gen_map_open(gen);
-        for(i = 0; i < data->u.object.len; i++) {
-            yajl_gen_string2(gen, data->u.object.keys[i]);
-            yajl_tree_print_i(gen, data->u.object.values[i]);
-        }
-        yajl_gen_map_close(gen);
-        break;
-    }
-    case yajl_t_array: {
-        uint32_t i;
-        yajl_gen_array_open(gen);
-        for(i = 0; i < data->u.array.len; i++) {
-            yajl_tree_print_i(gen, data->u.array.values[i]);
-        }
-        yajl_gen_array_close(gen);
-        break;
-    }
-    case yajl_t_true:
-        yajl_gen_bool(gen, 1);
-        break;
-    case yajl_t_false:
-        yajl_gen_bool(gen, 0);
-        break;
-    case yajl_t_null:
-        yajl_gen_null(gen);
-        break;
-    default:
-        break;
-    }
-}
+#include "yajl_gen_val.h"
 
 void yajl_tree_print(write_stream_t ws, yajl_val data) {
     yajl_gen gen = yajl_gen_alloc(NULL);
@@ -51,7 +11,7 @@ void yajl_tree_print(write_stream_t ws, yajl_val data) {
     yajl_gen_config(gen, yajl_gen_beautify, 0);
     yajl_gen_config(gen, yajl_gen_validate_utf8, 1);
     yajl_gen_config(gen, yajl_gen_print_callback, cpe_yajl_gen_print_to_stream, ws);
-    yajl_tree_print_i(gen, data);
+    yajl_gen_val(gen, data);
     yajl_gen_free(gen);
 }
 

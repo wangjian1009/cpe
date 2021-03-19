@@ -1,6 +1,7 @@
 #ifndef CPE_UTILS_YAJL_DUMP_TYPES_H
 #define  CPE_UTILS_YAJL_DUMP_TYPES_H
 #include "yajl/yajl_tree.h"
+#include "yajl/yajl_gen.h"
 #include "yajl_utils_types.h"
 
 #ifdef __cplusplus
