@@ -10,9 +10,11 @@
 #include "test_vfs_file.h"
 #include "test_vfs_dir.h"
 
-static int test_vfs_file_open(void * ctx, void * env, vfs_file_t file, const char * path, const char * mode) {
-/*     test_vfs_t rfs = env; */
-/*     test_vfs_file_t fp = vfs_file_data(file); */
+static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, const char * path, const char * mode) {
+    test_vfs_dir_t mount_root = mount_env;
+    test_vfs_testenv_t env = mount_root->m_env;
+    
+    //test_vfs_file_t fp = vfs_file_data(file);
 
 /*     fp->m_entry = test_vfs_entry_find_child_by_path(rfs->m_root, path, path + strlen(path)); */
 /*     if (fp->m_entry == NULL) { */
