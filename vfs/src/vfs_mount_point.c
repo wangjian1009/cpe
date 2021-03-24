@@ -76,7 +76,7 @@ void vfs_mount_point_free(vfs_mount_point_t mount_point) {
     }
 
     if (mount_point->m_backend) {
-        if (mount_point->m_backend_env) {
+        if (mount_point->m_backend->m_env_clear && mount_point->m_backend_env) {
             mount_point->m_backend->m_env_clear(mount_point->m_backend->m_ctx, mount_point->m_backend_env);
             mount_point->m_backend_env = NULL;
         }
