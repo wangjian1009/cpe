@@ -7,76 +7,61 @@
 #include "cpe/vfs/vfs_dir.h"
 #include "cpe/vfs/vfs_entry_info.h"
 #include "test_vfs_backend.h"
-#include "test_vfs_file.h"
-#include "test_vfs_dir.h"
+#include "test_vfs_entry.h"
+
+/*file*/
+void test_vfs_file_cleaar_entry(test_vfs_file_t f) {
+    if (f->m_entry) {
+        TAILQ_REMOVE(&f->m_entry->m_file.m_opend_files, f, m_next_for_entry);
+    }
+}
 
 static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, const char * path, const char * mode) {
-    test_vfs_dir_t mount_root = mount_env;
-    test_vfs_testenv_t env = mount_root->m_env;
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
     
-    //test_vfs_file_t fp = vfs_file_data(file);
+    test_vfs_file_t fp = vfs_file_data(file);
+    fp->m_env = env;
+    fp->m_r_pos = 0;
+    fp->m_w_pos = 0;
+    fp->m_entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    if (fp->m_entry == NULL) {
+        if (strchr(mode, 'w')) {
+            fp->m_entry = test_vfs_entry_create(env, mount_root, path, path + strlen(path), test_vfs_entry_file);
+            if (fp->m_entry == NULL) {
+                CPE_ERROR(env->m_em, "test_vfs_file_open: create entry fail");
+                return -1;
+            }
+        } else {
+            CPE_ERROR(env->m_em, "test_vfs_file_open: open %s fail", path);
+            return -1;
+        }
+    } else if (fp->m_entry->m_type == test_vfs_entry_dir) {
+        CPE_ERROR(env->m_em, "test_vfs_file_open: %s is not file", path);
+        return -1;
+    }
 
-/*     fp->m_entry = test_vfs_entry_find_child_by_path(rfs->m_root, path, path + strlen(path)); */
-/*     if (fp->m_entry == NULL) { */
-/*         if (strchr(mode, 'w')) { */
-/*             test_vfs_entry_t parent; */
-/*             const char * name; */
-/*             const char * sep = strrchr(path, '/'); */
-            
-/*             if (sep) { */
-/*                 parent = test_vfs_entry_find_child_by_path(rfs->m_root, path, sep); */
-/*                 if (parent == NULL) { */
-/*                     CPE_ERROR(rfs->m_em, "test_vfs_file_open: %s owner dir not exist", path); */
-/*                     return -1; */
-/*                 } */
-
-/*                 if (!parent->m_is_dir) { */
-/*                     CPE_ERROR(rfs->m_em, "test_vfs_file_open: %s owner is not dir", path); */
-/*                     return -1; */
-/*                 } */
-                
-/*                 name = sep + 1; */
-/*             } */
-/*             else { */
-/*                 parent = rfs->m_root; */
-/*                 name = path; */
-/*             } */
-
-/*             assert(parent); */
-/*             fp->m_entry = test_vfs_entry_create(rfs, parent, name, name + strlen(name), 0); */
-/*             if (fp->m_entry == NULL) { */
-/*                 CPE_ERROR(rfs->m_em, "test_vfs_file_open: create entry fail"); */
-/*                 return -1; */
-/*             } */
-/*         } */
-/*         else { */
-/*             CPE_ERROR(rfs->m_em, "test_vfs_file_open: %s not exist", path); */
-/*             return -1; */
-/*         } */
-/*     } */
-/*     else { */
-/*         if (fp->m_entry->m_is_dir) { */
-/*             CPE_ERROR(rfs->m_em, "test_vfs_file_open: %s is not file", path); */
-/*             return -1; */
-/*         } */
-/*     } */
-
-/*     if (strchr(mode, 'w')) { */
-/*         CPE_ERROR(rfs->m_em, "test_vfs_file_open: not support write file"); */
-/*         return -1; */
-/*     } */
-/*     else { */
-/*         fp->m_pos = 0; */
-/*     } */
+    if (strchr(mode, 'w')) {
+        fp->m_w_pos = 0;
+    } else {
+        fp->m_w_pos = -1;
+    }
+    
+    if (strchr(mode, 'r')) {
+        fp->m_r_pos = 0;
+    } else {
+        fp->m_r_pos = -1;
+    }
     
     return 0;
 }
 
 static void test_vfs_file_close(void * ctx, vfs_file_t file) {
+    test_vfs_testenv_t env = ctx;
 }
 
 static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_t size) {
-/*     test_vfs_backend_t backend = ctx; */
+    test_vfs_testenv_t env = ctx;
 /*     test_vfs_file_t fp = vfs_file_data(file); */
 /*     size_t buf_size = fp->m_entry->m_file.m_size; */
 /*     size_t read_size; */
@@ -101,12 +86,13 @@ static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_
 }
 
 static ssize_t test_vfs_file_write(void * ctx, vfs_file_t file, const void * buf, size_t size) {
-/*     test_vfs_backend_t backend = ctx; */
+    test_vfs_testenv_t env = ctx;
 /*     CPE_ERROR(backend->m_em, "test_vfs_file_write: test_vfs not support write!"); */
     return -1;
 }
 
 static int test_vfs_file_seek(void * ctx, vfs_file_t file, ssize_t off, vfs_file_seek_op_t op) {
+    test_vfs_testenv_t env = ctx;
 /*     test_vfs_backend_t backend = ctx; */
 /*     test_vfs_file_t fp = vfs_file_data(file); */
 /*     ssize_t new_pos; */
@@ -136,64 +122,108 @@ static int test_vfs_file_seek(void * ctx, vfs_file_t file, ssize_t off, vfs_file
 }
 
 static ssize_t test_vfs_file_tell(void * ctx, vfs_file_t file) {
+    test_vfs_testenv_t env = ctx;
 /*     test_vfs_file_t fp = vfs_file_data(file); */
 /*     return fp->m_pos; */
     return 0;
 }
 
 static uint8_t test_vfs_file_eof(void * ctx, vfs_file_t file) {
+    test_vfs_testenv_t env = ctx;
 /*     test_vfs_file_t fp = vfs_file_data(file); */
 /*     return fp->m_pos >= (ssize_t)fp->m_entry->m_file.m_size ? 1 : 0; */
     return 0;
 }
 
 static int test_vfs_file_flush(void * ctx, vfs_file_t file) {
+    test_vfs_testenv_t env = ctx;
+
+    test_vfs_file_t fp = vfs_file_data(file);
+    if (fp->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_flush: entry already removed");
+        return -1;
+    }
+
     return 0;
 }
 
 static int test_vfs_file_error(void * ctx, vfs_file_t file) {
+    test_vfs_testenv_t env = ctx;
+
+    test_vfs_file_t fp = vfs_file_data(file);
+    if (fp->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_error: entry already removed");
+        return -1;
+    }
+
     return 0;
 }
 
 static ssize_t test_vfs_file_size(void * ctx, vfs_file_t file) {
-    /* test_vfs_file_t fp = vfs_file_data(file); */
-    /* return (ssize_t)fp->m_entry->m_file.m_size; */
-    return 0;
+    test_vfs_testenv_t env = ctx;
+
+    test_vfs_file_t fp = vfs_file_data(file);
+    if (fp->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_size: entry already removed");
+        return -1;
+    }
+    
+    return (ssize_t)mem_buffer_size(&fp->m_entry->m_file.m_content);
 }
 
-static ssize_t test_vfs_file_size_by_path(void * ctx, void * env, const char * path) {
-/*     test_vfs_backend_t backend = ctx; */
-/*     test_vfs_t rfs = env; */
-/*     test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(rfs->m_root, path, path + strlen(path)); */
+static ssize_t test_vfs_file_size_by_path(void * ctx, void * mount_env, const char * path) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
 
-/*     if (entry == NULL) { */
-/*         CPE_ERROR(backend->m_em, "test_vfs_file_size_by_path: file %s not exist!", path); */
-/*         return -1; */
-/*     } */
+    test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    if (entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_size_by_path: file %s not exist!", path);
+        return -1;
+    }
 
-    //return (ssize_t)entry->m_file.m_size;
-    return -1;
+    if (entry->m_type != test_vfs_entry_file) {
+        CPE_ERROR(env->m_em, "test_vfs_file_size_by_path: %s is not file!", path);
+        return -1;
+    }
+    
+    return (ssize_t)mem_buffer_size(&entry->m_file.m_content);
 }
 
 static void const * test_vfs_file_inline_data(void * ctx, vfs_file_t file) {
-    /* spack_rfs_file_t fp = vfs_file_data(file); */
-    /* return ((const char *)fp->m_entry->m_rfs->m_data) + fp->m_entry->m_file.m_start; */
-    return NULL;
+    test_vfs_testenv_t env = ctx;
+
+    test_vfs_file_t fp = vfs_file_data(file);
+    if (fp->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_inline_data: entry already removed");
+        return NULL;
+    }
+
+    return mem_buffer_size(&fp->m_entry->m_file.m_content) == 0
+        ? ""
+        : mem_buffer_make_continuous(&fp->m_entry->m_file.m_content, 0);
 }
 
-static uint8_t test_vfs_file_exist(void * ctx, void * env, const char * path) {
-/*     test_vfs_t rfs = env; */
-/*     test_vfs_entry_t entry; */
+static uint8_t test_vfs_file_exist(void * ctx, void * mount_env, const char * path) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
+    test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    return entry && entry->m_type == test_vfs_entry_file ? 1 : 0;
+}
 
-/*     entry = test_vfs_entry_find_child_by_path(rfs->m_root, path, path + strlen(path)); */
-/*     return entry && !entry->m_is_dir ? 1 : 0; */
+static int test_vfs_file_rm(void * ctx, void * mount_env, const char * path) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
+
+    test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    if (env == NULL) return 0;
+
+    if (entry->m_type != test_vfs_entry_file) {
+        CPE_ERROR(env->m_em, "test_vfs_file_rm: %s is not file", path);
+        return -1;
+    }
+
+    test_vfs_entry_free(entry);
     return 0;
-}
-
-static int test_vfs_file_rm(void * ctx, void * env, const char * path) {
-/*     test_vfs_backend_t backend = ctx; */
-/*     CPE_ERROR(backend->m_em, "test_vfs_file_rm: rfs not support rm file"); */
-    return -1;
 }
 
 static int test_vfs_file_mv(void * ctx, void * from_env, const char * from_path, void * to_env, const char * to_path) {
@@ -204,6 +234,13 @@ static int test_vfs_file_mv(void * ctx, void * from_env, const char * from_path,
 
 static int test_vfs_file_set_attributes(void * ctx, void * env, const char * path, uint16_t fa) {
     return -1;
+}
+
+/*dir*/
+void test_vfs_dir_cleaar_entry(test_vfs_dir_t f) {
+    if (f->m_entry) {
+        TAILQ_REMOVE(&f->m_entry->m_dir.m_opend_dirs, f, m_next_for_entry);
+    }
 }
 
 static int test_vfs_dir_open(void * ctx, void * env, vfs_dir_t dir, const char * path) {

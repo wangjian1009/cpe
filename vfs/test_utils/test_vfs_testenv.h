@@ -7,6 +7,9 @@
 #include "cpe/vfs/vfs_types.h"
 
 typedef struct test_vfs_testenv * test_vfs_testenv_t;
+typedef enum test_vfs_entry_type test_vfs_entry_type_t;
+typedef struct test_vfs_entry * test_vfs_entry_t;
+typedef TAILQ_HEAD(test_vfs_entry_list, test_vfs_entry) test_vfs_entry_list_t;
 typedef struct test_vfs_file * test_vfs_file_t;
 typedef TAILQ_HEAD(test_vfs_file_list, test_vfs_file) test_vfs_file_list_t;
 typedef struct test_vfs_dir * test_vfs_dir_t;
@@ -16,8 +19,8 @@ struct test_vfs_testenv {
     error_monitor_t m_em;
     vfs_mgr_t m_mgr;
     vfs_backend_t m_backend;
-    test_vfs_dir_t m_current_dir;
-    test_vfs_dir_t m_root_dir;
+    test_vfs_entry_t m_current_dir;
+    test_vfs_entry_t m_root_dir;
 };
 
 test_vfs_testenv_t test_vfs_testenv_create(error_monitor_t em);
