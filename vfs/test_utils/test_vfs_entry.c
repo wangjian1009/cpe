@@ -142,7 +142,9 @@ test_vfs_entry_find_child_by_path(test_vfs_entry_t parent, const char * path, co
 }
 
 test_vfs_entry_t
-test_vfs_entry_create_recursive(test_vfs_testenv_t env, const char * path, test_vfs_entry_type_t type) {
+test_vfs_entry_create_recursive(
+    test_vfs_testenv_t env, const char * path, test_vfs_entry_type_t type, uint8_t auto_create)
+{
     test_vfs_entry_t parent;
     test_vfs_entry_t cur;
     const char * sep;
@@ -152,6 +154,13 @@ test_vfs_entry_create_recursive(test_vfs_testenv_t env, const char * path, test_
         if (sep > path) {
             cur = test_vfs_entry_find_child_by_name(parent, path, sep);
             if (cur == NULL) {
+                if (!auto_create) {
+                    CPE_ERROR(
+                        env->m_em, "test_vfs_entry_create_recursive: %s/%.*s not exist",
+                        parent->m_name, (int)(sep - path), path);
+                    return NULL;
+                }
+                
                 cur = test_vfs_entry_create(env, parent, path, sep, 1);
                 if (cur == NULL) {
                     CPE_ERROR(env->m_em, "test_vfs_entry_create_recursive: create entry fail");

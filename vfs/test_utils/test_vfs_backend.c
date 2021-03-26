@@ -61,6 +61,8 @@ static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, con
 
 static void test_vfs_file_close(void * ctx, vfs_file_t file) {
     test_vfs_testenv_t env = ctx;
+    test_vfs_file_t fp = vfs_file_data(file);
+    test_vfs_file_cleaar_entry(fp);
 }
 
 static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_t size) {
@@ -116,14 +118,19 @@ static ssize_t test_vfs_file_write(void * ctx, vfs_file_t file, const void * buf
     assert(fp->m_entry->m_type == test_vfs_entry_file);
 
     uint32_t total_size = mem_buffer_size(&fp->m_entry->m_file.m_content);
-    if (fp->m_r_pos > total_size) {
+    if (fp->m_w_pos > total_size) {
         CPE_ERROR(
             env->m_em, "test_vfs_file_write: pos %d overflow, size=%d",
-            fp->m_r_pos, total_size);
+            fp->m_w_pos, total_size);
         return -1;
     }
     
-    return -1;
+    struct mem_buffer_pos buf_pos;
+    mem_pos_at(&buf_pos, &fp->m_entry->m_file.m_content, fp->m_w_pos);
+
+    size_t sz = mem_pos_write(&buf_pos, buf, size);
+    fp->m_w_pos += sz;
+    return (ssize_t)sz;
 }
 
 static int test_vfs_file_seek(void * ctx, vfs_file_t file, ssize_t off, vfs_file_seek_op_t op) {
@@ -165,9 +172,8 @@ static int test_vfs_file_seek(void * ctx, vfs_file_t file, ssize_t off, vfs_file
 
 static ssize_t test_vfs_file_tell(void * ctx, vfs_file_t file) {
     test_vfs_testenv_t env = ctx;
-/*     test_vfs_file_t fp = vfs_file_data(file); */
-/*     return fp->m_pos; */
-    return 0;
+    test_vfs_file_t fp = vfs_file_data(file);
+    return fp->m_r_pos;
 }
 
 static uint8_t test_vfs_file_eof(void * ctx, vfs_file_t file) {
@@ -319,8 +325,8 @@ static int test_vfs_file_mv(void * ctx, void * from_env, const char * from_path,
 
     if (test_vfs_entry_find_child_by_name(to_dir, to_name, to_name + strlen(to_name)) != NULL) {
         CPE_ERROR(
-            env->m_em, "test_vfs_file_mv: to %s %.*s already exists",
-            to_root->m_name, (int)(to_path_last_sep - to_path), to_path);
+            env->m_em, "test_vfs_file_mv: to %s/%s already exists",
+            to_root->m_name, to_name);
         return -1;
     }
 
@@ -379,53 +385,83 @@ static int test_vfs_dir_open(void * ctx, void * mount_env, vfs_dir_t dir, const 
 }
 
 static void test_vfs_dir_close(void * ctx, vfs_dir_t dir) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_dir_t vfs_dir = vfs_dir_data(dir);
+    test_vfs_dir_cleaar_entry(vfs_dir);
+    vfs_dir->m_next_child = NULL;
 }
 
-/* struct test_vfs_dir_it_data { */
-/*     test_vfs_entry_t m_cur; */
-/*     struct vfs_entry_info m_entry; */
-/* }; */
+struct test_vfs_dir_it_data {
+    test_vfs_entry_t m_cur;
+    struct vfs_entry_info m_entry;
+};
 
-/* static vfs_entry_info_t test_vfs_dir_it_next(struct vfs_entry_info_it * it) { */
-/*     struct test_vfs_dir_it_data * it_data = (void*)it->m_data; */
+static vfs_entry_info_t test_vfs_dir_it_next(struct vfs_entry_info_it * it) {
+    struct test_vfs_dir_it_data * it_data = (void*)it->m_data;
 
-/*     if (it_data->m_cur == NULL) return NULL; */
+    if (it_data->m_cur == NULL) return NULL;
 
-/*     it_data->m_entry.m_name = it_data->m_cur->m_name; */
-/*     it_data->m_entry.m_type = it_data->m_cur->m_is_dir ? vfs_entry_dir : vfs_entry_file; */
+    it_data->m_entry.m_name = it_data->m_cur->m_name;
+    it_data->m_entry.m_type = it_data->m_cur->m_type == test_vfs_entry_dir ? vfs_entry_dir : vfs_entry_file;
 
-/*     it_data->m_cur = TAILQ_NEXT(it_data->m_cur, m_next); */
+    it_data->m_cur = TAILQ_NEXT(it_data->m_cur, m_next);
     
-/*     return &it_data->m_entry; */
-/* } */
+    return &it_data->m_entry;
+}
 
 static void test_vfs_dir_read(void * ctx, vfs_dir_t dir, vfs_entry_info_it_t it) {
-/*     struct test_vfs_dir_it_data * it_data = (void*)it->m_data; */
-/*     test_vfs_dir_t rfs_dir = vfs_dir_data(dir); */
+    test_vfs_testenv_t env = ctx;
+    test_vfs_dir_t vfs_dir = vfs_dir_data(dir);
 
-/*     it->next = test_vfs_dir_it_next; */
-/*     it_data->m_cur = TAILQ_FIRST(&rfs_dir->m_entry->m_dir.m_childs); */
+    struct test_vfs_dir_it_data * it_data = (void*)it->m_data;
+
+    it->next = test_vfs_dir_it_next;
+
+    if (vfs_dir->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_dir_read: entry alreay removed");
+        it_data->m_cur = NULL;
+    }
+    else {
+        assert(vfs_dir->m_entry->m_type ==  test_vfs_entry_dir);
+        it_data->m_cur = TAILQ_FIRST(&vfs_dir->m_entry->m_dir.m_childs);
+    }
 }
 
-static uint8_t test_vfs_dir_exist(void * ctx, void * env, const char * path) {
-/*     test_vfs_t rfs = env; */
-/*     test_vfs_entry_t entry; */
+static uint8_t test_vfs_dir_exist(void * ctx, void * mount_env, const char * path) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
+    
+    test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    return entry && entry->m_type == test_vfs_entry_dir ? 1 : 0;
+}
 
-/*     entry = test_vfs_entry_find_child_by_path(rfs->m_root, path, path + strlen(path)); */
-/*     return entry && entry->m_is_dir ? 1 : 0; */
+static int test_vfs_dir_rm(void * ctx, void * mount_env, const char * path, uint8_t is_recursive) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
+
+    test_vfs_entry_t entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
+    if (entry == NULL) return 0;
+
+    assert(entry->m_type == test_vfs_entry_file);
+    if (!TAILQ_EMPTY(&entry->m_dir.m_childs) && !is_recursive) {
+        CPE_ERROR(
+            env->m_em, "test_vfs_dir_rm: %s %s have data and not recursive rm, error",
+            mount_root->m_name, path);
+        return -1;
+    }
+
+    test_vfs_entry_free(entry);
     return 0;
 }
 
-static int test_vfs_dir_rm(void * ctx, void * env, const char * path, uint8_t is_recursive) {
-/*     test_vfs_backend_t backend = ctx; */
-/*     CPE_ERROR(backend->m_em, "test_vfs_dir_rm: rfs not support dir rm"); */
-    return -1;
-}
+static int test_vfs_dir_mk(void * ctx, void * mount_env, const char * path, uint8_t is_recursive) {
+    test_vfs_testenv_t env = ctx;
+    test_vfs_entry_t mount_root = mount_env;
 
-static int test_vfs_dir_mk(void * ctx, void * env, const char * path, uint8_t is_recursive) {
-/*     test_vfs_t rfs = env; */
-/*     CPE_ERROR(rfs->m_em, "test_vfs_dir_mk: rfs not support create dir"); */
-    return -1;
+    test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_dir, is_recursive);
+    if (entry == NULL) return -1;
+    
+    return 0;
 }
 
 vfs_backend_t

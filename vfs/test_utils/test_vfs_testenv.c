@@ -38,7 +38,7 @@ void test_vfs_testenv_free(test_vfs_testenv_t env) {
 }
 
 int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path, const char * data) {
-    test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_file);
+    test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_file, 1);
     if (entry == NULL) return -1;
 
     mem_buffer_clear_data(&entry->m_file.m_content);
