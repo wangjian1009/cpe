@@ -37,12 +37,6 @@ test_vfs_entry_create(
         assert(parent->m_type == test_vfs_entry_dir);
         TAILQ_INSERT_TAIL(&parent->m_dir.m_childs, entry, m_next);
     }
-
-    CPE_ERROR(
-        env->m_em, "%s add %s  %s",
-        parent ? parent->m_name : "N/A",
-        test_vfs_entry_type_str(type),
-        entry->m_name);
     
     return entry;
 }
