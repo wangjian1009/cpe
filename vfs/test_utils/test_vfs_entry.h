@@ -42,6 +42,9 @@ test_vfs_entry_create2(
 
 void test_vfs_entry_free(test_vfs_entry_t entry);
 
+void test_vfs_entry_set_name(test_vfs_entry_t entry, const char * name);
+void test_vfs_entry_set_parent(test_vfs_entry_t entry, test_vfs_entry_t parent);
+    
 test_vfs_entry_t test_vfs_entry_find_child_by_name(test_vfs_entry_t parent, const char * name, const char * name_end);
 test_vfs_entry_t test_vfs_entry_find_child_by_path(test_vfs_entry_t parent, const char * name, const char * path_end);    
 

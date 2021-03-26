@@ -17,6 +17,7 @@ struct test_vfs_dir {
     test_vfs_testenv_t m_env;
     test_vfs_entry_t m_entry;
     TAILQ_ENTRY(test_vfs_dir) m_next_for_entry;
+    test_vfs_entry_t m_next_child;
 };
 void test_vfs_dir_cleaar_entry(test_vfs_dir_t f);
 

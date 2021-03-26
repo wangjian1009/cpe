@@ -84,6 +84,27 @@ void test_vfs_entry_free(test_vfs_entry_t entry) {
     mem_free(test_allocrator(), entry);
 }
 
+void test_vfs_entry_set_name(test_vfs_entry_t entry, const char * name) {
+    if (entry->m_name) {
+        mem_free(test_allocrator(), entry->m_name);
+    }
+
+    entry->m_name = cpe_str_mem_dup(test_allocrator(), name);
+    assert(entry->m_name);
+}
+
+void test_vfs_entry_set_parent(test_vfs_entry_t entry, test_vfs_entry_t parent) {
+    if (entry->m_parent) {
+        TAILQ_REMOVE(&entry->m_parent->m_dir.m_childs, entry, m_next);
+    }
+
+    entry->m_parent = parent;
+
+    if (entry->m_parent) {
+        TAILQ_INSERT_TAIL(&entry->m_parent->m_dir.m_childs, entry, m_next);
+    }
+}
+
 test_vfs_entry_t
 test_vfs_entry_find_child_by_name(test_vfs_entry_t parent, const char * name, const char * name_end) {
     test_vfs_entry_t entry;
