@@ -45,8 +45,10 @@ void test_vfs_entry_free(test_vfs_entry_t entry);
 test_vfs_entry_t test_vfs_entry_find_child_by_name(test_vfs_entry_t parent, const char * name, const char * name_end);
 test_vfs_entry_t test_vfs_entry_find_child_by_path(test_vfs_entry_t parent, const char * name, const char * path_end);    
 
-test_vfs_entry_t test_vfs_entry_file_create(test_vfs_testenv_t env, const char * name);
-    
+test_vfs_entry_t test_vfs_entry_create_recursive(test_vfs_testenv_t env, const char * path, test_vfs_entry_type_t type);
+
+const char * test_vfs_entry_type_str(test_vfs_entry_type_t type);
+
 #ifdef __cplusplus
 }
 #endif

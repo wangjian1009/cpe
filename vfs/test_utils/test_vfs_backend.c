@@ -19,7 +19,7 @@ void test_vfs_file_cleaar_entry(test_vfs_file_t f) {
 static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, const char * path, const char * mode) {
     test_vfs_testenv_t env = ctx;
     test_vfs_entry_t mount_root = mount_env;
-    
+
     test_vfs_file_t fp = vfs_file_data(file);
     fp->m_env = env;
     fp->m_r_pos = 0;
@@ -62,27 +62,39 @@ static void test_vfs_file_close(void * ctx, vfs_file_t file) {
 
 static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_t size) {
     test_vfs_testenv_t env = ctx;
-/*     test_vfs_file_t fp = vfs_file_data(file); */
-/*     size_t buf_size = fp->m_entry->m_file.m_size; */
-/*     size_t read_size; */
+    test_vfs_file_t fp = vfs_file_data(file);
+    if (fp->m_entry == NULL) {
+        CPE_ERROR(env->m_em, "test_vfs_file_read: entry alreay removed");
+        return -1;
+    }
+    
+    if (fp->m_r_pos < 0) {
+        CPE_ERROR(env->m_em, "test_vfs_file_read: can`t read, check open mode");
+        return -1;
+    }
 
-/*     if (fp->m_pos == buf_size) return 0; */
-/*     if (fp->m_pos > buf_size) { */
-/*         CPE_ERROR( */
-/*             backend->m_em, "test_vfs_file_read: pos %d overflow, size=%d", */
-/*             (int)fp->m_pos, (int)buf_size); */
-/*         return -1; */
-/*     } */
+    assert(fp->m_entry->m_type == test_vfs_entry_file);
 
-/*     read_size = buf_size - fp->m_pos; */
-/*     if (read_size > size) read_size = size; */
+    uint32_t total_size = mem_buffer_size(&fp->m_entry->m_file.m_content);
+    if (fp->m_r_pos > total_size) {
+        CPE_ERROR(
+            env->m_em, "test_vfs_file_read: pos %d overflow, size=%d",
+            fp->m_r_pos, total_size);
+        return -1;
+    }
+    
+    if (fp->m_r_pos == total_size) return 0;
+    
+    uint32_t read_size = total_size - (uint32_t)fp->m_r_pos;
+    if (read_size > size) read_size = size;
 
-/*     memcpy(buf, ((const char *)fp->m_entry->m_rfs->m_data) + fp->m_entry->m_file.m_start + fp->m_pos, read_size); */
+    struct mem_buffer_pos buf_pos;
+    mem_pos_at(&buf_pos, &fp->m_entry->m_file.m_content, fp->m_r_pos);
+    mem_pos_read(&buf_pos, buf, read_size);
 
-/*     fp->m_pos += read_size; */
+    fp->m_r_pos += read_size;
 
-/*     return (ssize_t)read_size; */
-    return 0;
+    return (ssize_t)read_size;
 }
 
 static ssize_t test_vfs_file_write(void * ctx, vfs_file_t file, const void * buf, size_t size) {

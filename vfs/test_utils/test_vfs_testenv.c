@@ -38,18 +38,10 @@ void test_vfs_testenv_free(test_vfs_testenv_t env) {
 }
 
 int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path, const char * data) {
-    test_vfs_entry_t dir = env->m_current_dir;
-    if (path[0] == '/') {
-        path++;
-        dir = env->m_root_dir;
-    }
-
-    test_vfs_entry_t entry = 
-        test_vfs_entry_create(env, dir, path, path + strlen(path), test_vfs_entry_file);
+    test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_file);
     if (entry == NULL) return -1;
 
     mem_buffer_clear_data(&entry->m_file.m_content);
     mem_buffer_append(&entry->m_file.m_content, data, strlen(data));
-
     return 0;
 }
