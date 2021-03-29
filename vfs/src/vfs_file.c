@@ -193,35 +193,37 @@ ssize_t vfs_file_load_to_buffer(mem_buffer_t buffer, vfs_file_t f) {
 
             return backend->m_file_read(backend->m_ctx, f, buf, rv);
         }
+        else if (rv == 0) {
+            /*从inode获取大小有可能错误获取到0，此时需要通过正常手段读取文件 */
+        }
         else {
             return rv;
         }
     }
-    else {
-        ssize_t total_size;
 
-        total_size = 0;
-        do {
-            size_t buf_size;
-            char * buf;
-            ssize_t rv;
+    ssize_t total_size;
 
-            buf_size = buffer->m_auto_inc_size;
-            buf = mem_buffer_alloc(buffer, buf_size);
-            if (buf == NULL) {
-                CPE_ERROR(mgr->m_em, "vfs_file_load_to_buffer: alloc %d from buffer fail!", (int)buf_size);
-                return -1;
-            }
+    total_size = 0;
+    do {
+        size_t buf_size;
+        char * buf;
+        ssize_t rv;
+
+        buf_size = buffer->m_auto_inc_size;
+        buf = mem_buffer_alloc(buffer, buf_size);
+        if (buf == NULL) {
+            CPE_ERROR(mgr->m_em, "vfs_file_load_to_buffer: alloc %d from buffer fail!", (int)buf_size);
+            return -1;
+        }
             
-            rv = backend->m_file_read(backend->m_ctx, f, buf, buf_size);
-            if (rv < 0) return rv;
-            if (rv == 0) break;
+        rv = backend->m_file_read(backend->m_ctx, f, buf, buf_size);
+        if (rv < 0) return rv;
+        if (rv == 0) break;
             
-            total_size += rv;
-        } while(1);
+        total_size += rv;
+    } while(1);
 
-        return total_size;
-    }
+    return total_size;
 }
 
 ssize_t vfs_file_write_from_buffer(vfs_file_t f, mem_buffer_t buffer) {
