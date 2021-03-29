@@ -45,3 +45,9 @@ int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path,
     mem_buffer_append(&entry->m_file.m_content, data, strlen(data));
     return 0;
 }
+
+int test_vfs_testenv_install_dir(test_vfs_testenv_t env, const char * path) {
+    test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_dir, 1);
+    if (entry == NULL) return -1;
+    return 0;
+}

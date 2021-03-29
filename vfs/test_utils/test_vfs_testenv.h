@@ -27,5 +27,6 @@ test_vfs_testenv_t test_vfs_testenv_create(error_monitor_t em);
 void test_vfs_testenv_free(test_vfs_testenv_t env);
 
 int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path, const char * data);
+int test_vfs_testenv_install_dir(test_vfs_testenv_t env, const char * path);
 
 #endif
