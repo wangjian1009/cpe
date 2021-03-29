@@ -280,6 +280,16 @@ uint32_t cpe_hash_md5(cpe_md5_value_t value) {
     return *(uint32_t*)(value->digest + 12);
 }
 
+void cpe_md5_to_string(char str[CPE_MD5_STR_BUF_SIZE], cpe_md5_value_t value) {
+    char * ob = str;
+    int i;
+    for (i = 0; i < 16; i++) {
+        sprintf(ob, "%02x", value->digest[i]);
+        ob += 2;
+    }
+    *ob = 0;
+}
+
 void cpe_md5_print(write_stream_t s, cpe_md5_value_t value) {
     int i;
     for (i = 0; i < 16; i++) {
