@@ -37,12 +37,26 @@ void test_vfs_testenv_free(test_vfs_testenv_t env) {
     mem_free(test_allocrator(), env);
 }
 
-int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path, const char * data) {
+mem_buffer_t
+test_vfs_testenv_install_file(test_vfs_testenv_t env, const char * path) {
     test_vfs_entry_t entry = test_vfs_entry_create_recursive(env, path, test_vfs_entry_file, 1);
-    if (entry == NULL) return -1;
+    if (entry == NULL) return NULL;
 
     mem_buffer_clear_data(&entry->m_file.m_content);
-    mem_buffer_append(&entry->m_file.m_content, data, strlen(data));
+    return &entry->m_file.m_content;
+}
+
+int test_vfs_testenv_install_file_data(test_vfs_testenv_t env, const char * path, void const * data, uint32_t data_size) {
+    mem_buffer_t buffer = test_vfs_testenv_install_file(env, path);
+    if (buffer == NULL) return -1;
+    mem_buffer_append(buffer, data, data_size);
+    return 0;
+}
+
+int test_vfs_testenv_install_file_str(test_vfs_testenv_t env, const char * path, const char * data) {
+    mem_buffer_t buffer = test_vfs_testenv_install_file(env, path);
+    if (buffer == NULL) return -1;
+    mem_buffer_append(buffer, data, strlen(data));
     return 0;
 }
 
