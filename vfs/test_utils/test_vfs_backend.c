@@ -110,7 +110,7 @@ static ssize_t test_vfs_file_write(void * ctx, vfs_file_t file, const void * buf
         return -1;
     }
     
-    if (fp->m_r_pos < 0) {
+    if (fp->m_w_pos < 0) {
         CPE_ERROR(env->m_em, "test_vfs_file_write: can`t write, check open mode");
         return -1;
     }
