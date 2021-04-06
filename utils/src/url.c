@@ -6,6 +6,7 @@
 #include "cpe/utils/string_url.h"
 #include "cpe/utils/error.h"
 #include "cpe/utils/stream_buffer.h"
+#include "cpe/utils/md5.h"
 #include "cpe/utils/url.h"
 
 struct cpe_url_param {
@@ -316,6 +317,40 @@ int cpe_url_cmp_opt(cpe_url_t l, cpe_url_t r) {
             return cpe_url_cmp(l, r);
         }
     }
+}
+
+void cpe_url_md5_update(cpe_url_t url, cpe_md5_ctx_t ctx) {
+    if (url->m_protocol) {
+        cpe_md5_ctx_update(ctx, url->m_protocol, strlen(url->m_protocol));
+    }
+    
+    if (url->m_host) {
+        cpe_md5_ctx_update(ctx, url->m_host, strlen(url->m_host));
+    }
+
+    if (url->m_port) {
+        cpe_md5_ctx_update(ctx, &url->m_port, sizeof(url->m_port));
+    }
+
+    if (url->m_path) {
+        cpe_md5_ctx_update(ctx, url->m_path, strlen(url->m_path));
+    }
+
+    uint16_t i;
+    for (i = 0; i < url->m_query_param_count; ++i) {
+        const char * name = cpe_url_query_param_name_at(url, i);
+        const char * value = cpe_url_query_param_value_at(url, i);
+        cpe_md5_ctx_update(ctx, name, strlen(name));
+        cpe_md5_ctx_update(ctx, value, strlen(value));
+    }
+}
+
+void cpe_url_md5(cpe_url_t url, cpe_md5_value_t r_value) {
+    struct cpe_md5_ctx md5_ctx;
+    cpe_md5_ctx_init(&md5_ctx);
+    cpe_url_md5_update(url, &md5_ctx);
+    cpe_md5_ctx_final(&md5_ctx);
+    *r_value = md5_ctx.value;
 }
 
 void cpe_url_print(write_stream_t ws, cpe_url_t url) {
