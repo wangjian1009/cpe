@@ -24,6 +24,11 @@ void cpe_md5_ctx_update(cpe_md5_ctx_t ctx, void const * inBuf, size_t inLen);
 void cpe_md5_ctx_final(cpe_md5_ctx_t ctx);
 
 #define cpe_md5_ctx_update_sizeof(__ctx, __v) cpe_md5_ctx_update((__ctx), &(__v), sizeof(__v))
+#define cpe_md5_ctx_update_string(__ctx, __v) \
+    do {\
+        const char * __v_tmp = (__v);\
+        if (__v_tmp) cpe_md5_ctx_update((__ctx), __v_tmp, strlen(__v_tmp)); \
+    } while(0)
     
 int cpe_md5_cmp(cpe_md5_value_t l, cpe_md5_value_t r);
 uint32_t cpe_hash_md5(cpe_md5_value_t value);
