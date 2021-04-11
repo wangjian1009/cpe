@@ -22,8 +22,6 @@ test_vfs_entry_create(
     entry->m_name = cpe_str_mem_dup_range(test_allocrator(), name, name_end);
     entry->m_type = type;
 
-    CPE_ERROR(env->m_em, "test_vfs_entry_create: parent=%s, self=%s!", parent?parent->m_name : NULL, entry->m_name);
-    
     switch(type) {
     case test_vfs_entry_file:
         mem_buffer_init(&entry->m_file.m_content,test_allocrator());
