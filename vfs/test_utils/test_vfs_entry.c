@@ -180,8 +180,13 @@ test_vfs_entry_create_recursive(
     }
 
     if ((cur = test_vfs_entry_find_child_by_name(parent, path, path + strlen(path)))) {
-        CPE_ERROR(env->m_em, "test_vfs_entry_create_recursive: %s already exist", path);
-        return NULL;
+        if (auto_create) {
+            return cur;
+        }
+        else {
+            CPE_ERROR(env->m_em, "test_vfs_entry_create_recursive: %s already exist", path);
+            return NULL;
+        }
     }
     
     cur = test_vfs_entry_create2(env, parent, path, type);
