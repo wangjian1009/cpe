@@ -22,6 +22,8 @@ test_vfs_entry_create(
     entry->m_name = cpe_str_mem_dup_range(test_allocrator(), name, name_end);
     entry->m_type = type;
 
+    CPE_ERROR(env->m_em, "test_vfs_entry_create: parent=%s, self=%s!", parent?parent->m_name : NULL, entry->m_name);
+    
     switch(type) {
     case test_vfs_entry_file:
         mem_buffer_init(&entry->m_file.m_content,test_allocrator());
@@ -116,12 +118,14 @@ test_vfs_entry_find_child_by_name(test_vfs_entry_t parent, const char * name, co
 
 test_vfs_entry_t
 test_vfs_entry_find_child_by_path(test_vfs_entry_t parent, const char * path, const char * path_end) {
+    test_vfs_testenv_t env = parent->m_env;
     const char * sep;
 
     for(sep = cpe_str_char_range(path, path_end, '/');
         sep;
         path = sep + 1, sep = cpe_str_char_range(path, path_end, '/'))
     {
+        assert(sep < path_end);
         if (sep > path) {
             parent = test_vfs_entry_find_child_by_name(parent, path, sep);
             if (parent == NULL) return NULL;

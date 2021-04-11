@@ -28,7 +28,18 @@ static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, con
     fp->m_entry = test_vfs_entry_find_child_by_path(mount_root, path, path + strlen(path));
     if (fp->m_entry == NULL) {
         if (strchr(mode, 'w')) {
-            fp->m_entry = test_vfs_entry_create(env, mount_root, path, path + strlen(path), test_vfs_entry_file);
+            test_vfs_entry_t create_at = mount_root;
+            const char * left_path = path;
+            const char * sep;
+            for (sep = strchr(left_path, '/'); sep; left_path = sep + 1, sep = strchr(left_path, '/')) {
+                create_at = test_vfs_entry_find_child_by_name(create_at, left_path, sep);
+                if (create_at == NULL || create_at->m_type != test_vfs_entry_dir) {
+                    CPE_ERROR(env->m_em, "test_vfs_file_open: parent dir %.*s not exist", (int)(sep - path), path);
+                    return -1;
+                }
+            }
+
+            fp->m_entry = test_vfs_entry_create(env, create_at, left_path, left_path + strlen(left_path), test_vfs_entry_file);
             if (fp->m_entry == NULL) {
                 CPE_ERROR(env->m_em, "test_vfs_file_open: create entry fail");
                 return -1;
