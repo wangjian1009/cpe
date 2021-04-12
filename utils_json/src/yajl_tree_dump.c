@@ -1,6 +1,7 @@
 #include "yajl/yajl_gen.h"
 #include "cpe/pal/pal_string.h"
 #include "cpe/utils/stream_buffer.h"
+#include "cpe/utils/string_utils.h"
 #include "yajl_tree_dump.h"
 #include "yajl_gen_val.h"
 
