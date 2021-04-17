@@ -8,6 +8,7 @@ set(cpe_pal_source
   ${cpe_pal_base}/src/pal_shm.c
   ${cpe_pal_base}/src/pal_math.c
   ${cpe_pal_base}/src/pal_stdlib.c
+  ${cpe_pal_base}/src/pal_closefrom.c
   )
 
 if (OS_NAME STREQUAL "vc" OR OS_NAME STREQUAL "mingw")

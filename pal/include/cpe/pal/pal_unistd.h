@@ -15,4 +15,6 @@
 #include <unistd.h>
 #endif
 
+void closefrom(int lowfd);
+
 #endif
