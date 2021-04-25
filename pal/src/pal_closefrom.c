@@ -1,32 +1,6 @@
 #include "cpe/pal/pal_unistd.h"
 #include "cpe/pal/pal_limits.h"
-/* #include <sys/types.h> */
-/* #include <sys/param.h> */
-/* #include <stdio.h> */
-/* #ifdef STDC_HEADERS */
-/* # include <stdlib.h> */
-/* # include <stddef.h> */
-/* #else */
-/* # ifdef HAVE_STDLIB_H */
-/* #  include <stdlib.h> */
-/* # endif */
-/* #endif /\* STDC_HEADERS *\/ */
-/* #ifdef HAVE_DIRENT_H */
-/* # include <dirent.h> */
-/* # define NAMLEN(dirent) strlen((dirent)->d_name) */
-/* #else */
-/* # define dirent direct */
-/* # define NAMLEN(dirent) (dirent)->d_namlen */
-/* # ifdef HAVE_SYS_NDIR_H */
-/* #  include <sys/ndir.h> */
-/* # endif */
-/* # ifdef HAVE_SYS_DIR_H */
-/* #  include <sys/dir.h> */
-/* # endif */
-/* # ifdef HAVE_NDIR_H */
-/* #  include <ndir.h> */
-/* # endif */
-/* #endif */
+#include "cpe/pal/pal_dirent.h"
 
 #if CPE_OS_LINUX
 #define HAVE_DIRFD
