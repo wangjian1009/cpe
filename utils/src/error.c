@@ -87,6 +87,7 @@ void cpe_error_log_to_file(struct error_info * info, void * context, const char 
     else if (info->m_line >= 0) fprintf((FILE *)context, "%d: ", info->m_line);
 
     vfprintf((FILE *)context, fmt, args);
+    fprintf((FILE *)context, "\n");
 }
 
 void cpe_error_log_to_consol(struct error_info * info, void * context, const char * fmt, va_list args) {
