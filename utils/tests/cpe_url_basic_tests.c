@@ -19,7 +19,7 @@ static void cpe_url_assert_reparse(cpe_utils_testenv_t env, const char * str_url
     cpe_url_t url = cpe_url_parse(test_allocrator(), env->m_em, str_url);
     assert_true(url);
 
-    assert_string_equal(cpe_url_dump(&env->m_tmp_buffer, url), str_url);
+    assert_string_equal(cpe_url_dump(&env->m_tmp_buffer, url, cpe_url_print_full), str_url);
 
     cpe_url_free(url);
 }
