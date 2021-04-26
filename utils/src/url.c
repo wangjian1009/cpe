@@ -353,46 +353,50 @@ void cpe_url_md5(cpe_url_t url, cpe_md5_value_t r_value) {
     *r_value = md5_ctx.value;
 }
 
-void cpe_url_print(write_stream_t ws, cpe_url_t url) {
-    stream_printf(ws, "%s://", cpe_str_opt(url->m_protocol, ""));
-
-    if (url->m_host) {
-        if (url->m_port) {
-            stream_printf(ws, "%s:%d", url->m_host, url->m_port);
+void cpe_url_print(write_stream_t ws, cpe_url_t url, enum cpe_url_print_scope scope) {
+    if (scope == cpe_url_print_full) {
+        stream_printf(ws, "%s://", cpe_str_opt(url->m_protocol, ""));
+    }
+    
+    if (scope == cpe_url_print_full || scope == cpe_url_print_host) {
+        if (url->m_host) {
+            if (url->m_port) {
+                stream_printf(ws, "%s:%d", url->m_host, url->m_port);
+            } else {
+                stream_printf(ws, "%s", url->m_host);
+            }
+        } else {
+            stream_printf(ws, ":%d", url->m_port);
         }
-        else {
-            stream_printf(ws, "%s", url->m_host);
+    }
+
+    if (scope == cpe_url_print_full || scope == cpe_url_print_path_query) {
+        if (url->m_path) {
+            stream_printf(ws, "%s", url->m_path);
         }
-    }
-    else {
-        stream_printf(ws, ":%d", url->m_port);
-    }
 
-    if (url->m_path) {
-        stream_printf(ws, "%s", url->m_path);
-    }
+        if (url->m_query_param_count) {
+            stream_printf(ws, "%s", "?");
 
-    if (url->m_query_param_count) {
-        stream_printf(ws, "%s", "?");
-        
-        uint16_t i;
-        for(i = 0; i < url->m_query_param_count; ++i) {
-            const char * name = cpe_url_query_param_name_at(url, i);
-            const char * value = cpe_url_query_param_value_at(url, i);
+            uint16_t i;
+            for (i = 0; i < url->m_query_param_count; ++i) {
+                const char * name = cpe_url_query_param_name_at(url, i);
+                const char * value = cpe_url_query_param_value_at(url, i);
 
-            if (i > 0) stream_printf(ws, "&");
-            
-            stream_printf(ws, "%s=%s", name, value);
+                if (i > 0) stream_printf(ws, "&");
+
+                stream_printf(ws, "%s=%s", name, value);
+            }
         }
     }
 }
 
-const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url) {
+const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url, enum cpe_url_print_scope scope) {
     struct write_stream_buffer stream = CPE_WRITE_STREAM_BUFFER_INITIALIZER(buffer);
 
     mem_buffer_clear_data(buffer);
     
-    cpe_url_print((write_stream_t)&stream, url);
+    cpe_url_print((write_stream_t)&stream, url, scope);
     stream_putc((write_stream_t)&stream, 0);
     
     return mem_buffer_make_continuous(buffer, 0);

@@ -30,8 +30,14 @@ int cpe_url_cmp_opt(cpe_url_t l, cpe_url_t r);
 void cpe_url_md5_update(cpe_url_t url, cpe_md5_ctx_t ctx);
 void cpe_url_md5(cpe_url_t url, cpe_md5_value_t r_value);
 
-void cpe_url_print(write_stream_t ws, cpe_url_t url);
-const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url);
+enum cpe_url_print_scope {
+    cpe_url_print_full,
+    cpe_url_print_host,
+    cpe_url_print_path_query,
+};
+
+void cpe_url_print(write_stream_t ws, cpe_url_t url, enum cpe_url_print_scope scope);
+const char * cpe_url_dump(mem_buffer_t buffer, cpe_url_t url, enum cpe_url_print_scope scope);
 
 cpe_url_t cpe_url_parse(mem_allocrator_t alloc, error_monitor_t em, const char * str_url);
 
