@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "pcre2.h"
 #include "cmocka_all.h"
 
@@ -25,3 +26,28 @@ void _assert_string_match(
     }
 }
 
+int cpe_cmocak_run_test_suits(const struct _CPE_TEST_SUIT * test_suits, uint16_t test_suit_count) {
+    uint32_t total_count = 0;
+
+    uint16_t i;
+    for(i = 0; i < test_suit_count; ++i) {
+        total_count += test_suits[i].m_count;
+    }
+
+    struct CMUnitTest * all_cases = malloc(sizeof(struct CMUnitTest) * total_count);
+
+    uint32_t case_pos = 0;
+    for(i = 0; i < test_suit_count; ++i) {
+        uint16_t j;
+        for(j = 0; j < test_suits[i].m_count; ++j) {
+            all_cases[case_pos++] = test_suits[i].m_cases[j];
+        }
+    }
+    assert(case_pos == total_count);
+    
+ 	int rv = _cmocka_run_group_tests("aa", all_cases, total_count, NULL, NULL);
+
+    free(all_cases);
+
+    return rv;
+}
