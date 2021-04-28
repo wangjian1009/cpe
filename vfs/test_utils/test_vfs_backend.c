@@ -54,7 +54,13 @@ static int test_vfs_file_open(void * ctx, void * mount_env, vfs_file_t file, con
     }
 
     if (strchr(mode, 'w')) {
-        fp->m_w_pos = 0;
+        if (strchr(mode, '+')) {
+            fp->m_w_pos = mem_buffer_size(&fp->m_entry->m_file.m_content);
+        }
+        else {
+            mem_buffer_clear_data(&fp->m_entry->m_file.m_content);
+            fp->m_w_pos = 0;
+        }
     } else {
         fp->m_w_pos = -1;
     }
@@ -83,7 +89,7 @@ static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_
         CPE_ERROR(env->m_em, "test_vfs_file_read: entry alreay removed");
         return -1;
     }
-    
+
     if (fp->m_r_pos < 0) {
         CPE_ERROR(env->m_em, "test_vfs_file_read: can`t read, check open mode");
         return -1;
@@ -98,7 +104,7 @@ static ssize_t test_vfs_file_read(void * ctx, vfs_file_t file, void * buf, size_
             fp->m_r_pos, total_size);
         return -1;
     }
-    
+
     if (fp->m_r_pos == total_size) return 0;
     
     uint32_t read_size = total_size - (uint32_t)fp->m_r_pos;
