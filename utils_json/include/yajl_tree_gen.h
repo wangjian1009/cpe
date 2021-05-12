@@ -7,8 +7,6 @@
 extern "C" {
 #endif
 
-typedef struct yajl_val_s * yajl_val;
-    
 struct cpe_yajl_tree_gen {
     mem_buffer_t m_buffer;
     error_monitor_t m_em;

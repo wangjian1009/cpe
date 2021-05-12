@@ -6,6 +6,10 @@
 extern "C" {
 #endif
 
+typedef struct yajl_val_s * yajl_val;
+
+typedef struct cpe_yajl_stream_parser * cpe_yajl_stream_parser_t;
+
 const char * cpe_yajl_tree_type_str(int type);
 
 void cpe_yajl_stream_escape_str_range(write_stream_t ws, const char * msg, const char * msg_end);
