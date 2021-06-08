@@ -23,6 +23,7 @@ const char * cpe_url_query_param_name_at(cpe_url_t url, uint16_t pos);
 const char * cpe_url_query_param_value_at(cpe_url_t url, uint16_t pos);
 const char * cpe_url_query_param_value_find(cpe_url_t url, const char * name);
 int cpe_url_query_param_add(cpe_url_t url, const char * name, const char * value);
+void cpe_url_query_param_clear(cpe_url_t url);
 
 int cpe_url_cmp(cpe_url_t l, cpe_url_t r);
 int cpe_url_cmp_opt(cpe_url_t l, cpe_url_t r);

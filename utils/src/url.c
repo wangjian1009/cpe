@@ -274,6 +274,24 @@ int cpe_url_query_param_add(cpe_url_t url, const char * name, const char * value
     return 0;
 }
 
+void cpe_url_query_param_clear(cpe_url_t url) {
+    mem_allocrator_t alloc = url->m_alloc;
+
+    uint16_t i;
+    for(i = 0; i < url->m_query_param_count; ++i) {
+        if (i < CPE_ARRAY_SIZE(url->m_query_param)) {
+            mem_free(alloc, url->m_query_param[i].m_name);
+            mem_free(alloc, url->m_query_param[i].m_value);
+        }
+        else {
+            uint16_t addition_pos = i - CPE_ARRAY_SIZE(url->m_query_param);
+            mem_free(alloc, url->m_query_param_addition[addition_pos].m_name);
+            mem_free(alloc, url->m_query_param_addition[addition_pos].m_value);
+        }
+    }
+    url->m_query_param_count = 0;
+}
+
 int cpe_url_cmp(cpe_url_t l, cpe_url_t r) {
     int rv;
     
