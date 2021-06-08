@@ -35,6 +35,7 @@ enum cpe_url_print_scope {
     cpe_url_print_full,
     cpe_url_print_host,
     cpe_url_print_path_query,
+    cpe_url_print_protocol_host_path,
 };
 
 void cpe_url_print(write_stream_t ws, cpe_url_t url, enum cpe_url_print_scope scope);

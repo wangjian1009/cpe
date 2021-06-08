@@ -372,11 +372,11 @@ void cpe_url_md5(cpe_url_t url, cpe_md5_value_t r_value) {
 }
 
 void cpe_url_print(write_stream_t ws, cpe_url_t url, enum cpe_url_print_scope scope) {
-    if (scope == cpe_url_print_full) {
+    if (scope == cpe_url_print_full || scope == cpe_url_print_protocol_host_path) {
         stream_printf(ws, "%s://", cpe_str_opt(url->m_protocol, ""));
     }
     
-    if (scope == cpe_url_print_full || scope == cpe_url_print_host) {
+    if (scope == cpe_url_print_full || scope == cpe_url_print_host || scope == cpe_url_print_protocol_host_path) {
         if (url->m_host) {
             if (url->m_port) {
                 stream_printf(ws, "%s:%d", url->m_host, url->m_port);
@@ -388,11 +388,13 @@ void cpe_url_print(write_stream_t ws, cpe_url_t url, enum cpe_url_print_scope sc
         }
     }
 
-    if (scope == cpe_url_print_full || scope == cpe_url_print_path_query) {
+    if (scope == cpe_url_print_full || scope == cpe_url_print_path_query || scope == cpe_url_print_protocol_host_path) {
         if (url->m_path) {
             stream_printf(ws, "%s", url->m_path);
         }
+    }
 
+    if (scope == cpe_url_print_full || scope == cpe_url_print_path_query) {
         if (url->m_query_param_count) {
             stream_printf(ws, "%s", "?");
 
