@@ -7,3 +7,6 @@
 [submodule "depends/unixem"]
 	path = depends/unixem
 	url = git@github.com:wangjian1009/unixem.git
+[submodule "depends/mimalloc"]
+	path = depends/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
