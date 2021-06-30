@@ -10,3 +10,4 @@ set_property(TARGET cpe_vfs PROPERTY INCLUDE_DIRECTORIES
     ${cpe_vfs_base}/include
   )
 
+target_link_libraries(cpe_vfs INTERFACE cpe_utils)

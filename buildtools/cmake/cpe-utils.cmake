@@ -1,3 +1,5 @@
+# -*- origami-fold-style: triple-braces -*-
+
 # {{{ cpe_pal
 set(cpe_pal_base ${CMAKE_CURRENT_LIST_DIR}/../../pal)
 
