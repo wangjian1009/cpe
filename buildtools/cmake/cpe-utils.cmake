@@ -71,6 +71,11 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
 
 set(cpe_utils_interface_libraries cpe_utils)
 
+
+if(WIN32)
+  list(APPEND cpe_utils_interface_libraries IPHLPAPI)
+endif()
+
 if (OS_NAME MATCHES "mac")
   set(cpe_utils_interface_libraries ${cpe_utils_interface_libraries} resolv)
 endif()
