@@ -1,3 +1,5 @@
+#include "cpe/pal/pal_stdio.h"
+#include "cpe/pal/pal_stdlib.h"
 #include "cpe/pal/pal_unistd.h"
 #include "cpe/pal/pal_limits.h"
 #include "cpe/pal/pal_dirent.h"
