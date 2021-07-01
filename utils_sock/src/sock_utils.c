@@ -1,5 +1,8 @@
 #include <assert.h>
+#ifdef WIN32
+#else
 #include <sys/ioctl.h>
+#endif
 #include "cpe/pal/pal_string.h"
 #include "cpe/pal/pal_stdio.h"
 #include "cpe/pal/pal_strings.h"
@@ -600,6 +603,11 @@ int sock_protect_vpn(int fd, error_monitor_t em) {
 
 #endif
 
+#ifdef WIN32
+int sock_get_read_size(int fd, error_monitor_t em) {
+    return 0;
+}
+#else
 int sock_get_read_size(int fd, error_monitor_t em) {
     int bytes; 
     int rv = ioctl(fd, FIONREAD, &bytes);
@@ -612,3 +620,4 @@ int sock_get_read_size(int fd, error_monitor_t em) {
         return bytes;
     }
 }
+#endif
