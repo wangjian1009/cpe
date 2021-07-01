@@ -47,7 +47,13 @@ set_property(TARGET cpe_utils PROPERTY INCLUDE_DIRECTORIES
 
 add_dependencies(cpe_utils cpe_pal)
 
-target_link_libraries(cpe_utils INTERFACE cpe_pal)
+set(cpe_utils_libraries cpe_pal)
+
+if (OS_NAME MATCHES "linux")
+  set(cpe_utils_libraries ${cpe_utils_libraries} m)
+endif()
+
+target_link_libraries(cpe_utils INTERFACE ${cpe_utils_libraries})
   
 # }}}
 # {{{ cpe_utils_sock
