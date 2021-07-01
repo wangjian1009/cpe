@@ -32,6 +32,7 @@
 */
 
 /* -- include the following line if the md5.h header file is separate -- */
+#include "cpe/pal/pal_stdio.h"
 #include "cpe/utils/md5.h"
 #include "cpe/utils/stream_buffer.h"
 

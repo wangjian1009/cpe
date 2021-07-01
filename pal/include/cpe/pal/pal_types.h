@@ -11,6 +11,10 @@
 #include <limits.h>
 #endif
 
+#if __MINGW32__
+#include <crtdefs.h>
+#endif
+
 #ifdef __cplusplus
 #  define CPE_BEGIN_DECL extern "C" {
 #  define CPE_END_DECL }
@@ -67,12 +71,24 @@ typedef int gid_t;
 
 #endif /* WIN32 */
 
-#if (__WORDSIZE == 64)
-typedef int64_t ptr_int_t;
-typedef uint64_t ptr_uint_t;
+#if __MINGW32__
+   typedef intptr_t ptr_int_t;
 #else
-typedef int32_t ptr_int_t;
-typedef uint32_t ptr_uint_t;
+#  if (__WORDSIZE == 64)
+     typedef int64_t ptr_int_t;
+#  else
+     typedef int32_t ptr_int_t;
+#  endif
+#endif
+
+#if __MINGW32__
+   typedef uintptr_t ptr_uint_t;
+#else
+#  if (__WORDSIZE == 64)
+     typedef uint64_t ptr_uint_t;
+#  else
+     typedef uint32_t ptr_uint_t;
+#  endif
 #endif
 
 #if ! defined NULL

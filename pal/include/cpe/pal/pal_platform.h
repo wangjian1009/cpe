@@ -4,6 +4,7 @@
 #if defined __APPLE__
 #    include <stdint.h>
 #    include <ConditionalMacros.h>
+#else
 #endif
 
 #ifndef CPE_BIG_ENDIAN
@@ -34,11 +35,14 @@
 #endif
 
 #ifndef __WORDSIZE
-#if __SIZEOF_INT__ == 8
-#    define __WORDSIZE (64)
-#else
-#    define __WORDSIZE (32)
-#endif
+#  if __WORDSIZE
+#  else
+#    if __SIZEOF_INT__ == 8
+#      define __WORDSIZE (64)
+#    else
+#      define __WORDSIZE (32)
+#    endif
+#  endif
 #endif
 
 #ifdef _MSC_VER
