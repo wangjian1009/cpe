@@ -10,7 +10,11 @@
 int dir_mk(const char * path, mode_t mode, error_monitor_t em) {
     int rv;
 
+#if __MINGW32__
+    rv = mkdir(path);
+#else
     rv = mkdir(path, mode);
+#endif
 
     if (rv != 0) {
         switch(errno) {

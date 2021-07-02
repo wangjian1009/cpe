@@ -3,23 +3,12 @@
 # {{{ cpe_pal
 set(cpe_pal_base ${CMAKE_CURRENT_LIST_DIR}/../../pal)
 
-set(cpe_pal_source
-  ${cpe_pal_base}/src/pal_socket.c
-  ${cpe_pal_base}/src/pal_error.c
-  ${cpe_pal_base}/src/pal_string.c
-  ${cpe_pal_base}/src/pal_shm.c
-  ${cpe_pal_base}/src/pal_math.c
-  ${cpe_pal_base}/src/pal_stdlib.c
-  ${cpe_pal_base}/src/pal_closefrom.c
-  )
+file(GLOB cpe_pal_source ${cpe_pal_base}/src/pal_*.c)
 
 if (OS_NAME STREQUAL "vc" OR OS_NAME STREQUAL "mingw")
-set(cpe_pal_source
-  ${cpe_pal_source}
-  ${cpe_pal_base}/src/msvc_time.c
-  ${cpe_pal_base}/src/msvc_dlfcn.c
-  ${cpe_pal_base}/src/win32_dirent.c
-  )
+  file(GLOB cpe_pal_source_win32 ${cpe_pal_base}/src/win32_*.c)
+  file(GLOB cpe_pal_source_msvc ${cpe_pal_base}/src/msvc_*.c)
+  list(APPEND cpe_pal_source ${cpe_pal_source_win32} ${cpe_pal_source_msvc})
 endif ()
 
 add_library(cpe_pal STATIC ${cpe_pal_source})
@@ -69,17 +58,16 @@ set_property(TARGET cpe_utils_sock PROPERTY INCLUDE_DIRECTORIES
     ${cpe_utils_sock_base}/include
     )
 
-set(cpe_utils_interface_libraries cpe_utils)
-
+set(cpe_utils_sock_libraries cpe_utils)
 
 if(WIN32)
-  list(APPEND cpe_utils_interface_libraries IPHLPAPI)
+  list(APPEND cpe_utils_sock_libraries IPHLPAPI)
 endif()
 
 if (OS_NAME MATCHES "mac")
-  set(cpe_utils_interface_libraries ${cpe_utils_interface_libraries} resolv)
+  list(APPEND cpe_utils_sock_libraries resolv)
 endif()
 
-target_link_libraries(cpe_utils_sock INTERFACE ${cpe_utils_interface_libraries})
+target_link_libraries(cpe_utils_sock INTERFACE ${cpe_utils_sock_libraries})
 
 # }}}
