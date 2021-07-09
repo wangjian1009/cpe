@@ -222,6 +222,26 @@ static vfs_entry_info_t vfs_native_dir_it_next(struct vfs_entry_info_it * it) {
             else if (S_ISREG(stat_buf.st_mode)) {
                 dp->d_type = DT_REG;
             }
+            else if (S_ISBLK(stat_buf.st_mode)) {
+                dp->d_type = DT_BLK;
+            }
+            else if (S_ISCHR(stat_buf.st_mode)) {
+                dp->d_type = DT_CHR;
+            }
+            else if (S_ISFIFO(stat_buf.st_mode)) {
+                dp->d_type = DT_FIFO;
+            }
+            else if (S_ISLNK(stat_buf.st_mode)) {
+                dp->d_type = DT_LNK;
+            }
+            else if (S_ISSOCK(stat_buf.st_mode)) {
+                dp->d_type = DT_SOCK;
+            }
+#if defined S_ISWHT
+            else if (S_ISWHT(stat_buf.st_mode)) {
+                dp->d_type = DT_WHT;
+            }
+#endif
             else {
                 continue;
             }
