@@ -247,7 +247,7 @@ static vfs_entry_info_t vfs_native_dir_it_next(struct vfs_entry_info_it * it) {
             }
         }
 
-        if (dp->d_type == DT_DIR || dp->d_type == DT_REG) break;
+        if (dp->d_type != DT_UNKNOWN) break;
     }
     if (dp == NULL) return NULL;
 
